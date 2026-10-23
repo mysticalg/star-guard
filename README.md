@@ -1,10 +1,10 @@
 # Star Guard
 
-A C / SDL3 arcade space shooter compiled to WebAssembly for the browser. Seven weapons, fourteen enemy types, six sectors, insect formations, four-hit ricochet shots, an expanding player-origin nova bomb, GPU glow particles and synthesised stereo effects.
+A C / SDL3 arcade space shooter compiled to WebAssembly for the browser. Eight weapons, twenty-two enemy types, ten sectors, insect formations, four-hit ricochet shots, an expanding player-origin nova bomb, GPU glow particles and synthesised stereo effects.
 
 ## Play
 
-Open the GitHub Pages site, click **Launch Game**, then Space to start/fire. Move with arrows, Z/X, mouse or touch; hold mouse to fire. 1–7 selects weapons; B bombs; D shields; O pods; P pauses; R restarts; M mutes; F4 changes effects quality. Gamepads: stick, A fire, B bomb, X shield, Y pods, shoulders change weapon.
+Open the GitHub Pages site, click **Launch Game**, then Space to start/fire. Move with arrows, Z/X, mouse or touch; hold mouse to fire. 1–8 selects weapons; B bombs; D shields; O pods; P pauses; R restarts; M mutes; F4 changes effects quality. Gamepads: stick, A fire, B bomb, X shield, Y pods, shoulders change weapon.
 
 Rendering follows the display refresh rate, including 120 Hz displays. Simulation remains fixed at 50 Hz with interpolated rendering. Actual performance depends on the browser, GPU and effects quality. The maximum GPU particle pool is 12,288; use F4 on slower devices. Touch dragging flies and fires.
 
@@ -22,4 +22,22 @@ GitHub Pages serves `main:/docs`. Commit rebuilt files after source changes. No 
 
 ## Credits
 
-Original game and generated artwork developed for Dave. SDL3 is provided under its zlib licence; see `SDL-LICENSE.txt`. No third-party game art or audio is included. References to classic arcade games describe gameplay inspiration only.
+Original game and generated artwork developed for Dave. SDL3 is provided under its zlib licence; see `SDL-LICENSE.txt`. Original/generated sprites and synthesised sound effects are included; the supplied OVG soundtrack is credited below. References to classic arcade games describe gameplay inspiration only.
+
+Weapon 8 is a three-way split ricochet laser with five enemy hits per beam. All friendly projectiles remain harmless to the player after rebounds. Shots inherit two-thirds of horizontal ship velocity, capped at four pixels per simulation tick.
+
+Ten continuous sectors now include Verdant Skies, Dune Sea, Frost Ridge and Magma Coast, with scrolling terrain below the ship, distant mountains and clouds moving at different parallax speeds. Each sector ends with a distinct boss silhouette, name, movement and projectile pattern. Live objects survive sector handovers; stages no longer clear enemies, hazards, bullets or pickups. Use the starting-sector menu to explore any level.
+
+The browser canvas is 1920 by 1600, with a matching full-resolution particle target. Retro scenery and original sprites retain their pixel-art style; new enemy art has twice the texel density. F4 reduces particle density on slower hardware.
+
+Specialists: Prism Strider (zigzag/triple fan), Shield Bulwark (cycling armour), Mine Serpent (sweeping mine laying), Lance Charger (telegraphed dive), Phase Stalker (blink/reappear), Brood Carrier (launches two drones on destruction), Orbit Weaver (spiral projectiles), Rail Sniper (target-lock tracer and fast shot).
+
+Sector handovers play a 4.3-second filtered white-noise thruster sweep. Its envelope rises and fades, with the filter opening around the middle. Muting also mutes the whoosh.
+
+## Soundtrack
+
+OVG Alien 8 - Follow the Valves, Version 1 (168.24 s), supplied by Dave from his downloaded WAV. [Original track](https://suno.com/song/7ce95598-c808-4dd5-8163-2251faf26b3a). Compressed to 128 kb/s MP3 for the game. Starts on Launch, loops, pauses with gameplay, follows master mute and has its own music-volume slider. Music ducks during sector transitions.
+
+The playlist also includes OVG Sabre Wulf - Follow the Orchid (Version 2) and OVG Shinobi School Run File (Version 1), supplied by Dave from Downloads. The selector changes tracks; reaching the end advances to the next track and repeats the playlist. Original downloaded audio stays untouched.
+
+Flying enemies rotate toward actual frame-to-frame movement, with a bounded turn rate and shortest-path angular interpolation. Bug atlas art faces upward at zero rotation; other ships use their own orientation offset. Rotated quads stay in the same sprite batch, avoiding extra draw calls.

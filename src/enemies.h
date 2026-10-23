@@ -1,0 +1,16 @@
+/* Eight specialist enemies. Their own age clock drives readable tells and attacks. */
+static int enemy_guarded(const Obj*o){return (o->type==15&&o->age%140<85)||(o->type==18&&o->age%130>=85&&o->age%130<105);}
+static void specialist_group(int type,int formation){int n=type==19?3:type==15?4:6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=type==19?8:type==15?6:3,.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
+static void specialist_step(Obj*o){int t=o->age,x=o->x,y=o->y;
+ switch(o->type){
+ case 14:o->x=o->base*Q+sn(t*3+o->phase)*7;o->y+=t<170?180:520;if(t%75==40&&y>28*Q)for(int a=-1;a<=1;a++)bullet(x,y,a*340,460);break;
+ case 15:o->x=o->base*Q+sn(t+o->phase)*3;o->y+=100;if(t%140==90&&y>30*Q)for(int a=-2;a<=2;a++)bullet(x,y,a*170,390);break;
+ case 16:o->x=160*Q+sn(t*2+o->phase)*30;o->y+=235;if(t%80==45&&y>32*Q&&y<200*Q)hazard(3,x>>8,y>>8);break;
+ case 17:if(t<100){o->x=o->base*Q+sn(t*2+o->phase)*4;o->y+=170;if(t==80){int d=absn(g.px-x)+absn(player_y-y);o->vx=divn((g.px-x)*1450,d);o->vy=divn((player_y-y)*1450,d);}}else{o->x+=o->vx;o->y+=o->vy;if(t>200)o->y+=900;}break;
+ case 18:o->y+=165;if(t%130==85){pc_impact(x>>8,y>>8,3);o->base=24+remn(o->base+113,272);}o->x=o->base*Q+sn(t*2+o->phase)*3;if(t%130==110&&y>24*Q)aim(o->x,o->y,700);break;
+ case 19:o->x=o->base*Q+sn(t+o->phase)*4;o->y+=110;if(t%100==65&&y>30*Q){aim(x-12*Q,y,450);aim(x+12*Q,y,450);}break;
+ case 20:if(t<300){o->x=o->base*Q+sn(t*3+o->phase)*9;o->y+=t<100?200:45;}else o->y+=640;if(t%36==0&&y>30*Q){int a=t*5+o->phase;bullet(x,y,sn(a)*550/1024,sn(a+64)*550/1024);}break;
+ case 21:o->x=o->base*Q+sn(t+o->phase)*6;o->y+=120;if(t%150==80){o->vx=g.px;o->vy=player_y;}if(t%150==115&&y>28*Q){int dx=o->vx-x,dy=o->vy-y,d=absn(dx)+absn(dy);bullet(x,y,divn(dx*1400,d),divn(dy*1400,d));sound(4,1,55,0x4800);}break;
+ }
+}
+static void carrier_release(const Obj*parent){if(parent->type!=19)return;for(int n=-1;n<=1;n+=2){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=17,.hp=2,.x=parent->x+n*14*Q,.y=parent->y,.base=(parent->x>>8)+n*14,.age=99,.vx=n*600,.vy=750};}}
