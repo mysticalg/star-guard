@@ -17,7 +17,7 @@ static int mission_index(int phase){for(int i=0;i<SECTOR_COUNT;i++)if(missionRou
 #define BOSS_SHIELD_RECHARGE 300
 #define MAXP 160
 #define NSTARS 144
-typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay;} Obj;
+typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
@@ -99,13 +99,22 @@ static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.sc
 #include "expansion_step.h"
 #include "bosses.h"
 static int emp_near(int x,int y,int radius){int dx=(x-g.px)/Q,dy=(y-player_y)/Q;return dx*dx+dy*dy<radius*radius;}
-static void emp_arc(int x,int y,int xx,int yy){if(ex.empCount>=24)return;ex.empArcs[ex.empCount++]=(Obj){.x=x,.y=y,.vx=xx,.vy=yy};}
-static void emp_storm(void){int rank=power_level(8),radius=110+rank*15,damage=55+rank*15,hits=0;ex.empCount=0;ex.empTicks=10;
+static void emp_arc(int x,int y,int xx,int yy){if(ex.empCount>=96)return;ex.empArcs[ex.empCount++]=(Obj){.x=x,.y=y,.vx=xx,.vy=yy};}
+static int emp_link_distance(const Obj*a,const Obj*b){int dx=(a->x-b->x)/Q,dy=(a->y-b->y)/Q;return dx*dx+dy*dy;}
+static int emp_visible(const Obj*o){return o->on&&o->x>=0&&o->x<=320*Q&&o->y>=24*Q&&o->y<=256*Q;}
+/* Fixed-size breadth-first search: every connected enemy may join, including
+   targets beyond the player's initial range. No recursion or allocations. */
+static void emp_begin_critical(int radius){if(ex.empCritical)return;int seen[MAXE]={0},best[MAXE],bestCount=0,rank=power_level(8),range=48+rank*4;for(int seed=0;seed<MAXE;seed++){if(seen[seed]||!emp_visible(g.enemies+seed))continue;int queue[MAXE],count=1,contacts=0,near=0;queue[0]=seed;seen[seed]=1;for(int head=0;head<count;head++){Obj*a=g.enemies+queue[head];near|=emp_near(a->x,a->y,radius);for(int j=0;j<MAXE;j++)if(j!=queue[head]&&emp_visible(g.enemies+j)&&emp_link_distance(a,g.enemies+j)<=range*range){contacts++;if(!seen[j]){seen[j]=1;queue[count++]=j;}}}if(near&&count>=5&&contacts>=count*2&&count>bestCount){bestCount=count;for(int i=0;i<count;i++)best[i]=queue[i];}}if(!bestCount)return;ex.empNetwork++;if(!ex.empNetwork)ex.empNetwork=1;ex.empCritical=100+rank*15;ex.empFeedbackAge=0;ex.empCriticalCount=bestCount;for(int i=0;i<bestCount;i++){Obj*o=g.enemies+best[i];o->empLinked=ex.empNetwork;if(o->type!=4)o->empFreeze=12;}}
+static void emp_feedback_step(void){if(!ex.empCritical)return;if(ex.empDisable){ex.empCritical=ex.empCriticalCount=0;return;}ex.empCritical--;ex.empFeedbackAge++;if(ex.empFeedbackAge%5)return;int rank=power_level(8),range=48+rank*4,changed=1;while(changed){changed=0;for(int i=0;i<MAXE;i++){Obj*a=g.enemies+i;if(!emp_visible(a)||a->empLinked==ex.empNetwork)continue;for(int j=0;j<MAXE;j++){Obj*b=g.enemies+j;if(emp_visible(b)&&b->empLinked==ex.empNetwork&&emp_link_distance(a,b)<=range*range){a->empLinked=ex.empNetwork;changed=1;break;}}}}
+ int count=0;for(int i=0;i<MAXE;i++)if(emp_visible(g.enemies+i)&&g.enemies[i].empLinked==ex.empNetwork)count++;ex.empCriticalCount=count;if(!count){ex.empCritical=0;return;}ex.empCount=0;ex.empTicks=7;int drawn[MAXE]={0},queue[MAXE];for(int root=0;root<MAXE;root++){if(drawn[root]||!emp_visible(g.enemies+root)||g.enemies[root].empLinked!=ex.empNetwork)continue;int tail=1;queue[0]=root;drawn[root]=1;emp_arc(g.px,player_y,g.enemies[root].x,g.enemies[root].y);for(int head=0;head<tail;head++)for(int j=0;j<MAXE;j++)if(!drawn[j]&&emp_visible(g.enemies+j)&&g.enemies[j].empLinked==ex.empNetwork&&emp_link_distance(g.enemies+queue[head],g.enemies+j)<=range*range){drawn[j]=1;queue[tail++]=j;emp_arc(g.enemies[queue[head]].x,g.enemies[queue[head]].y,g.enemies[j].x,g.enemies[j].y);}}
+ for(int i=0;i<MAXE;i++){Obj*a=g.enemies+i;if(!emp_visible(a)||a->empLinked!=ex.empNetwork)continue;if(a->type!=4)a->empFreeze=12; if(ex.empFeedbackAge>=15&&ex.empFeedbackAge%10==5&&(!enemy_guarded(a)||a->type==4)){int damage=12+rank*4+clamp(count,0,20)+clamp(ex.empFeedbackAge/20,0,5)*6;if(a->type==4)damage=18+rank*3;weapon_damage_enemy(a,damage,8);pc_impact(a->x/Q,a->y/Q,3);if(a->hp<=0)killed(a);}}
+ if(ex.empFeedbackAge%20==5)pc_emp_sound(0,g.px/Q);}
+static void emp_storm(void){if(ex.empCritical)return;int rank=power_level(8),radius=110+rank*15,damage=55+rank*15,hits=0;ex.empCount=0;ex.empTicks=10;
  int visited[MAXE]={0},nodeX[15]={g.px},nodeY[15]={player_y},nodes=1,hop=65+rank*10;
  for(int jump=0;jump<6+rank*2;jump++){int target=-1,parent=0,best=2147483647;for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(!o->on||visited[i]||o->y<24*Q||o->y>256*Q||o->x<0||o->x>320*Q)continue;for(int n=0;n<nodes;n++){int dx=(o->x-nodeX[n])/Q,dy=(o->y-nodeY[n])/Q,d=dx*dx+dy*dy,range=n?hop:radius;if(d<range*range&&d<best){best=d;target=i;parent=n;}}}if(target<0)break;Obj*o=g.enemies+target;visited[target]=1;emp_arc(nodeX[parent],nodeY[parent],o->x,o->y);nodeX[nodes]=o->x;nodeY[nodes++]=o->y;hits++;if(!enemy_guarded(o)||o->type==4){int falloff=clamp(100-jump*5,45,100);weapon_damage_enemy(o,damage*falloff/100,8);pc_hit_sound(enemy_material(o),8,o->x/Q);if(o->hp<=0)killed(o);}}
  for(int i=0,n=0;i<MAXB&&n<8+rank*3;i++){Obj*o=g.bullets+i;if(!o->on||o->type==1||!emp_near(o->x,o->y,radius))continue;if(ex.empCount<10)emp_arc(g.px,player_y,o->x,o->y);if(o->type>=3){o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->hp<=0){o->on=0;g.score+=100;}}else o->on=0;pc_impact(o->x/Q,o->y/Q,3);n++;}
  for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;if(!o->on||o->type==2||o->type==3||!emp_near(o->x,o->y,radius))continue;emp_arc(g.px,player_y,o->x,o->y);if(--o->hp<=0){o->on=0;g.score+=25;pc_crush_sound(hazard_material(o),o->base,o->x/Q);pc_burst(o->x/Q,o->y/Q,0);}}
- for(int n=0;n<3&&ex.empCount<24;n++){int a=rnd()&255,r=radius*(55+rnd()%45)/100;emp_arc(g.px,player_y,clamp(g.px+sn(a)*r/4,5*Q,315*Q),clamp(player_y+sn(a+64)*r/4,26*Q,252*Q));}pc_emp_sound(0,g.px/Q);}
+ for(int n=0;n<3&&ex.empCount<24;n++){int a=rnd()&255,r=radius*(55+rnd()%45)/100;emp_arc(g.px,player_y,clamp(g.px+sn(a)*r/4,5*Q,315*Q),clamp(player_y+sn(a+64)*r/4,26*Q,252*Q));}emp_begin_critical(radius);pc_emp_sound(0,g.px/Q);}
 static void hostile_emp(Obj*o){o->on=0;ex.empPulse=22;ex.empX=o->x;ex.empY=o->y;pc_emp_sound(1,o->x/Q);pc_charge_burst(o->x/Q,o->y/Q);if(!ex.empGrace&&emp_near(o->x,o->y,110)){ex.empDisable=125;ex.empGrace=225;g.beam=0;ex.empTicks=0;}}
 void game_step(int mask,int ch){int i,j,alive=0,fired=0;
  if(ch==27||ch=='q')g.paused=!g.paused;if(ch=='r'){game_reset();g.mode=1;}if(ch=='f')g.fx=!g.fx;
@@ -117,8 +126,9 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0;
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;}
  g.tick++;g.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);
  if(ex.empDisable)ex.empDisable--;if(ex.empGrace)ex.empGrace--;if(ex.empTicks)ex.empTicks--;if(ex.empPulse)ex.empPulse--;if(g.shield)g.shield--;if(g.active)g.active--;if(g.shake)g.shake--;if(g.cool)g.cool--;if(g.beam)g.beam--;
+ emp_feedback_step();
  if((g.tick&3)==0&&g.energy<100)g.energy++;if((g.tick&15)==0&&g.barrier<100)g.barrier++;
- if((mask&4)&&!g.cool&&!ex.empDisable){if(g.weapon==8){if(g.energy>=9){g.energy-=9;fired=1;g.cool=weapon_delay(18);emp_storm();}else g.cool=4;}else if(g.weapon==3||g.weapon==5){int cost=g.weapon==5?3:2;if(g.energy>=cost){g.energy-=cost;fired=1;g.beam=8;g.cool=6;ex.multi=g.weapon==5;pc_laser_sound(0,g.px/Q);}else g.cool=3;}else if(g.weapon!=7||g.energy>=6){if(g.weapon==7)g.energy-=6;fired=1;shot(g.px,g.weapon==6?((g.tick&1)?600:-600):0,g.weapon);if(g.weapon==7){shot(g.px-3*Q,-1100,7);shot(g.px+3*Q,1100,7);}if(g.weapon==1){shot(g.px-3*Q,-350,1);shot(g.px+3*Q,350,1);}g.cool=weapon_delay(g.weapon==7?12:g.weapon==6?9:g.weapon==4?14:g.weapon==2?3:g.weapon==1?6:4);if(g.weapon==7)pc_laser_sound(1,g.px/Q);else{sound(1,1,62,g.weapon==2?0x4100+(sn(g.tick*17)>>1):0x3800+(sn(g.tick*7)>>2));sound_slide(1,1,g.weapon==2?0x2c00:0x2000,g.weapon==2?3:7);}particle(g.px,player_y-10*Q,-160,-250,7,3);particle(g.px,player_y-10*Q,160,-250,7,1);}else g.cool=3;}
+ if((mask&4)&&!g.cool&&!ex.empDisable){if(g.weapon==8){if(ex.empCritical){g.cool=5;}else if(g.energy>=9){g.energy-=9;fired=1;g.cool=weapon_delay(18);emp_storm();}else g.cool=4;}else if(g.weapon==3||g.weapon==5){int cost=g.weapon==5?3:2;if(g.energy>=cost){g.energy-=cost;fired=1;g.beam=8;g.cool=6;ex.multi=g.weapon==5;pc_laser_sound(0,g.px/Q);}else g.cool=3;}else if(g.weapon!=7||g.energy>=6){if(g.weapon==7)g.energy-=6;fired=1;shot(g.px,g.weapon==6?((g.tick&1)?600:-600):0,g.weapon);if(g.weapon==7){shot(g.px-3*Q,-1100,7);shot(g.px+3*Q,1100,7);}if(g.weapon==1){shot(g.px-3*Q,-350,1);shot(g.px+3*Q,350,1);}g.cool=weapon_delay(g.weapon==7?12:g.weapon==6?9:g.weapon==4?14:g.weapon==2?3:g.weapon==1?6:4);if(g.weapon==7)pc_laser_sound(1,g.px/Q);else{sound(1,1,62,g.weapon==2?0x4100+(sn(g.tick*17)>>1):0x3800+(sn(g.tick*7)>>2));sound_slide(1,1,g.weapon==2?0x2c00:0x2000,g.weapon==2?3:7);}particle(g.px,player_y-10*Q,-160,-250,7,3);particle(g.px,player_y-10*Q,160,-250,7,1);}else g.cool=3;}
  if(fired)ship_fire();
  if(g.beam&&(g.tick&3)==0)sound_mod(1,85,0x3800+sn(g.tick*21)*2);
  if((g.tick&1)==0){particle(g.px-2*Q,player_y+8*Q,-50,350,10,0);particle(g.px+2*Q,player_y+8*Q,50,350,10,3);}
@@ -128,13 +138,14 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0;
  }
  if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<SECTOR_WAVES&&enemy_count()<=20&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*170){group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
  for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;o->age++;if(o->base>0)o->base--;if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||(ex.phase==11&&o->x>=288*Q)||o->age>=28||o->x<3*Q||o->x>317*Q||o->y>252*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0))continue;if(o->type==6||o->type==7){if(o->x<3*Q||o->x>317*Q){o->x=clamp(o->x,3*Q,317*Q);o->vx=-o->vx;if(o->type==7){o->heading++;pc_reflection_sound(ex.phase==5?2:5,0,o->x/Q);}}if(o->y<26*Q||o->y>252*Q){o->y=clamp(o->y,26*Q,252*Q);o->vy=-o->vy;if(o->type==7){o->heading++;pc_reflection_sound(ex.phase==5?2:5,0,o->x/Q);}}if(o->age>150)o->on=0;}else if(o->y<20*Q||o->x<0||o->x>320*Q)o->on=0;}
- for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;int oldx=o->x,oldy=o->y;o->age++;
+ for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;int oldx=o->x,oldy=o->y;if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
   if(o->type==4){stage_boss_step(o);
   }else{if(o->type<8)o->y+=(o->vy*ex.enemySpeed)>>8;new_enemy_step(o);if(o->type==0)o->x=o->base*Q+sn(o->age*2+o->phase)*5;
    if(o->type==1){o->x=o->base*Q+sn(o->age+o->phase)*9;if(o->age>100)o->y+=180;}
    if(o->type==2)o->x=160*Q+sn(o->age*2+o->phase)*33;
    if(o->type==3)o->x=o->base*Q+sn((o->age>>1)+o->phase)*3;
    if(o->y>24*Q&&((o->age+o->phase)&127)==0)aim(o->x,o->y,450+(g.wave<<3));
+  }
   }
   if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else{int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
   x=o->x>>8;y=o->y>>8;if(y>304||(o->age>120&&(x< -80||x>400||y< -96))){o->on=0;continue;}

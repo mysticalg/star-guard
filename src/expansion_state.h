@@ -1,6 +1,6 @@
 typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
- int empDisable,empGrace,empTicks,empCount,empPulse,empX,empY;Obj empArcs[24];
+ int empDisable,empGrace,empTicks,empCount,empPulse,empX,empY,empCritical,empNetwork,empFeedbackAge,empCriticalCount;Obj empArcs[96];
  int intro,victory,victoryX,victoryY,stageScore,stageKills,stageSalvage,clearScore,clearKills,clearSalvage,clearBonus;
  int phase,oldPhase,transition,scrollSpeed,enemySpeed,backgroundY,bombs,bombFlash,options,optionsOn,followHead,multi,hazardSerial,nextParticle,soundTick;
  int followX[64],followY[64];Obj obstacles[MAXH];
