@@ -6,9 +6,9 @@ const origin='https://mysticalg.github.io';
 function setup(){
   const runs=new Map(),scores=new Map();
   const repo={
-    start:async(id,level)=>runs.set(id,{starting_level:level,started_at:new Date(0).toISOString()}),
+    start:async(id,level,version)=>runs.set(id,{starting_level:level,client_version:version,started_at:new Date(0).toISOString()}),
     run:async id=>runs.get(id),
-    save:async s=>{if(!scores.has(s.runId))scores.set(s.runId,{id:s.id,name:s.name,score:s.score,level:s.level,starting_level:s.startingLevel});return scores.get(s.runId);},
+    save:async s=>{const same=[...scores.values()].find(x=>x.name===s.name&&x.score===s.score&&x.level===s.level);if(scores.has(s.runId))return scores.get(s.runId);if(same)return same;scores.set(s.runId,{id:s.id,name:s.name,score:s.score,level:s.level,starting_level:s.startingLevel});return scores.get(s.runId);},
     top:async()=>[...scores.values()].sort((a,b)=>b.score-a.score).slice(0,20)
   };
   const handler=createScoreHandler(repo,()=>30000);
@@ -41,3 +41,17 @@ test('preflight allows the game origin, and malformed bodies cannot write',async
 });
 
 test("all seventeen starting sectors are accepted, out-of-range sectors are rejected",async()=>{const {call}=setup();for(let startingLevel=1;startingLevel<=17;startingLevel++)assert.equal((await call("runs",{startingLevel})).status,201);for(const startingLevel of [0,18,-1])assert.equal((await call("runs",{startingLevel})).status,400);});
+
+test('old Earth restart sessions are corrected from scenery 11 to mission 1',async()=>{
+  const {call,repo}=setup();const {runId}=await(await call('runs',{startingLevel:11})).json();
+  (await repo.run(runId)).started_at=new Date(-60000).toISOString();
+  const response=await call('scores',{runId,name:'Palpatine',score:850075,level:3});
+  assert.equal(response.status,201);assert.equal((await response.json()).saved.starting_level,1);
+});
+test('new sessions cannot use legacy scenery correction to move backwards',async()=>{
+  const {call}=setup();const {runId}=await(await call('runs',{startingLevel:11,clientVersion:2})).json();
+  assert.equal((await call('scores',{runId,name:'ACE',score:1000,level:3})).status,400);
+});
+test('same confirmed result retried with another session has only one entry',async()=>{
+  const {call,scores}=setup();for(let i=0;i<2;i++){const {runId}=await(await call('runs',{startingLevel:1,clientVersion:2})).json();assert.equal((await call('scores',{runId,name:'ACE',score:12000,level:2})).status,201);}assert.equal(scores.size,1);
+});

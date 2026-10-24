@@ -24,7 +24,7 @@
     save.disabled=false;save.textContent='SAVE SCORE';document.querySelector('#save-status').textContent='Enter your pilot name to join the shared table.';
   }
   function beginRun(startingLevel){
-    runPromise=request('/runs',{startingLevel}).then(data=>data.runId).catch(()=>null);
+    runPromise=request('/runs',{startingLevel,clientVersion:2}).then(data=>data.runId).catch(()=>null);
     lastTick=null;lastMode=null;
   }
   async function finish(score,level,promise){
@@ -35,7 +35,7 @@
     showPending();form.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   function observeRun(state){
-    if(lastTick!==null&&state.tick<lastTick&&state.mode!==2)beginRun(state.phase<0?1:state.phase+1);
+    if(lastTick!==null&&state.tick<lastTick&&state.mode!==2)beginRun(state.level);
     if(state.mode===2&&lastMode!==2)finish(state.score,state.level,runPromise);
     lastMode=state.mode;lastTick=state.tick;
   }

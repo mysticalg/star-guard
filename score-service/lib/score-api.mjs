@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto';
 const origins = new Set(['https://mysticalg.github.io', 'https://star-guard-scores-mysticalg.netlify.app', 'http://127.0.0.1:8927']);
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const integer = (x, min, max) => Number.isInteger(x) && x >= min && x <= max;
+// Internal scenery ids are not mission numbers. Old restarted clients sent phase+1.
+const missionRoute = [10,0,2,9,12,13,15,16,14,4,5,1,3,6,7,8,11];
 
 export function createScoreHandler(repo, now = Date.now) {
   return async request => {
@@ -31,7 +33,7 @@ export function createScoreHandler(repo, now = Date.now) {
       if (path === '/api/runs') {
         if (!integer(body.startingLevel, 1, 17)) return reply({error:'Invalid starting level.'}, 400);
         const id = randomUUID();
-        await repo.start(id, body.startingLevel);
+        await repo.start(id, body.startingLevel, body.clientVersion === 2 ? 2 : 1);
         return reply({runId:id}, 201);
       }
       if (path !== '/api/scores') return reply({error:'Not found.'}, 404);
@@ -41,8 +43,13 @@ export function createScoreHandler(repo, now = Date.now) {
       const run = await repo.run(body.runId);
       if (!run) return reply({error:'This run was not registered. Start a new game.'}, 400);
       const seconds = Math.max(0,(now() - new Date(run.started_at).getTime())/1000);
-      if (seconds > 172800 || body.score > 100000 + seconds*20000 || body.level < run.starting_level || body.level > run.starting_level + Math.ceil(seconds/8)+1) return reply({error:'Score does not match this run.'}, 400);
-      const saved = await repo.save({id:randomUUID(), runId:body.runId, name, score:body.score, level:body.level, startingLevel:run.starting_level});
+      let startingLevel = run.starting_level;
+      if ((run.client_version || 1) < 2 && body.level < startingLevel) {
+        const corrected = missionRoute.indexOf(startingLevel - 1) + 1;
+        if (corrected > 0 && corrected <= body.level) startingLevel = corrected;
+      }
+      if (seconds > 172800 || body.score > 100000 + seconds*20000 || body.level < startingLevel || body.level > startingLevel + Math.ceil(seconds/8)+1) return reply({error:'Score does not match this run.'}, 400);
+      const saved = await repo.save({id:randomUUID(), runId:body.runId, name, score:body.score, level:body.level, startingLevel});
       return reply({saved, scores:await repo.top()}, 201);
     } catch (error) {
       console.error('Score service unavailable', error?.code || 'storage-error');

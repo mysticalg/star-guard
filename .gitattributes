@@ -1,0 +1,2 @@
+# Applied SQL migrations are byte-checksummed by Netlify. Preserve their exact bytes.
+score-service/netlify/database/migrations/*.sql -text

@@ -487,3 +487,6 @@ Phoenix charge now requires five times the prior combat contribution: 5000 charg
 Tesla critical feedback also consumes its own battery while the network remains active, including after switching weapons; exhausting it ends the chain and starts the six-second lockout.
 
 HUD placement: the Phoenix meter now occupies a compact strip at the very top, above the existing status counters. Weapon ability icons sit flush against the bottom edge in desktop, fullscreen and mobile layouts; the sector/status line sits just above them.
+
+
+High-score restart registration now uses the current mission number, rather than the internal scenery id. New run registrations carry a client version; the service recognizes legacy restarted sessions and maps their scenery id back to the mission route when needed. Failed submissions keep the pending result for retry, and identical pilot/score/sector results are unique in the database. Regression checks cover restart registration, old-session recovery, new-session validation, retry preservation and duplicate saves.
