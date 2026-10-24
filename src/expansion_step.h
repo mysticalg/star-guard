@@ -38,7 +38,7 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,10),targ
  for(i=0;i<384;i++)if(ex.trails[i].life)ex.trails[i].life--;
  for(i=0;i<12;i++)if(ex.impacts[i].on&&++ex.impacts[i].age>9)ex.impacts[i].on=0;
  ex.followX[ex.followHead]=g.px;ex.followY[ex.followHead]=player_y;ex.followHead=(ex.followHead+1)&63;
- if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-10;yy<=(player_y>>8)+10;yy+=10){int l=tunnel_left(yy),r=tunnel_right(yy);if(px-11<l){if((g.tick&3)==0||!g.shield)hurt_at(clamp(l,px-11,px+11),yy,1,0);break;}if(px+11>r){if((g.tick&3)==0||!g.shield)hurt_at(clamp(r,px-11,px+11),yy,-1,0);break;}}}
+ if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-5;yy<=(player_y>>8)+5;yy+=5){int l=tunnel_left(yy),r=tunnel_right(yy);if(px-6<l){if((g.tick&3)==0||!g.shield)hurt_at(clamp(l,px-6,px+6),yy,1,0);break;}if(px+6>r){if((g.tick&3)==0||!g.shield)hurt_at(clamp(r,px-6,px+6),yy,-1,0);break;}}}
  if(phase>=6&&player_y>222*Q)player_y-=Q;
  if(ch=='o')ex.optionsOn=!ex.optionsOn;
  if(ex.optionCool)ex.optionCool--;if(!ex.optionCool&&ex.optionsOn){option_fire();ex.optionCool=8;}
@@ -53,10 +53,10 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,10),targ
  if(!ex.travel&&!ex.bossSpawned&&phase==3&&g.clock<encounter_deadline()&&g.clock>80&&remn(g.clock,150)==0)hazard(2,80+remn(ex.hazardSerial*67,160),-16);
  for(i=0;i<12;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;o->age++;o->y+=o->vy;x=o->x>>8;y=o->y>>8;
   if(y>288){o->on=0;continue;}
-  if(o->type==2){if(absn(y-(player_y>>8))<18&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-13,(player_y>>8)+13),0,y<(player_y>>8)?1:-1);continue;}
+  if(o->type==2){if(absn(y-(player_y>>8))<12&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-7,(player_y>>8)+7),0,y<(player_y>>8)?1:-1);continue;}
   for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){s->on=0;o->hp--;hit_sparks(s->x>>8,s->y>>8,0,1,1);}}
   if(g.beam&&beam_hits(x,o->base)&&(g.tick&3)==0&&y<(player_y>>8))o->hp--;
   if(o->hp<=0){o->on=0;g.score+=25;burst(x,y,0);continue;}
-  if(absn(x-(g.px>>8))<o->base+8&&absn(y-(player_y>>8))<o->base+10){int pt[2];surface_point(g.px>>8,player_y>>8,11,13,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);o->on=0;burst(x,y,0);}
+  if(absn(x-(g.px>>8))<o->base+4&&absn(y-(player_y>>8))<o->base+5){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);o->on=0;burst(x,y,0);}
  }
 }

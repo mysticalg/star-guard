@@ -19,7 +19,7 @@ static void draw_landscapes(u8*b){int scroll=ex.landScroll>>8;
  }}
  }
 }
-static void draw_stage_boss(u8*b,Obj*o,int x,int y){int v=o->variant;if(pc_modern){pc_sprite(40+v,o->x/256.0f,o->y/256.0f);return;}if(v==0){pc_sprite(2,o->x/256.0f,o->y/256.0f);return;}
+static void draw_stage_boss(u8*b,Obj*o,int x,int y){int v=o->variant;if(pc_modern){pc_enemy_sprite(40+v,o,o->x/256.0f,o->y/256.0f);return;}if(v==0){pc_sprite(2,o->x/256.0f,o->y/256.0f);return;}
  int colours[10]={143,235,7,139,143,87,235,223,235,87},c=colours[v];
  /* Distinct silhouettes: orbital oracle, armoured harvester, lance, citadel,
     rock warden, broad manta, scorpion, ice crown and three-headed hydra. */

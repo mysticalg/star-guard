@@ -4,7 +4,7 @@ const music=document.querySelector("#music"),musicVolume=document.querySelector(
 
 let ready=false,started=false,touchActive=false;
 
-var Module={canvas,locateFile(path){return path+"?v=6";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
+var Module={canvas,locateFile(path){return path+"?v=8";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
 
 startButton.onclick=()=>{if(!ready||started)return;started=true;music.play().catch(()=>{});document.querySelector('#cover').hidden=true;Module.callMain([document.querySelector("#sector").value,document.querySelector("#resolution").value]);document.querySelector("#hud").hidden=false;document.querySelector('#sound').disabled=false;canvas.focus();};
 
@@ -46,7 +46,8 @@ function chooseTrack(index){trackSelect.value=String(index);music.src=tracks[ind
 
 trackSelect.onchange=()=>chooseTrack(+trackSelect.value);
 
-music.addEventListener('ended',()=>chooseTrack((+trackSelect.value+1)%tracks.length));
+music.loop=true;let musicLevel=null;
+function syncLevelMusic(level){if(level<0)return;if(musicLevel===null){musicLevel=level;return;}if(level!==musicLevel){musicLevel=level;chooseTrack((+trackSelect.value+1)%tracks.length);}}
 
 
 
@@ -56,7 +57,7 @@ const weaponNames=['PULSE','SPREAD','RAPID','BEAM','HEATSEEKER','MULTILASER','RI
 
 const bossNames=['STAR DREADNOUGHT','ION ORACLE','IRON HARVESTER','RIFT LANCER','SIEGE CITADEL','CAVERN WARDEN','SKY MANTA','DUNE SCORPION','FROST CROWN','MAGMA HYDRA'];
 
-setInterval(()=>{if(!started||typeof Module._web_stat!=='function')return;const stat=Module._web_stat;document.querySelector('#hud-score').textContent=stat(19).toLocaleString();document.querySelector('#hud-wave').textContent=String(stat(10)).padStart(2,'0');document.querySelector('#hud-lives').textContent=stat(20);document.querySelector('#hud-weapon').textContent=weaponNames[stat(2)];document.querySelector('#hud-barrier').style.width=Math.max(0,Math.min(100,stat(21)))+'%';document.querySelector('#hud-energy').style.width=stat(22)+'%';document.querySelector('#hud-sector').textContent=sectorNames[Math.max(0,stat(15))]+(stat(28)?" / SIDE FLIGHT":" / VERTICAL");document.querySelector('#hud-supplies').textContent=stat(3)+' NOVAS / '+stat(26)+' PODS';document.querySelector('#hud-fps').textContent=stat(27)+' FPS';let boss=stat(24);document.querySelector('#boss-hud').hidden=!boss;if(boss){document.querySelector('#boss-name').textContent=bossNames[boss-1];document.querySelector('#boss-health').style.width=stat(25)+'%';}const message=document.querySelector('#game-message');message.hidden=stat(1)!==2&&!stat(6);message.textContent=stat(1)===2?'GAME OVER · PRESS R TO RESTART':'PAUSED';const transit=document.querySelector('#transit-message');transit.hidden=!stat(16)&&!stat(33)&&!stat(34);transit.textContent=stat(33)?'WARNING / BOSS APPROACHING':stat(34)?'SECTOR CLEAR':'SECTOR TRANSIT';transit.style.color=stat(33)?'#ffb48c':'#c1fff2';},100);
+setInterval(()=>{if(!started||typeof Module._web_stat!=='function')return;const stat=Module._web_stat;syncLevelMusic(stat(15));document.querySelector('#hud-score').textContent=stat(19).toLocaleString();document.querySelector('#hud-wave').textContent=String(stat(10)).padStart(2,'0');document.querySelector('#hud-lives').textContent=stat(20);document.querySelector('#hud-weapon').textContent=weaponNames[stat(2)];document.querySelector('#hud-barrier').style.width=Math.max(0,Math.min(100,stat(21)))+'%';document.querySelector('#hud-energy').style.width=stat(22)+'%';document.querySelector('#hud-sector').textContent=sectorNames[Math.max(0,stat(15))]+(stat(28)?" / SIDE FLIGHT":" / VERTICAL");document.querySelector('#hud-supplies').textContent=stat(3)+' NOVAS / '+stat(26)+' PODS';document.querySelector('#hud-fps').textContent=stat(27)+' FPS';let boss=stat(24);document.querySelector('#boss-hud').hidden=!boss;if(boss){document.querySelector('#boss-name').textContent=bossNames[boss-1];document.querySelector('#boss-health').style.width=stat(25)+'%';}const message=document.querySelector('#game-message');message.hidden=stat(1)!==2&&!stat(6);message.textContent=stat(1)===2?'GAME OVER · PRESS R TO RESTART':'PAUSED';const transit=document.querySelector('#transit-message');transit.hidden=!stat(16)&&!stat(33)&&!stat(34);transit.textContent=stat(33)?'WARNING / BOSS APPROACHING':stat(34)?'SECTOR CLEAR':'SECTOR TRANSIT';transit.style.color=stat(33)?'#ffb48c':'#c1fff2';},100);
 
 
 

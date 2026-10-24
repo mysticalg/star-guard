@@ -38,7 +38,7 @@ Sector handovers play a 4.3-second filtered white-noise thruster sweep. Its enve
 
 OVG Alien 8 - Follow the Valves, Version 1 (168.24 s), supplied by Dave from his downloaded WAV. [Original track](https://suno.com/song/7ce95598-c808-4dd5-8163-2251faf26b3a). Compressed to 128 kb/s MP3 for the game. Starts on Launch, loops, pauses with gameplay, follows master mute and has its own music-volume slider. Music ducks during sector transitions.
 
-The playlist also includes OVG Sabre Wulf - Follow the Orchid (Version 2) and OVG Shinobi School Run File (Version 1), supplied by Dave from Downloads. The selector changes tracks; reaching the end advances to the next track and repeats the playlist. Original downloaded audio stays untouched.
+The playlist also includes OVG Sabre Wulf - Follow the Orchid (Version 2) and OVG Shinobi School Run File (Version 1), supplied by Dave from Downloads. The selector changes tracks; each track loops until the next level advances the soundtrack. Original downloaded audio stays untouched.
 
 Flying enemies rotate toward actual frame-to-frame movement, with a bounded turn rate and shortest-path angular interpolation. Bug atlas art faces upward at zero rotation; other ships use their own orientation offset. Rotated quads stay in the same sprite batch, avoiding extra draw calls.
 
@@ -61,3 +61,9 @@ Backgrounds scroll continuously in the flight direction: three depths of stars o
 Player projectiles and beams intercept ordinary hostile bullets. Ricochet shots and split lasers spend one hit per interception. The heavy Shield Bulwark and Brood Carrier fire amber armored rounds that must be dodged; nova bombs still clear them. Swept collision checks prevent fast crossing shots from slipping through.
 
 Sector completion is gated by surviving enemies and hazards. After the encounter clears, a two-second warning precedes a smooth boss entrance from outside the playfield. Bosses cannot attack or take damage during entry. Surviving hostile rounds finish travelling before the cleared sector advances. Bug squadrons finish their sorties and leave; cavern enemies enter from outside the viewport.
+
+The player hull renders at half width and height in both flight modes, with a matching smaller collision area and closer muzzle/exhaust effects. Fast dense foreground clouds pass at 220/480 logical pixels per second at cruise speed; space uses two additive blue/violet gas layers at 100/360, behind the moving stars. These reuse the resident cloud texture without extra downloads.
+
+Bosses bank up to twelve degrees with their actual lateral movement, easing back toward level while keeping their collision centres aligned.
+
+Right-click over the canvas triggers the nova bomb (B and the touch button still work). Music loops within each level and advances to the next OVG track when the next sector begins; the manual track selector remains available.

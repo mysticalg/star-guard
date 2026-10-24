@@ -42,7 +42,7 @@ static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e
 static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){o->x=x*Q;o->y=y*Q;o->type=type;o->vy=220;}}
 void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=255;g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
-static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-19*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
+static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-10*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
 static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;}return o;}
 static void armored_bullet(int x,int y,int vx,int vy){Obj*o=bullet(x,y,vx,vy);if(o)o->type=1;}
 static void armored_aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;armored_bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
@@ -73,9 +73,9 @@ void game_step(int mask,int ch){int i,j,alive=0;
  g.tick++;if(!ex.travel)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);
  if(g.shield)g.shield--;if(g.active)g.active--;if(g.shake)g.shake--;if(g.cool)g.cool--;if(g.beam)g.beam--;
  if((g.tick&3)==0&&g.energy<100)g.energy++;if((g.tick&15)==0&&g.barrier<100)g.barrier++;
- if((mask&4)&&!g.cool){if(g.weapon==3||g.weapon==5){int cost=g.weapon==5?10:35;if(g.energy>=cost){g.energy-=cost;g.beam=g.weapon==5?7:12;g.cool=g.weapon==5?12:24;ex.multi=g.weapon==5;sound(1,1,80,0x4000);}else g.cool=3;}else{shot(g.px,g.weapon==6?((g.tick&1)?600:-600):0,g.weapon);if(g.weapon==7){shot(g.px-5*Q,-1100,7);shot(g.px+5*Q,1100,7);}if(g.weapon==1){shot(g.px-5*Q,-350,1);shot(g.px+5*Q,350,1);}g.cool=g.weapon==7?12:g.weapon==6?9:g.weapon==4?14:g.weapon==2?2:g.weapon==1?6:4;sound(1,1,62,g.weapon==2?0x4100+(sn(g.tick*17)>>1):0x3800+(sn(g.tick*7)>>2));sound_slide(1,1,g.weapon==2?0x2c00:0x2000,g.weapon==2?3:7);particle(g.px,player_y-20*Q,-160,-250,7,3);particle(g.px,player_y-20*Q,160,-250,7,1);}}
+ if((mask&4)&&!g.cool){if(g.weapon==3||g.weapon==5){int cost=g.weapon==5?10:35;if(g.energy>=cost){g.energy-=cost;g.beam=g.weapon==5?7:12;g.cool=g.weapon==5?12:24;ex.multi=g.weapon==5;sound(1,1,80,0x4000);}else g.cool=3;}else{shot(g.px,g.weapon==6?((g.tick&1)?600:-600):0,g.weapon);if(g.weapon==7){shot(g.px-3*Q,-1100,7);shot(g.px+3*Q,1100,7);}if(g.weapon==1){shot(g.px-3*Q,-350,1);shot(g.px+3*Q,350,1);}g.cool=g.weapon==7?12:g.weapon==6?9:g.weapon==4?14:g.weapon==2?2:g.weapon==1?6:4;sound(1,1,62,g.weapon==2?0x4100+(sn(g.tick*17)>>1):0x3800+(sn(g.tick*7)>>2));sound_slide(1,1,g.weapon==2?0x2c00:0x2000,g.weapon==2?3:7);particle(g.px,player_y-10*Q,-160,-250,7,3);particle(g.px,player_y-10*Q,160,-250,7,1);}}
  if(g.beam&&(g.tick&3)==0)sound_mod(1,85,0x3800+sn(g.tick*21)*2);
- if((g.tick&1)==0){particle(g.px-4*Q,player_y+16*Q,-50,350,10,0);particle(g.px+4*Q,player_y+16*Q,50,350,10,3);}
+ if((g.tick&1)==0){particle(g.px-2*Q,player_y+8*Q,-50,350,10,0);particle(g.px+2*Q,player_y+8*Q,50,350,10,3);}
  if(!ex.travel&&!ex.bossSpawned&&g.groups>=3&&g.clock>=encounter_deadline()&&!route_occupied()){
   if(!ex.bossWarning){ex.bossWarning=100;sound(5,1,90,0x2800);sound_slide(5,1,0x4800,90);}
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
@@ -90,15 +90,15 @@ void game_step(int mask,int ch){int i,j,alive=0;
    if(o->type==3)o->x=o->base*Q+sn((o->age>>1)+o->phase)*3;
    if(o->y>24*Q&&((o->age+o->phase)&127)==0)aim(o->x,o->y,450+(g.wave<<3));
   }
-  if(o->type!=4){int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
+  if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else{int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
   x=o->x>>8;y=o->y>>8;if(y>304||(o->age>120&&(x< -80||x>400||y< -96))){o->on=0;continue;}
   if(g.beam&&(g.tick&1)==0&&!enemy_guarded(o)&&beam_hits(x,o->type==4?32:13)&&y<(player_y>>8)-12&&y>15)o->hp-=2;
   for(j=0;j<MAXS;j++){Obj *s=g.shots+j;if(s->on&&!((s->type==6||s->type==7)&&s->base>0)&&absn((s->x>>8)-x)<(o->type==4?33:o->type>=14?15:o->type>=10?10:14)&&absn((s->y>>8)-y)<(o->type==4?26:o->type>=10?10:15)){int pt[2];if(s->type==6||s->type==7)ricochet(s,o,i);else s->on=0;if(!enemy_guarded(o))o->hp-=s->type==4?3:1;surface_point(x,y,o->type==4?30:12,o->type==4?23:12,s->x>>8,s->y>>8,pt);hit_sparks(pt[0],pt[1],0,1,1);}}
-  if(o->hp<=0){killed(o);continue;}if(absn(y-(player_y>>8))<24&&absn(x-(g.px>>8))<22){int pt[2];surface_point(g.px>>8,player_y>>8,11,13,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);if(o->type!=4){o->on=0;burst(x,y,0);}}
+  if(o->hp<=0){killed(o);continue;}if(absn(y-(player_y>>8))<17&&absn(x-(g.px>>8))<17){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);if(o->type!=4){o->on=0;burst(x,y,0);}}
  }
  for(i=0;i<MAXB;i++){Obj *o=g.bullets+i;if(!o->on)continue;trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,2);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,1))continue;
  if(!o->type){int intercepted=g.beam&&beam_hits(o->x>>8,6)&&o->y<player_y-12*Q;for(j=0;j<MAXS&&!intercepted;j++){Obj*s=g.shots+j;if(s->on&&projectile_crosses(s,o)){intercepted=1;if(s->type==6||s->type==7){if(--s->hp<=0)s->on=0;}else s->on=0;}}if(intercepted){o->on=0;hit_sparks(o->x>>8,o->y>>8,0,0,3);continue;}}
- if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<11*Q&&absn(o->y-player_y)<14*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,10,13,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
+ if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<6*Q&&absn(o->y-player_y)<7*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,6,7,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
  for(i=0;i<8;i++){Obj *o=g.drops+i;if(!o->on)continue;o->y+=o->vy;o->age++;if(o->y>267*Q)o->on=0;else if(absn(o->x-g.px)<20*Q&&absn(o->y-player_y)<20*Q){o->on=0;if(o->type<2||o->type==3){int w=o->type==3?3:o->type+1;g.unlocked|=1<<w;g.weapon=w;}if(o->type==5&&ex.bombs<5)ex.bombs++;if(o->type==6){ex.options=2;ex.optionsOn=1;}if(o->type==2){g.shield=220;g.barrier=100;}if(o->type==4){if(g.lives<5)g.lives++;g.barrier=100;}g.score+=50;sound(1,1,80,0x4600);}}
  for(i=0;i<24;i++)if(g.effects[i].on&&++g.effects[i].age>34)g.effects[i].on=0;
  for(i=0;i<MAXP;i++){Particle *p=g.particles+i;if(!p->on)continue;p->x+=p->vx;p->y+=p->vy;if(p->life>14&&p->tint==1){p->vx-=p->vx>>5;p->vy-=p->vy>>5;p->vy+=10;}if(--p->life<=0)p->on=0;}
@@ -129,7 +129,7 @@ void game_render(u8 *b){int y,i,x,dx=0,dy=0,busy=0;int scroll=(ex.backgroundY>>8
   if(!pc_modern)for(i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int bx=o->x>>8,by=o->y>>8,k,t=i<MAXS?(o->type==2||o->type==4?1:3):2;int vx=i<MAXS?0:-(o->vx>>8),vy=i<MAXS?1:-(o->vy>>8);if(!vy)vy=1;pixel(b,bx-1,by,t==1?87:t==2?143:235);pixel(b,bx+1,by,t==1?87:t==2?143:235);projectile_bloom(b,bx,by,t,i<MAXS?i<12:i<MAXS+12);if(i<MAXS&&o->type==7){int speed=absn(o->vx)+absn(o->vy);if(speed){int tx=bx-divn(o->vx*12,speed),ty=by-divn(o->vy*12,speed);stroke(b,bx-1,by,tx-1,ty,139);stroke(b,bx+1,by,tx+1,ty,235);stroke(b,bx,by,tx,ty,255);}}pixel(b,bx,by,255);pixel(b,bx,by-1,255);pixel(b,bx+1,by,255);}}
   if(!pc_modern){draw_beams(b);draw_impacts(b);}
   if(!pc_modern)for(i=0;i<12;i++)if(g.effects[i].on)draw_explosion(b,g.effects+i,i<(busy>4?1:4));
-  if(g.mode==1){x=g.px>>8;if(!g.shield||(g.tick&2)==0)pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-4,(player_y>>8)+15,3,1);projectile_bloom(b,x+4,(player_y>>8)+15,3,1);}if(!pc_modern&&(g.shield||g.active)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
+  if(g.mode==1){x=g.px>>8;if(!g.shield||(g.tick&2)==0)pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-2,(player_y>>8)+8,3,1);projectile_bloom(b,x+2,(player_y>>8)+8,3,1);}if(!pc_modern&&(g.shield||g.active)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
  }
  if(pc_modern)return;
  rowcopy(b,clear_hud,1920);text(b,4,3,"SCORE",219,1);number(b,40,3,g.score,255);text(b,108,3,"WAVE",219,1);number(b,138,3,g.wave,255);text(b,178,3,"LIVES",219,1);number(b,214,3,g.lives,255);text(b,250,3,"GUN",219,1);number(b,274,3,g.weapon+1,255);
