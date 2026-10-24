@@ -1,7 +1,9 @@
 static const char*boss_name(int v){static const char*n[10]={"STAR DREADNOUGHT","ION ORACLE","IRON HARVESTER","RIFT LANCER","SIEGE CITADEL","CAVERN WARDEN","SKY MANTA","DUNE SCORPION","FROST CROWN","MAGMA HYDRA"};return n[clamp(v,0,9)];}
-static void stage_boss_step(Obj*o){int v=o->variant,p=o->hp*3>o->base*2?1:o->hp*3>o->base?2:3;g.bossPhase=p;
+static void stage_boss_step(Obj*o){int v=o->variant;
+ if(o->age<=120){float t=o->age/120.0f,e=t*t*(3-2*t);o->x=160*Q;o->y=(int)((-64+(v==6?138:122)*e)*Q);return;}
+ int p=o->hp*3>o->base*2?1:o->hp*3>o->base?2:3;g.bossPhase=p;
  if(p!=o->phase){o->phase=p;g.shake=5;pc_impact(o->x>>8,o->y>>8,3);}
- int amplitude=v==5?12:v==6?47:20+v*2;o->x=160*Q+sn(o->age/(p==3?1:2)+v*17)*amplitude;o->y=(v==6?74:58)*Q+sn(o->age+64)*(v==3?9:4);
+ int amplitude=v==5?12:v==6?47:20+v*2;int settle=clamp(o->age-120,0,60);o->x=160*Q+sn(o->age/(p==3?1:2)+v*17)*amplitude*settle/60;o->y=(v==6?74:58)*Q+sn(o->age+64)*(v==3?9:4)*settle/60;
  int cooldown=clamp(45-v-p*4,18,45);if(o->age%cooldown)return;int x=o->x,y=o->y+20*Q;
  switch(v){
  case 0:for(int a=-2;a<=2;a++)bullet(x,y,a*230,390+p*70);aim(x,y,650);break;

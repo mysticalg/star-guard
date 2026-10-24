@@ -19,11 +19,13 @@ static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,ti
 static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);if(x<l||x>r){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);return 1;}return 0;}
 static int cruise_speed(int phase){return phase>=6?192:phase==5?768:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
 static int tunnel_visible(int y){return (ex.phase==5&&(!ex.entryY||y<ex.entryY))||(ex.oldPhase==5&&ex.entryY>0&&y>=ex.entryY);}
-static void clear_route(void){int i;for(i=0;i<MAXE;i++)g.enemies[i].on=0;for(i=0;i<MAXB;i++)g.bullets[i].on=0;for(i=0;i<12;i++)ex.obstacles[i].on=0;for(i=0;i<8;i++)g.drops[i].on=0;}
+static int encounter_deadline(void){return ex.phase==5?900:520;}
+static int route_occupied(void){for(int i=0;i<MAXE;i++)if(g.enemies[i].on)return 1;for(int i=0;i<12;i++)if(ex.obstacles[i].on)return 1;return 0;}
+static int hostile_rounds_remain(void){for(int i=0;i<MAXB;i++)if(g.bullets[i].on)return 1;return 0;}
 static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,10),targetScroll,targetEnemy;
  if(ex.phase<0){ex.phase=phase;ex.oldPhase=phase==5?0:phase;ex.entryY=phase==5?24:0;ex.phaseAge=0;ex.transition=0;if(phase==5){g.groups=3;g.shield=100;}}
  else if(phase!=ex.phase&&!ex.travel){ex.nextPhase=phase;ex.travel=1;ex.travelTick=0;pc_transition();/* Keep every live enemy, shot, pickup and hazard moving through the handover. */g.shield=120;}
- if(ex.travel){ex.travelTick++;if(ex.travel==1&&ex.travelTick>=90){ex.oldPhase=ex.phase;ex.phase=ex.nextPhase;ex.entryY=24;ex.entryDistance=0;ex.travel=2;ex.travelTick=0;ex.bossSpawned=0;ex.phaseAge=0;if(ex.phase==5)g.groups=3;}else if(ex.travel==2&&ex.travelTick>=90&&!ex.entryY&&ex.scrollSpeed<=cruise_speed(ex.phase)+48){ex.travel=0;ex.travelTick=0;ex.phaseAge=0;g.shield=50;}}
+ if(ex.travel){ex.travelTick++;if(ex.travel==1&&ex.travelTick>=90){ex.oldPhase=ex.phase;ex.phase=ex.nextPhase;ex.entryY=24;ex.entryDistance=0;ex.travel=2;ex.travelTick=0;ex.bossSpawned=0;ex.bossWarning=0;ex.clearTicks=0;ex.phaseAge=0;if(ex.phase==5)g.groups=3;}else if(ex.travel==2&&ex.travelTick>=90&&!ex.entryY&&ex.scrollSpeed<=cruise_speed(ex.phase)+48){ex.travel=0;ex.travelTick=0;ex.phaseAge=0;g.shield=50;}}
  phase=ex.phase;
  targetScroll=ex.travel?((cruise_speed(ex.oldPhase)+cruise_speed(ex.nextPhase))/2):cruise_speed(phase);
  targetEnemy=phase==5?192:phase==1?192:phase==2?288:phase==3?352:256;
@@ -43,12 +45,12 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,10),targ
  if(ch=='b'&&ex.bombs&&!ex.bombAge){ex.bombs--;ex.bombAge=1;ex.bombX=g.px>>8;ex.bombY=player_y>>8;ex.bombRadius=0;g.shield=80;g.shake=5;pc_bomb_start(ex.bombX,ex.bombY);sound(3,2,127,0x2200);sound_slide(3,1,0x1100,65);sound_slide(3,0,0,110);}
  bomb_step();
  /* Cavern encounters are placed inside the live corridor, not over solid rock. */
- if(phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<860&&ex.phaseAge>75&&remn(ex.phaseAge,110)==0){Obj*o=slot(g.enemies,MAXE);if(o){o->type=(ex.phaseAge&128)?9:8;o->hp=o->type==9?5:3;o->phase=ex.hazardSerial++&1;o->x=tunnel_center(28)*Q;o->y=28*Q;o->vy=o->type==9?(ex.scrollSpeed>>2):340;}}
+ if(phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<860&&ex.phaseAge>75&&remn(ex.phaseAge,110)==0){Obj*o=slot(g.enemies,MAXE);if(o){o->type=(ex.phaseAge&128)?9:8;o->hp=o->type==9?5:3;o->phase=ex.hazardSerial++&1;o->x=tunnel_center(-32)*Q;o->y=-32*Q;o->vy=o->type==9?(ex.scrollSpeed>>2):340;}}
  if(phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<860&&ex.phaseAge>140&&remn(ex.phaseAge,170)==0&&tunnel_right(-12)-tunnel_left(-12)>128)hazard(0,tunnel_center(-12),-12);
- if(phase>=6&&!ex.travel&&!ex.bossSpawned&&g.clock>100&&remn(g.clock,110)==0)hazard(phase==9?3:0,30+remn(ex.hazardSerial*89,260),-18);
+ if(phase>=6&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()&&g.clock>100&&remn(g.clock,110)==0)hazard(phase==9?3:0,30+remn(ex.hazardSerial*89,260),-18);
  /* Telegraph each hazard at the top edge while it enters. Gate gaps stay at least 104 pixels wide. */
- if(!ex.travel&&phase==2&&g.clock>60&&remn(g.clock,64)==0)hazard((ex.hazardSerial&3)==0?1:0,26+remn(ex.hazardSerial*79,268),-26);
- if(!ex.travel&&phase==3&&g.clock>80&&remn(g.clock,150)==0)hazard(2,80+remn(ex.hazardSerial*67,160),-16);
+ if(!ex.travel&&!ex.bossSpawned&&phase==2&&g.clock<encounter_deadline()&&g.clock>60&&remn(g.clock,64)==0)hazard((ex.hazardSerial&3)==0?1:0,26+remn(ex.hazardSerial*79,268),-26);
+ if(!ex.travel&&!ex.bossSpawned&&phase==3&&g.clock<encounter_deadline()&&g.clock>80&&remn(g.clock,150)==0)hazard(2,80+remn(ex.hazardSerial*67,160),-16);
  for(i=0;i<12;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;o->age++;o->y+=o->vy;x=o->x>>8;y=o->y>>8;
   if(y>288){o->on=0;continue;}
   if(o->type==2){if(absn(y-(player_y>>8))<18&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-13,(player_y>>8)+13),0,y<(player_y>>8)?1:-1);continue;}

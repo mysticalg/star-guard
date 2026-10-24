@@ -1,5 +1,5 @@
 /* Eight specialist enemies. Their own age clock drives readable tells and attacks. */
-static int enemy_guarded(const Obj*o){return (o->type==15&&o->age%140<85)||(o->type==18&&o->age%130>=85&&o->age%130<105);}
+static int enemy_guarded(const Obj*o){return (o->type==4&&o->age<=120)||(o->type==15&&o->age%140<85)||(o->type==18&&o->age%130>=85&&o->age%130<105);}
 static void specialist_group(int type,int formation){int n=type==19?3:type==15?4:6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=type==19?8:type==15?6:3,.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
 static void specialist_step(Obj*o){int t=o->age,x=o->x,y=o->y;
  switch(o->type){

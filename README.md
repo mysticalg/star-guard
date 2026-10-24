@@ -59,3 +59,5 @@ Odd-numbered sectors use vertical flight; even-numbered sectors use horizontal s
 Backgrounds scroll continuously in the flight direction: three depths of stars over space, a slower scenery plate and two faster transparent cloud layers over landscapes. Sprite and glow geometry compensates for the side-view camera so ships keep their proportions.
 
 Player projectiles and beams intercept ordinary hostile bullets. Ricochet shots and split lasers spend one hit per interception. The heavy Shield Bulwark and Brood Carrier fire amber armored rounds that must be dodged; nova bombs still clear them. Swept collision checks prevent fast crossing shots from slipping through.
+
+Sector completion is gated by surviving enemies and hazards. After the encounter clears, a two-second warning precedes a smooth boss entrance from outside the playfield. Bosses cannot attack or take damage during entry. Surviving hostile rounds finish travelling before the cleared sector advances. Bug squadrons finish their sorties and leave; cavern enemies enter from outside the viewport.
