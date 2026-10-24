@@ -479,3 +479,11 @@ Visual clarity update: regular single/triple lasers now use a stronger multi-lay
 Large player lasers also cast a subtle colour-matched cone and ambient spill onto the scene. Sprite masks intersected by the beam receive an additive material highlight, including enemy hulls, shields, pickups and destructible hazards. The lighting is clipped to the playfield and uses bounded existing geometry batches; the HUD is unaffected.
 
 Steering smoothly aims single, triple and Phoenix laser beams toward lateral movement, up to 45 degrees from the flight direction. Triple beam lanes are individually clamped to that limit. The beam centre, perpendicular collision distance, touched-object highlight and scenery light share the same aiming geometry. Releasing lateral input smoothly returns the beams forward. In side flight, vertical movement supplies the lateral aim.
+
+Weapon battery balance: recharge is now three times slower for every weapon (empty-to-full 12–36 seconds, depending on weapon), and running empty triggers a six-second overheat lockout. Inactive weapons continue recharging independently; damage and firing cadence are unchanged. The action-bar clock wipe uses the same six-second duration.
+
+Phoenix charge now requires five times the prior combat contribution: 5000 charge units rather than 1000. Kill and damage contributions accumulate at their previous precision, and the HUD reads the authoritative maximum from the game, so a formerly full meter now represents 20% progress.
+
+Tesla critical feedback also consumes its own battery while the network remains active, including after switching weapons; exhausting it ends the chain and starts the six-second lockout.
+
+HUD placement: the Phoenix meter now occupies a compact strip at the very top, above the existing status counters. Weapon ability icons sit flush against the bottom edge in desktop, fullscreen and mobile layouts; the sector/status line sits just above them.
