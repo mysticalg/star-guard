@@ -41,3 +41,17 @@ OVG Alien 8 - Follow the Valves, Version 1 (168.24 s), supplied by Dave from his
 The playlist also includes OVG Sabre Wulf - Follow the Orchid (Version 2) and OVG Shinobi School Run File (Version 1), supplied by Dave from Downloads. The selector changes tracks; reaching the end advances to the next track and repeats the playlist. Original downloaded audio stays untouched.
 
 Flying enemies rotate toward actual frame-to-frame movement, with a bounded turn rate and shortest-path angular interpolation. Bug atlas art faces upward at zero rotation; other ships use their own orientation offset. Rotated quads stay in the same sprite batch, avoiding extra draw calls.
+
+## Cinematic graphics update
+
+The renderer uses full-colour ImageGen environment JPEGs and an HD RGBA sprite atlas, rather than enlarging the old 320x256 scenery. Choose Balanced (1920x1600), Cinematic (2880x2400, default), or Ultra (3840x3200) before launching. The terrain images are 1536x1024 native assets; the larger canvas improves compositing and edges and does not invent additional photographic detail. The game remains a 2D shooter with photorealistic-style artwork, rather than a real-time 3D simulation.
+
+Six generated environment plates cover space, cavern rock, verdant valleys, dunes, frost and magma. Other space sectors use distinct colour treatments. A separately generated transparent cloud layer scrolls at two depths. Stage changes crossfade the environment, while the moving cavern walls remain aligned with their collision corridor. The player, flying enemies and ten bosses now use detailed generated artwork, retaining their movement and combat rules. Rotations stay GPU-batched. The HUD uses crisp HTML typography at every resolution.
+
+Built-in ImageGen produced the assets; prompts are recorded in Artwork/IMAGEGEN-PROMPTS.json. Optimised runtime files live in Assets/modern. Full generated PNG originals are preserved in the local delivered Artwork folder but excluded from Git to avoid duplicating large runtime assets.
+
+JPEG/PNG textures are decoded with stb_image, from the official nothings/stb repository; its public-domain/MIT licence is embedded in src/stb_image.h. No additional image SDK is required to build.
+
+## Alternating flight modes
+
+Odd-numbered sectors use vertical flight; even-numbered sectors use horizontal side flight. Side stages use a separately generated side-profile interceptor and fire right into enemies arriving from the right. The combat camera rotates smoothly during handover, while landscape backgrounds and HUD remain upright. Collision, shots, lasers, ricochets, bombs, cave walls and particles share one combat transform, preserving their alignment. Keyboard, mouse, touch and gamepad movement is mapped through the same inverse transform, including during the turn.

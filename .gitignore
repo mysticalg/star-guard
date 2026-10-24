@@ -1,3 +1,7 @@
 *.bmp
 *.log
 .DS_Store
+
+# Full ImageGen originals are retained in the delivered local Artwork folder.
+# The web build uses the optimised runtime textures under Assets/modern.
+Artwork/*.png

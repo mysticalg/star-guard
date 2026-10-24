@@ -17,6 +17,7 @@ typedef struct {
  u32 seed; Obj enemies[MAXE],shots[MAXS],bullets[MAXB],drops[8],effects[24]; Particle particles[MAXP]; Star stars[NSTARS];
 } Game;
 Game g;
+extern int pc_modern;
 int player_y;
 #include "expansion_state.h"
 extern void pc_sprite(int,float,float);
@@ -103,22 +104,24 @@ static int star_x(const Star*s){int x=s->x-(((g.px-160*Q)*(s->z+1))>>12);if(x<0)
 #include "expansion_render.h"
 void game_render(u8 *b){int y,i,x,dx=0,dy=0,busy=0;int scroll=(ex.backgroundY>>8)&511;
  /* The distant cloud tile drifts as a whole; no scanline wobble or shearing. */
- int off=(((g.px>>8)-160)>>5)*4;if(off<0)off+=320;
+ if(!pc_modern){int off=(((g.px>>8)-160)>>5)*4;if(off<0)off+=320;
  for(y=24;y<256;y++){int sy=(y+scroll)&511;const u8*cloud=phase_background(y);if(tunnel_visible(y)){int world=(ex.backgroundY>>8)+y,center=tunnel_center(y),half=tunnel_half(y),left=tunnel_left(y)+((world>>2)&3)-1,right=tunnel_right(y)-((world>>3)&3)+1,l=left&~3,r=(right+3)&~3,start=l+off;if(start>=320)start-=320;rowcopy(b+y*320+l,cloud+sy*320+start,(r-l)>>2);}else{rowcopy(b+y*320,cloud+sy*320+off,(320-off)>>2);if(off)rowcopy(b+y*320+320-off,cloud+sy*320,off>>2);}}
  for(i=0;i<NSTARS;i++){Star*s=g.stars+i;int z=s->z;int xx=star_x(s);int yy=24+(s->y>>8)-(((player_y-140*Q)*(z+1))>>13);if(yy<24)yy+=232;else if(yy>=256)yy-=232;pixel(b,xx,yy,z==0?2:z==1?3:255);if(z==2&&(i&3)==0){pixel(b,xx,yy+1,3);if(g.fx&&(i&15)==0){pixel(b,xx-1,yy,3);pixel(b,xx+1,yy,3);pixel(b,xx,yy-1,3);}}}
- expansion_render(b);draw_trails(b);
+ }else memset(b,0,81920);
+ expansion_render(b);if(!pc_modern)draw_trails(b);
  if(g.shake&&g.fx){dx=(sn(g.tick*71)*g.shake)>>11;dy=(sn(g.tick*93)*g.shake)>>12;}
  for(i=0;i<12;i++)busy+=g.effects[i].on;
- for(i=0;i<(busy>4?96:MAXP);i++){Particle*p=g.particles+i;if(p->on){int x=p->x>>8,y=p->y>>8,hot=p->life>20,c=p->tint==1?(hot?87:p->life>10?23:4):p->tint==2?(hot?143:12):(hot?235:p->life>8?139:8);pixel(b,x,y,c);pixel(b,x-(p->vx>>9),y-(p->vy>>9),c);if(hot){pixel(b,x,y+1,p->life>30?255:c);if((i&7)==0)glow(b,x+1,y,p->tint,2);}}}
+ if(!pc_modern)for(i=0;i<(busy>4?96:MAXP);i++){Particle*p=g.particles+i;if(p->on){int x=p->x>>8,y=p->y>>8,hot=p->life>20,c=p->tint==1?(hot?87:p->life>10?23:4):p->tint==2?(hot?143:12):(hot?235:p->life>8?139:8);pixel(b,x,y,c);pixel(b,x-(p->vx>>9),y-(p->vy>>9),c);if(hot){pixel(b,x,y+1,p->life>30?255:c);if((i&7)==0)glow(b,x+1,y,p->tint,2);}}}
  if(g.mode==1||g.mode==2){
   for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;if(!o->on)continue;x=(o->x>>8)+dx;y=(o->y>>8)+dy;if(o->type==4){draw_stage_boss(b,o,x,y);}else if(o->type<5)pc_enemy_sprite(o->type==0?1:o->type+5,o,o->x/256.0f+dx,o->y/256.0f+dy);else draw_new_enemy(b,o,x,y);}
   for(i=0;i<8;i++){Obj*o=g.drops+i;if(o->on){if(o->type<5)pc_sprite(9+o->type,o->x/256.0f,o->y/256.0f);else draw_supply(b,o);}}
   /* Projectiles are palette-blended energy particles, with a fading wake. */
-  for(i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int bx=o->x>>8,by=o->y>>8,k,t=i<MAXS?(o->type==2||o->type==4?1:3):2;int vx=i<MAXS?0:-(o->vx>>8),vy=i<MAXS?1:-(o->vy>>8);if(!vy)vy=1;pixel(b,bx-1,by,t==1?87:t==2?143:235);pixel(b,bx+1,by,t==1?87:t==2?143:235);projectile_bloom(b,bx,by,t,i<MAXS?i<12:i<MAXS+12);if(i<MAXS&&o->type==7){int speed=absn(o->vx)+absn(o->vy);if(speed){int tx=bx-divn(o->vx*12,speed),ty=by-divn(o->vy*12,speed);stroke(b,bx-1,by,tx-1,ty,139);stroke(b,bx+1,by,tx+1,ty,235);stroke(b,bx,by,tx,ty,255);}}pixel(b,bx,by,255);pixel(b,bx,by-1,255);pixel(b,bx+1,by,255);}}
-  draw_beams(b);draw_impacts(b);
-  for(i=0;i<12;i++)if(g.effects[i].on)draw_explosion(b,g.effects+i,i<(busy>4?1:4));
-  if(g.mode==1){x=g.px>>8;if(!g.shield||(g.tick&2)==0)pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-4,(player_y>>8)+15,3,1);projectile_bloom(b,x+4,(player_y>>8)+15,3,1);}if(g.shield||g.active){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
+  if(!pc_modern)for(i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int bx=o->x>>8,by=o->y>>8,k,t=i<MAXS?(o->type==2||o->type==4?1:3):2;int vx=i<MAXS?0:-(o->vx>>8),vy=i<MAXS?1:-(o->vy>>8);if(!vy)vy=1;pixel(b,bx-1,by,t==1?87:t==2?143:235);pixel(b,bx+1,by,t==1?87:t==2?143:235);projectile_bloom(b,bx,by,t,i<MAXS?i<12:i<MAXS+12);if(i<MAXS&&o->type==7){int speed=absn(o->vx)+absn(o->vy);if(speed){int tx=bx-divn(o->vx*12,speed),ty=by-divn(o->vy*12,speed);stroke(b,bx-1,by,tx-1,ty,139);stroke(b,bx+1,by,tx+1,ty,235);stroke(b,bx,by,tx,ty,255);}}pixel(b,bx,by,255);pixel(b,bx,by-1,255);pixel(b,bx+1,by,255);}}
+  if(!pc_modern){draw_beams(b);draw_impacts(b);}
+  if(!pc_modern)for(i=0;i<12;i++)if(g.effects[i].on)draw_explosion(b,g.effects+i,i<(busy>4?1:4));
+  if(g.mode==1){x=g.px>>8;if(!g.shield||(g.tick&2)==0)pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-4,(player_y>>8)+15,3,1);projectile_bloom(b,x+4,(player_y>>8)+15,3,1);}if(!pc_modern&&(g.shield||g.active)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
  }
+ if(pc_modern)return;
  rowcopy(b,clear_hud,1920);text(b,4,3,"SCORE",219,1);number(b,40,3,g.score,255);text(b,108,3,"WAVE",219,1);number(b,138,3,g.wave,255);text(b,178,3,"LIVES",219,1);number(b,214,3,g.lives,255);text(b,250,3,"GUN",219,1);number(b,274,3,g.weapon+1,255);
  text(b,4,14,"BARRIER",151,1);for(i=0;i<g.barrier;i++)b[17*320+49+i]=151;text(b,164,14,"CHARGE",223,1);for(i=0;i<g.energy;i++)b[17*320+207+i]=223;
  if(g.mode==0){title_particles(b);text(b,74,108,"WINDOWS C / SDL3 EDITION",151,1);text(b,57,133,"SPACE TO LAUNCH",255,2);text(b,51,162,"MOUSE MOVE  LEFT CLICK/SPACE FIRE",219,1);text(b,8,177,"1-6 SECTOR  1-7 GUN  B BOMB  D SHIELD",219,1);text(b,51,192,"O OPTIONS  P PAUSE  F EFFECTS",219,1);text(b,60,220,"F11 FULLSCREEN  M MUTE  V VSYNC",151,1);}

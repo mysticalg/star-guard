@@ -8,7 +8,14 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_JPEG
+#define STBI_ONLY_PNG
+#define STBI_NO_HDR
+#define STBI_NO_LINEAR
+#include "stb_image.h"
 #include "game.c"
+int pc_modern=1;
 #define PI 3.14159265358979323846f
 #define NP 12288
 #define NQ (NP+4096)
@@ -19,7 +26,15 @@ static SDL_AudioStream *astream;
 static unsigned char fb[81920];
 static uint32_t rgba[81920],palette[256];
 typedef struct{float x,y,w,h,u,v,uw,vh;} Sprite;
-static Sprite sprites[40];
+static Sprite sprites[51];
+#include "modern_sprites.h"
+static SDL_Texture*scenes[6],*cloudTexture,*combatTarget;
+static float sideBlend;
+static int side_mode(void){return (ex.phase<0?(g.wave-1)%10:ex.phase)&1;}
+static void flight_delta(float sx,float sy,float*wx,float*wy){float a=sideBlend*1.57079632679f,c=cosf(a),ss=sinf(a),w=960-264*sideBlend,h=696+264*sideBlend;*wx=(sx*c+sy*ss)*3*320/w;*wy=(-sx*ss+sy*c)*3*232/h;}
+static void flight_pointer(int*x,int*y){float wx,wy;flight_delta(*x-160,*y-140,&wx,&wy);*x=(int)(160+wx);*y=(int)(140+wy);}
+static void flight_move(float sx,float sy){float wx,wy;flight_delta(sx,sy,&wx,&wy);g.px=clamp(g.px+(int)(wx*Q),14*Q,306*Q);player_y=clamp(player_y+(int)(wy*Q),40*Q,240*Q);}
+
 typedef struct{int n;float x,y,angle;} Draw;
 static Draw draws[256];static int ndraw;
 static SDL_Vertex vertices[NQ*4];static int indices[NQ*6],nquad;
@@ -36,8 +51,8 @@ static void emit(float x,float y,float vx,float vy,float life,float size,int tin
 void pc_burst(int x,int y,int big){lastExplosionX=(float)x;if(!g.fx)return;int n=(int)((big?330:100)*intensity()*(quality==2?1:quality==1?.5f:.15f));for(int i=0;i<n;i++){float a=frand()*2*PI,s=8+frand()*(big?130:65);emit(x,y,cosf(a)*s,sinf(a)*s,.25f+frand()*(big?1.8f:.9f),.35f+frand()*2.5f,(i&7)?1:3);}Wave*w=waves+waveHead;waveHead=(waveHead+1)%64;*w=(Wave){x,y,0,big?1.4f:.65f,big?130:60,big};}
 void pc_bomb_start(int x,int y){for(int i=0;i<480;i++){float a=frand()*2*PI,s=25+frand()*180;emit(x,y,cosf(a)*s,sinf(a)*s*.8f,.3f+frand()*.8f,.6f+frand()*2,3);}}
 void pc_impact(int x,int y,int tint){if(!g.fx)return;int n=(int)((quality==2?18:7)*intensity());for(int i=0;i<n;i++){float a=frand()*2*PI,s=10+frand()*55;emit(x,y,cosf(a)*s,sinf(a)*s,.12f+frand()*.35f,.4f+frand(),tint);}}
-void pc_sprite(int n,float x,float y){if(ndraw<256&&n>=0&&n<40)draws[ndraw++]=(Draw){n,x,y};}
-void pc_enemy_sprite(int n,Obj*o,float x,float y){if(ndraw<256&&n>=0&&n<40)draws[ndraw++]=(Draw){n,x,y,o->heading/16.0f-(o->type>=10&&o->type<14?0:180)};}
+void pc_sprite(int n,float x,float y){if(ndraw<256&&n>=0&&n<51){float angle=n>=40?180:0;if(n==0&&side_mode()){n=50;angle=-90;}draws[ndraw++]=(Draw){n,x,y,angle};}}
+void pc_enemy_sprite(int n,Obj*o,float x,float y){if(ndraw<256&&n>=0&&n<51)draws[ndraw++]=(Draw){n,x,y,o->heading/16.0f};}
 void sprite_plot(int n,int x,int y){pc_sprite(n,(float)x,(float)y);}
 void rowcopy(void*d,const void*s,int n){memcpy(d,s,(size_t)n*4);}
 void sprite_bank(void*p){(void)p;}
@@ -71,15 +86,17 @@ static void SDLCALL audio_callback(void*unused,SDL_AudioStream*s,int additional,
 static void quad(float x,float y,float w,float h,SDL_FColor c,float u,float v,float uw,float vh){if(nquad>=NQ)return;int k=nquad*4;vertices[k]=(SDL_Vertex){{x,y},c,{u,v}};vertices[k+1]=(SDL_Vertex){{x+w,y},c,{u+uw,v}};vertices[k+2]=(SDL_Vertex){{x+w,y+h},c,{u+uw,v+vh}};vertices[k+3]=(SDL_Vertex){{x,y+h},c,{u,v+vh}};nquad++;}
 static void flush(SDL_Texture*t){if(nquad)SDL_RenderGeometry(renderer,t,vertices,nquad*4,indices,nquad*6);nquad=0;}
 static void light(float x,float y,float size,float r,float gg,float b,float alpha){quad((x-size)*3,(y-size)*3,size*6,size*6,(SDL_FColor){r,gg,b,alpha},0,0,1,1);}
+static void streak(float x,float y,float vx,float vy,float length,int hostile){float speed=sqrtf(vx*vx+vy*vy);if(speed<1)return;float dx=vx/speed,dy=vy/speed,cx=(x-dx*length*.4f)*3,cy=(y-dy*length*.4f)*3;int begin=nquad;quad(cx-length*1.5f,cy-2,length*3,4,(SDL_FColor){hostile?1:.6f,hostile?.18f:1,hostile?.3f:.9f,.95f},0,0,1,1);if(nquad==begin)return;for(int i=begin*4;i<begin*4+4;i++){float px=vertices[i].position.x-cx,py=vertices[i].position.y-cy;vertices[i].position.x=cx+px*dx-py*dy;vertices[i].position.y=cy+px*dy+py*dx;}}
 static void init_graphics(void){for(int i=0;i<NQ;i++){int k=i*6,a=i*4;indices[k]=a;indices[k+1]=a+1;indices[k+2]=a+2;indices[k+3]=a;indices[k+4]=a+2;indices[k+5]=a+3;}
  for(int c=0;c<256;c++){int r=17*(((c&16)>>1)+(c&4)+(c&3)),gg=17*(((c&64)>>3)+((c&32)>>3)+(c&3)),b=17*(((c&128)>>4)+((c&8)>>1)+(c&3));palette[c]=0xff000000u|(b<<16)|(gg<<8)|r;}
  base=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,320,256);SDL_SetTextureScaleMode(base,SDL_SCALEMODE_NEAREST);
- uint32_t *pixels=calloc(512*512,4);FILE*f=fopen("Assets/sprites.bin","rb");if(!f){SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Missing assets","Keep the Assets folder beside StarGuard.exe.",window);exit(1);}uint32_t count;fread(&count,4,1,f);int x=0,y=0,rh=0;
- for(uint32_t i=0;i<count&&i<40;i++){uint32_t w,h;fread(&w,4,1,f);fread(&h,4,1,f);if(x+(int)w>512){x=0;y+=rh;rh=0;}if(y+(int)h>512)exit(2);sprites[i]=(Sprite){0,0,w,h,x/512.0f,y/512.0f,w/512.0f,h/512.0f};for(uint32_t row=0;row<h;row++)fread(pixels+(y+row)*512+x,4,w,f);x+=w;if((int)h>rh)rh=h;}fclose(f);
- atlas=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STATIC,512,512);SDL_UpdateTexture(atlas,0,pixels,512*4);SDL_SetTextureBlendMode(atlas,SDL_BLENDMODE_BLEND);SDL_SetTextureScaleMode(atlas,SDL_SCALEMODE_NEAREST);free(pixels);
+ int aw,ah,channels;unsigned char*pixels=stbi_load("Assets/modern/atlas.png",&aw,&ah,&channels,4);if(!pixels)exit(2);
+ atlas=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STATIC,aw,ah);SDL_UpdateTexture(atlas,0,pixels,aw*4);SDL_SetTextureBlendMode(atlas,SDL_BLENDMODE_BLEND);SDL_SetTextureScaleMode(atlas,SDL_SCALEMODE_LINEAR);stbi_image_free(pixels);memcpy(sprites,modernSprites,sizeof(sprites));
+ const char*files[7]={"space.jpg","cavern.jpg","verdant.jpg","dunes.jpg","frost.jpg","magma.jpg","clouds.png"};for(int i=0;i<7;i++){char path[120];snprintf(path,sizeof(path),"Assets/modern/%s",files[i]);pixels=stbi_load(path,&aw,&ah,&channels,4);if(!pixels)exit(3);SDL_Texture*t=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STATIC,aw,ah);SDL_UpdateTexture(t,0,pixels,aw*4);SDL_SetTextureBlendMode(t,SDL_BLENDMODE_BLEND);SDL_SetTextureScaleMode(t,SDL_SCALEMODE_LINEAR);stbi_image_free(pixels);if(i<6)scenes[i]=t;else cloudTexture=t;}
+ SDL_SetTextureBlendMode(base,SDL_BLENDMODE_BLEND);
  uint32_t glowPixels[64*64];for(int j=0;j<64;j++)for(int i=0;i<64;i++){float dx=(i-31.5f)/31.5f,dy=(j-31.5f)/31.5f,d=dx*dx+dy*dy;float a=fmaxf(0,1-d);a=a*a*a;glowPixels[j*64+i]=((uint32_t)(a*255)<<24)|0xffffff;}
  fxTarget=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,1920,1600);if(!fxTarget)exit(3);SDL_SetTextureBlendMode(fxTarget,SDL_BLENDMODE_ADD);SDL_SetTextureScaleMode(fxTarget,SDL_SCALEMODE_LINEAR);
- halo=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STATIC,64,64);SDL_UpdateTexture(halo,0,glowPixels,64*4);SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_ADD);SDL_SetTextureScaleMode(halo,SDL_SCALEMODE_LINEAR);
+ halo=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STATIC,64,64);SDL_UpdateTexture(halo,0,glowPixels,64*4);SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_ADD);SDL_SetTextureScaleMode(halo,SDL_SCALEMODE_LINEAR);int cw,ch;SDL_GetRenderOutputSize(renderer,&cw,&ch);combatTarget=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,cw,ch);if(!combatTarget)exit(3);SDL_SetTextureBlendMode(combatTarget,SDL_ComposeCustomBlendMode(SDL_BLENDFACTOR_ONE,SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,SDL_BLENDOPERATION_ADD,SDL_BLENDFACTOR_ONE,SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,SDL_BLENDOPERATION_ADD));SDL_SetTextureScaleMode(combatTarget,SDL_SCALEMODE_LINEAR);
 }
 static float trailTime,bombRenderRadius;
 static void update_fx(float dt){aliveParticles=0;for(int i=0;i<NP;i++){Spark*p=sparks+i;if(p->life<=0)continue;p->age+=dt;if(p->age>=p->life){p->life=0;continue;}p->px=p->x;p->py=p->y;float drag=1/(1+dt*1.3f),vx=p->vx;p->vx=(p->vx-p->vy*p->spin*dt*.1f)*drag;p->vy=(p->vy+vx*p->spin*dt*.1f)*drag;p->x+=p->vx*dt;p->y+=p->vy*dt;aliveParticles++;}if(aliveParticles>peakParticles)peakParticles=aliveParticles;for(int i=0;i<64;i++)if(waves[i].life>0){waves[i].age+=dt;if(waves[i].age>waves[i].life)waves[i].life=0;}}
@@ -91,20 +108,39 @@ static void draw_fx(float dt){float power=intensity();int level=quality==2?2:1;t
  SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;
  if(g.fx){for(int i=0;i<NP;i++){Spark*p=sparks+i;if(p->life<=0)continue;float fade=1-p->age/p->life;light(p->x,p->y,p->size*(1+fade*1.4f),p->r,p->g,p->b,fade*.65f);if(quality==2&&p->age<.08f)light(p->x,p->y,p->size*.38f,1,1,1,fade);}
  for(int i=0;i<64;i++){Wave*w=waves+i;if(!w->life)continue;float t=w->age/w->life,r=w->radius*t,fade=(1-t)*(1-t);light(w->x,w->y,10*(1-t)+2,1,.55f,.12f,fade*.8f);int n=quality==2?96:40;for(int j=0;j<n;j++){float a=j*2*PI/n;light(w->x+cosf(a)*r,w->y+sinf(a)*r,.6f+2*(1-t),.25f,.65f,1,fade*.65f);}}
- for(int i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int t=i<MAXS?o->type:7;if(t==6|| (i<MAXS&&t==7)){light(o->x/256.0f,o->y/256.0f,4,.35f,1,.12f,1);continue;}light(o->x/256.0f,o->y/256.0f,3.5f,t==2||t==4?1:.2f,t==7?.15f:.7f,t==2?.1f:1,.8f);}}
+ for(int i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int t=i<MAXS?o->type:7;streak(o->x/256.0f,o->y/256.0f,o->vx,o->vy,i<MAXS&&t==7?14:5,i>=MAXS);if(t==6|| (i<MAXS&&t==7)){light(o->x/256.0f,o->y/256.0f,4,.35f,1,.12f,1);continue;}light(o->x/256.0f,o->y/256.0f,3.5f,t==2||t==4?1:.2f,t==7?.15f:.7f,t==2?.1f:1,.8f);}}
  if(g.beam)for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++)for(int y=26;y<(player_y>>8)-12;y+=6)light((g.px>>8)+lane*28,y,7,.12f,.5f,1,.26f);
  if(ex.bombAge){flush(halo);float r=bombRenderRadius,fade=fminf(1,(61-ex.bombAge)/10.0f),cx=(float)ex.bombX,cy=(float)ex.bombY;quad((cx-r)*3,(cy-r*.8f)*3,r*6,r*4.8f,(SDL_FColor){.08f,.35f,1,.11f*fade},0,0,1,1);for(int j=0;j<256;j++){float a=j*2*PI/256;light(cx+cosf(a)*r,cy+sinf(a)*r*.8f,5.5f,.1f,.5f,1,.8f*fade);light(cx+cosf(a)*r*.96f,cy+sinf(a)*r*.768f,2,.55f,.9f,1,.4f*fade);}}
  }flush(halo);
  if(ex.bombAge){SDL_FPoint points[257];SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_ADD);float fade=fminf(1,(61-ex.bombAge)/10.0f);for(int line=-1;line<=1;line++){float r=bombRenderRadius+line*2;for(int j=0;j<=256;j++){float a=j*2*PI/256;points[j]=(SDL_FPoint){(ex.bombX+cosf(a)*r)*3,(ex.bombY+sinf(a)*r*.8f)*3};}SDL_SetRenderDrawColor(renderer,line?60:235,line?160:255,255,(Uint8)((line?140:255)*fade));SDL_RenderLines(renderer,points,257);}SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);}
  SDL_SetRenderClipRect(renderer,0);
 }
+static void scene_plate(int phase,int alpha){phase=clamp(phase,0,9);int index=phase>=6?phase-4:0;SDL_Texture*t=scenes[index];if(!t)return;float time=ex.landScroll/65536.0f;
+ SDL_FRect source={106+sinf(time*.18f)*65,32+cosf(time*.13f)*24,1324,960},destination={0,72,960,696};
+ SDL_SetTextureAlphaMod(t,(Uint8)clamp(alpha,0,255));SDL_SetTextureColorMod(t,phase==1?190:phase==4?245:255,phase==1?170:phase==4?180:255,phase==4?190:255);SDL_RenderTexture(renderer,t,&source,&destination);
+ if(phase>=6&&cloudTexture){SDL_SetTextureAlphaMod(cloudTexture,(Uint8)(alpha*(phase==9?.18f:.28f)));SDL_SetTextureColorMod(cloudTexture,255,phase==7?218:255,phase==7?185:255);for(int layer=0;layer<2;layer++){SDL_FRect clouds={-160+sinf(time*(layer?.45f:.21f)+layer*2)*130,38+cosf(time*.24f+layer)*45,1280,820};SDL_RenderTexture(renderer,cloudTexture,0,&clouds);}}
+}
+static void draw_modern_world(void){SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);int phase=ex.phase<0?0:ex.phase;if(ex.entryY){scene_plate(ex.oldPhase,255);scene_plate(phase,(ex.entryY-24)*255/232);}else scene_plate(phase,255);
+
+ SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);SDL_SetRenderDrawColor(renderer,1,6,16,45);SDL_FRect shade={0,72,960,696};SDL_RenderFillRect(renderer,&shade);SDL_SetRenderClipRect(renderer,0);
+}
+static void draw_modern_terrain(void){SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);
+ if(ex.phase==5||(ex.oldPhase==5&&ex.entryY)){SDL_SetTextureColorMod(scenes[1],255,255,255);nquad=0;
+ for(int y=24;y<256;y+=2)if(tunnel_visible(y)){float l=tunnel_left(y),r=tunnel_right(y),ll=tunnel_left(y+2),rr=tunnel_right(y+2),v=fmodf(((ex.backgroundY>>8)+y)*4.8f,1024)/1024.0f,vh=fminf(9.6f/1024,1-v);SDL_FColor colour={.75f,.82f,.88f,1};
+ quad(0,y*3,l*3,6,colour,0,v,l/320,vh);vertices[nquad*4-2].position.x=ll*3;vertices[nquad*4-2].tex_coord.x=ll/320;
+ quad(r*3,y*3,(320-r)*3,6,colour,r/320,v,(320-r)/320,vh);vertices[nquad*4-1].position.x=rr*3;vertices[nquad*4-1].tex_coord.x=rr/320;
+ }flush(scenes[1]);}
+
+SDL_SetRenderClipRect(renderer,0);}
 static Game previous,saved;static Expansion previousEx,savedEx;static int previousY;
 static int lerpi(int a,int b,float t){return (int)(a+(b-a)*t);}
 static void interp_objects(Obj*a,Obj*b,int n,float t){for(int i=0;i<n;i++)if(a[i].on&&b[i].on&&a[i].type==b[i].type){a[i].x=lerpi(b[i].x,a[i].x,t);a[i].y=lerpi(b[i].y,a[i].y,t);int turn=(a[i].heading-b[i].heading+8640)%5760-2880;a[i].heading=(b[i].heading+(int)(turn*t)+5760)%5760;}}
 static void render_frame(float alpha,float dt){saved=g;savedEx=ex;int sy=player_y;g.px=lerpi(previous.px,g.px,alpha);player_y=lerpi(previousY,player_y,alpha);interp_objects(g.enemies,previous.enemies,MAXE,alpha);interp_objects(g.shots,previous.shots,MAXS,alpha);interp_objects(g.bullets,previous.bullets,MAXB,alpha);interp_objects(g.drops,previous.drops,8,alpha);
  int delta=(ex.backgroundY-previousEx.backgroundY)&131071;if(delta>65535)delta-=131072;ex.backgroundY=(previousEx.backgroundY+(int)(delta*alpha))&131071;for(int i=0;i<NSTARS;i++){int d=g.stars[i].y-previous.stars[i].y;if(d<0)d+=232*Q;g.stars[i].y=(previous.stars[i].y+(int)(d*alpha))%(232*Q);}
- bombRenderRadius=ex.bombAge?((previousEx.bombAge?previousEx.bombRadius:0)+(ex.bombRadius-(previousEx.bombAge?previousEx.bombRadius:0))*alpha):0;ndraw=0;game_render(fb);for(int i=0;i<81920;i++)rgba[i]=palette[fb[i]];SDL_UpdateTexture(base,0,rgba,320*4);SDL_SetRenderDrawColor(renderer,3,5,14,255);SDL_RenderClear(renderer);SDL_FRect area={0,0,960,768};SDL_RenderTexture(renderer,base,0,&area);
- SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;for(int i=0;i<ndraw;i++){Draw*d=draws+i;Sprite*s=sprites+d->n;float scale=d->n>=32?.65f:1;quad((d->x-s->w*.5f*scale)*3,(d->y-s->h*.5f*scale)*3,(s->w*3*scale)*(d->n>=28&&d->n<32?(1+.09f*sinf(g.tick*.7f+d->x)):1),s->h*3*scale,(SDL_FColor){1,1,1,1},s->u,s->v,s->uw,s->vh);if(d->angle!=0){float angle=d->angle*PI/180,c=cosf(angle),ss=sinf(angle),cx=d->x*3,cy=d->y*3;for(int v=(nquad-1)*4;v<nquad*4;v++){float xx=vertices[v].position.x-cx,yy=vertices[v].position.y-cy;vertices[v].position.x=cx+xx*c-yy*ss;vertices[v].position.y=cy+xx*ss+yy*c;}}}flush(atlas);SDL_SetRenderClipRect(renderer,0);SDL_SetRenderTarget(renderer,fxTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,255);SDL_RenderClear(renderer);draw_fx(dt);SDL_SetRenderTarget(renderer,0);SDL_FRect fxArea={0,0,960,800};SDL_RenderTexture(renderer,fxTarget,0,&fxArea);
+ bombRenderRadius=ex.bombAge?((previousEx.bombAge?previousEx.bombRadius:0)+(ex.bombRadius-(previousEx.bombAge?previousEx.bombRadius:0))*alpha):0;ndraw=0;game_render(fb);for(int i=0;i<81920;i++)rgba[i]=fb[i]?palette[fb[i]]:0;SDL_UpdateTexture(base,0,rgba,320*4);SDL_SetRenderTarget(renderer,combatTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,0);SDL_RenderClear(renderer);draw_modern_terrain();SDL_FRect area={0,0,960,768};SDL_RenderTexture(renderer,base,0,&area);
+ SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;for(int i=0;i<ndraw;i++){Draw*d=draws+i;Sprite*s=sprites+d->n;float scale=1;quad((d->x-s->w*.5f*scale)*3,(d->y-s->h*.5f*scale)*3,(s->w*3*scale)*(d->n>=28&&d->n<32?(1+.09f*sinf(g.tick*.7f+d->x)):1),s->h*3*scale,(SDL_FColor){1,1,1,1},s->u,s->v,s->uw,s->vh);if(d->angle!=0){float angle=d->angle*PI/180,c=cosf(angle),ss=sinf(angle),cx=d->x*3,cy=d->y*3;for(int v=(nquad-1)*4;v<nquad*4;v++){float xx=vertices[v].position.x-cx,yy=vertices[v].position.y-cy;vertices[v].position.x=cx+xx*c-yy*ss;vertices[v].position.y=cy+xx*ss+yy*c;}}}flush(atlas);SDL_SetRenderClipRect(renderer,0);SDL_SetRenderTarget(renderer,fxTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,255);SDL_RenderClear(renderer);draw_fx(dt);SDL_SetRenderTarget(renderer,combatTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_FRect fxArea={0,0,960,800};SDL_RenderTexture(renderer,fxTarget,0,&fxArea);
+ sideBlend+=(side_mode()-sideBlend)*fminf(1,dt*4);if(fabsf(sideBlend-side_mode())<.0005f)sideBlend=side_mode();
+ SDL_SetRenderTarget(renderer,0);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);SDL_SetRenderDrawColor(renderer,3,5,14,255);SDL_RenderClear(renderer);draw_modern_world();float tw,th;SDL_GetTextureSize(combatTarget,&tw,&th);SDL_FRect source={0,th*72/800,tw,th*696/800};float w=960-264*sideBlend,h=696+264*sideBlend;SDL_FRect destination={480-w/2,420-h/2,w,h};SDL_Rect worldClip={0,72,960,696};SDL_SetRenderClipRect(renderer,&worldClip);SDL_RenderTextureRotated(renderer,combatTarget,&source,&destination,sideBlend*90,0,SDL_FLIP_NONE);SDL_SetRenderClipRect(renderer,0);
  g=saved;ex=savedEx;player_y=sy;
 }
 static void ui_text(int x,int y,const char*s,SDL_Color c){SDL_SetRenderDrawColor(renderer,c.r,c.g,c.b,c.a);while(*s){int glyph=-1;for(int i=0;fontchars[i];i++)if(fontchars[i]==*s){glyph=i;break;}if(glyph>=0)for(int j=0;j<7;j++)for(int k=0;k<5;k++)if(font[glyph*7+j]&(1<<(4-k))){SDL_FRect r={x+k*2.0f,y+j*2.0f,2,2};SDL_RenderFillRect(renderer,&r);}x+=12;s++;}}
@@ -146,27 +182,24 @@ EMSCRIPTEN_KEEPALIVE void web_command(int c){webCmd=c;}
 EMSCRIPTEN_KEEPALIVE void web_held(int mask){webHeld=mask;}
 EMSCRIPTEN_KEEPALIVE void web_pointer(float x,float y){mx=x;my=y;mouseControl=1;}
 EMSCRIPTEN_KEEPALIVE void web_mute(void){muted=!muted;if(astream)SDL_SetAudioStreamGain(astream,muted?0:1);}
-EMSCRIPTEN_KEEPALIVE int web_stat(int n){switch(n){case 0:return g.tick;case 1:return g.mode;case 2:return g.weapon;case 3:return ex.bombs;case 4:return ex.bombAge;case 5:return aliveParticles;case 6:return g.paused;case 7:return SDL_GetAtomicInt(&audioFrames);case 8:return audioNonzero;case 9:return SDL_GetAtomicInt(&audioErrors);case 10:return g.wave;case 11:return peakParticles;case 12:return (int)(audioPeak*1000000);case 13:return frames;case 14:return g.playerVX;case 15:return ex.phase;case 16:return ex.travel;case 17:return ex.bossSpawned;case 18:return muted;}return -1;}
+EMSCRIPTEN_KEEPALIVE int web_stat(int n){switch(n){case 0:return g.tick;case 1:return g.mode;case 2:return g.weapon;case 3:return ex.bombs;case 4:return ex.bombAge;case 5:return aliveParticles;case 6:return g.paused;case 7:return SDL_GetAtomicInt(&audioFrames);case 8:return audioNonzero;case 9:return SDL_GetAtomicInt(&audioErrors);case 10:return g.wave;case 11:return peakParticles;case 12:return (int)(audioPeak*1000000);case 13:return frames;case 14:return g.playerVX;case 15:return ex.phase;case 16:return ex.travel;case 17:return ex.bossSpawned;case 18:return muted;case 19:return g.score;case 20:return g.lives;case 21:return g.barrier;case 22:return g.energy;case 23:{int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}case 24:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].variant+1;return 0;case 25:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].hp*100/g.enemies[i].base;return 0;case 26:return ex.optionsOn?ex.options:0;case 27:return (int)recentFPS;case 28:return side_mode();case 29:return g.px;case 30:return player_y;}return -1;}
 static void browser_frame(void){
 double frameStart=ms_now(),delta=(frameStart-before)/1000;before=frameStart;if(delta>.1)delta=.1;
- while(SDL_PollEvent(&event)){SDL_ConvertEventToRenderCoordinates(renderer,&event);if(event.type==SDL_EVENT_QUIT)cmd='p';if(event.type==SDL_EVENT_WINDOW_FOCUS_LOST&&!demo){focus=0;if(astream){SDL_ClearAudioStream(astream);SDL_PauseAudioStreamDevice(astream);}}if(event.type==SDL_EVENT_WINDOW_FOCUS_GAINED){focus=1;acc=0;if(astream)SDL_ResumeAudioStreamDevice(astream);}if(event.type==SDL_EVENT_MOUSE_MOTION){mx=event.motion.x/3;my=event.motion.y/3;mouseControl=1;}if(event.type==SDL_EVENT_MOUSE_BUTTON_DOWN&&event.button.button==SDL_BUTTON_LEFT){mouseFire=1;cmd=32;}if(event.type==SDL_EVENT_MOUSE_BUTTON_UP&&event.button.button==SDL_BUTTON_LEFT)mouseFire=0;
- if(event.type==SDL_EVENT_KEY_DOWN&&!event.key.repeat){SDL_Keycode k=event.key.key;if(k>=32&&k<127)cmd=(int)k;if(k==SDLK_ESCAPE)cmd='p';if(k==SDLK_F11){fullscreen=!fullscreen;SDL_SetWindowFullscreen(window,fullscreen);}if(k=='m'){muted=!muted;if(astream)SDL_SetAudioStreamGain(astream,muted?0:1);}if(k=='v'){vsync=!vsync;SDL_SetRenderVSync(renderer,vsync);}if(k==SDLK_F2){cap=cap==120?240:cap==240?0:120;}if(k==SDLK_F3)showStats=!showStats;if(k==SDLK_F4)quality=(quality+1)%3;if(k==SDLK_F12){screenshot("Screenshot.bmp");}if(k=='z'||k=='x'||k==SDLK_LEFT||k==SDLK_RIGHT||k==SDLK_UP||k==SDLK_DOWN||k=='w'||k=='a'||k=='s')mouseControl=0;}
+ while(SDL_PollEvent(&event)){SDL_ConvertEventToRenderCoordinates(renderer,&event);if(event.type==SDL_EVENT_QUIT)cmd='p';if(event.type==SDL_EVENT_WINDOW_FOCUS_LOST&&!demo){focus=0;if(astream){SDL_ClearAudioStream(astream);SDL_PauseAudioStreamDevice(astream);}}if(event.type==SDL_EVENT_WINDOW_FOCUS_GAINED){focus=1;acc=0;if(astream)SDL_ResumeAudioStreamDevice(astream);}if(event.type==SDL_EVENT_MOUSE_MOTION){mx=event.motion.x/3;my=event.motion.y/3;if(ticks>5)mouseControl=1;}if(event.type==SDL_EVENT_MOUSE_BUTTON_DOWN&&event.button.button==SDL_BUTTON_LEFT){mouseFire=1;cmd=32;}if(event.type==SDL_EVENT_MOUSE_BUTTON_UP&&event.button.button==SDL_BUTTON_LEFT)mouseFire=0;
+ if(event.type==SDL_EVENT_KEY_DOWN&&!event.key.repeat){SDL_Keycode k=event.key.key;if(k>=32&&k<127&&(k!=32||!cmd))cmd=(int)k;if(k==SDLK_ESCAPE)cmd='p';if(k==SDLK_F11){fullscreen=!fullscreen;SDL_SetWindowFullscreen(window,fullscreen);}if(k=='m'){muted=!muted;if(astream)SDL_SetAudioStreamGain(astream,muted?0:1);}if(k=='v'){vsync=!vsync;SDL_SetRenderVSync(renderer,vsync);}if(k==SDLK_F2){cap=cap==120?240:cap==240?0:120;}if(k==SDLK_F3)showStats=!showStats;if(k==SDLK_F4)quality=(quality+1)%3;if(k==SDLK_F12){screenshot("Screenshot.bmp");}if(k=='z'||k=='x'||k==SDLK_LEFT||k==SDLK_RIGHT||k==SDLK_UP||k==SDLK_DOWN||k=='w'||k=='a'||k=='s')mouseControl=0;}
  if(event.type==SDL_EVENT_GAMEPAD_BUTTON_DOWN){switch(event.gbutton.button){case SDL_GAMEPAD_BUTTON_SOUTH:cmd=32;break;case SDL_GAMEPAD_BUTTON_EAST:cmd='b';break;case SDL_GAMEPAD_BUTTON_WEST:cmd='d';break;case SDL_GAMEPAD_BUTTON_NORTH:cmd='o';break;case SDL_GAMEPAD_BUTTON_START:cmd='p';break;case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:cmd='1'+(g.weapon+7)%8;break;case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:cmd='1'+(g.weapon+1)%8;break;}}if(event.type==SDL_EVENT_GAMEPAD_ADDED&&!pad)pad=SDL_OpenGamepad(event.gdevice.which);if(event.type==SDL_EVENT_GAMEPAD_REMOVED&&pad&&SDL_GetGamepadID(pad)==event.gdevice.which){SDL_CloseGamepad(pad);pad=0;}}
- const bool*k=SDL_GetKeyboardState(0);keysHeld=webHeld|(k[SDL_SCANCODE_Z]||k[SDL_SCANCODE_LEFT]||k[SDL_SCANCODE_A]?1:0)|(k[SDL_SCANCODE_X]||k[SDL_SCANCODE_RIGHT]?2:0)|(k[SDL_SCANCODE_SPACE]||mouseFire?4:0);
+ const bool*k=SDL_GetKeyboardState(0);keysHeld=webHeld|(k[SDL_SCANCODE_SPACE]||mouseFire?4:0);
  if(webCmd){cmd=webCmd;webCmd=0;}if(!focus){delta=0;acc=0;}acc+=delta;int steps=0;
  while(acc>=.02&&steps++<5){previous=g;previousEx=ex;previousY=player_y;int mask=keysHeld;
  if(demo){int phase=(int)((frameStart-start)/5000)%6;if(g.mode!=1||g.lives<1){game_reset();g.mode=1;}g.shield=100000;g.weapon=((int)((frameStart-start)/1500))%7;g.energy=100;int wave=phase==5?(stress?28:3):(stress?26:1)+phase;if(g.wave!=wave||((ex.phase==5)!=(phase==5))){g.wave=wave;g.clock=phase==5?300:0;g.groups=0;if(phase==5)ex.phase=-1;}for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].y>24*Q){g.px=clamp(g.enemies[i].x,14*Q,306*Q);break;}if(phase==5)g.px=tunnel_center(210)*Q;mask=4;if(stress&&ticks%30==0)for(int j=0;j<3;j++)pc_burst(30+(ticks*31+j*97)%260,55+(ticks*17+j*41)%150,1);if(ticks%400==220)cmd='b';if((ticks%150)==0)pc_burst(40+(ticks*31)%240,70+(ticks*17)%140,ticks%300==0);}
- else if(mouseControl&&g.mode==1&&!g.paused)game_pointer((int)mx,(int)my);
+ else if(mouseControl&&g.mode==1&&!g.paused){int px=(int)mx,py=(int)my;flight_pointer(&px,&py);game_pointer(px,py);}
 if(showcase){g.wave=1;g.clock=100;g.groups=3;g.px=160*Q;player_y=220*Q;g.weapon=6;ex.optionsOn=0;mask=ticks>125?4:0;if(ticks==0){bug_group(10,0);for(int i=0;i<MAXE;i++)if(g.enemies[i].on){g.enemies[i].type=10+(i&3);g.enemies[i].hp=8;}}cmd=ticks==180?'b':0;}
  
- if(!mouseControl&&!g.paused){if(k[SDL_SCANCODE_UP]||k[SDL_SCANCODE_W])player_y-=4*Q;if(k[SDL_SCANCODE_DOWN]||k[SDL_SCANCODE_S])player_y+=4*Q;player_y=clamp(player_y,40*Q,240*Q);}
- if(pad){float ax=SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_LEFTX)/32768.0f,ay=SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_LEFTY)/32768.0f;if(fabsf(ax)>.15f||fabsf(ay)>.15f){mouseControl=0;g.px=clamp(g.px+(int)(ax*6*Q),14*Q,306*Q);player_y=clamp(player_y+(int)(ay*5*Q),40*Q,240*Q);}if(SDL_GetGamepadButton(pad,SDL_GAMEPAD_BUTTON_SOUTH)||SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER)>12000)mask|=4;}
+ if(!mouseControl&&!g.paused){int sx=(k[SDL_SCANCODE_RIGHT]||k[SDL_SCANCODE_X])-(k[SDL_SCANCODE_LEFT]||k[SDL_SCANCODE_Z]||k[SDL_SCANCODE_A]);int sy=(k[SDL_SCANCODE_DOWN]||k[SDL_SCANCODE_S])-(k[SDL_SCANCODE_UP]||k[SDL_SCANCODE_W]);flight_move(sx*6,sy*4);}
+ if(pad){float ax=SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_LEFTX)/32768.0f,ay=SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_LEFTY)/32768.0f;if(fabsf(ax)>.15f||fabsf(ay)>.15f){mouseControl=0;flight_move(ax*6,ay*5);}if(SDL_GetGamepadButton(pad,SDL_GAMEPAD_BUTTON_SOUTH)||SDL_GetGamepadAxis(pad,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER)>12000)mask|=4;}
  game_step(mask|(cmd==32?4:0),cmd);cmd=0;acc-=.02;ticks++;
  }if(steps>5)acc=0;
  if(focus&&!g.paused)update_fx((float)delta);render_frame((float)fmin(acc/.02,1),(focus&&!g.paused)?(float)delta:0);
- char label[140];snprintf(label,sizeof(label),"%s  %s  FX %s  %d PARTICLES",muted?"MUTED":"STEREO",vsync?"VSYNC ON":"VSYNC OFF",quality==2?"ULTRA":quality==1?"HIGH":"LOW",aliveParticles);ui_text(12,780,label,(SDL_Color){135,189,224,255});
- if(!focus)ui_text(260,380,"CLICK WINDOW TO RESUME",(SDL_Color){255,255,255,255});
- if(showStats&&frames>0){snprintf(label,sizeof(label),"%.0f FPS  CPU %.2f MS",recentFPS,recentCPUms);ui_text(610,750,label,(SDL_Color){190,232,255,255});}
  double cpu=ms_now()-frameStart;cpuSum+=cpu;if(cpu>maxCpu)maxCpu=cpu;SDL_RenderPresent(renderer);double work=ms_now()-frameStart;double total=delta*1000;frameSum+=total;frames++;recentMS+=total;recentCPU+=cpu;recentFrames++;if(recentMS>=500){recentFPS=(float)(1000*recentFrames/recentMS);recentCPUms=(float)(recentCPU/recentFrames);recentMS=recentCPU=0;recentFrames=0;}if(sampleCount<200000){frameTimes[sampleCount]=total;cpuTimes[sampleCount]=cpu;sampleCount++;}
  if(showcase){if(ticks>=125&&showcaseShots==0){screenshot("Formation-Preview.bmp");showcaseShots=1;}if(ex.bombAge>=12&&showcaseShots==1){screenshot("Bomb-Early.bmp");showcaseShots=2;}if(ex.bombAge>=28&&showcaseShots==2){screenshot("Bomb-Late.bmp");showcaseShots=3;}}
  if(demo&&!benchmark&&((int)((frameStart-start)/1000)>shotCount+2)){char name[64];snprintf(name,sizeof(name),"Demo-%02d.bmp",shotCount);screenshot(name);shotCount+=5;}
@@ -175,9 +208,10 @@ if(showcase){g.wave=1;g.clock=100;g.groups=3;g.px=160*Q;player_y=220*Q;g.weapon=
 }
 
 int main(int argc,char**argv){SDL_SetMainReady();SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT,"#canvas");vsync=1;cap=0;
+int renderWidth=argc>2?clamp(atoi(argv[2]),1920,3840):2880,renderHeight=renderWidth*5/6;
 if(!SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_GAMEPAD))fatal(SDL_GetError());
- window=SDL_CreateWindow("Star Guard",1920,1600,0);if(!window)fatal(SDL_GetError());SDL_SetWindowSize(window,1920,1600);renderer=SDL_CreateRenderer(window,0);if(!renderer)fatal(SDL_GetError());SDL_SetWindowSize(window,1920,1600);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);SDL_SetRenderVSync(renderer,1);init_graphics();
+ window=SDL_CreateWindow("Star Guard",renderWidth,renderHeight,0);if(!window)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);renderer=SDL_CreateRenderer(window,0);if(!renderer)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);SDL_SetRenderVSync(renderer,1);init_graphics();
  SDL_AudioSpec spec={SDL_AUDIO_F32,2,48000};astream=SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,&spec,audio_callback,0);if(astream)SDL_ResumeAudioStreamDevice(astream);
-game_reset();if(argc>1)g.wave=clamp(atoi(argv[1]),0,9)+1;previous=g;previousEx=ex;previousY=player_y;before=start=ms_now();
+game_reset();g.mode=1;if(argc>1)g.wave=clamp(atoi(argv[1]),0,9)+1;sideBlend=side_mode();previous=g;previousEx=ex;previousY=player_y;before=start=ms_now();
 int count=0;SDL_JoystickID*ids=SDL_GetGamepads(&count);if(count)pad=SDL_OpenGamepad(ids[0]);SDL_free(ids);
 emscripten_set_main_loop(browser_frame,0,1);return 0;}
