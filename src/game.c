@@ -21,6 +21,7 @@ typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wo
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
+ int continues,continueTicks,continueReady;
  int tick,missionTicks,mode,quit,paused,wave,clock,groups,score,kills,lives,px,weapon,unlocked,energy,barrier,shield,cool,beam,active,shake,fx,bossPhase,playerVX,lastPlayerX;
  int acquiredWeapons,shipFireCount,salvagePicked,lastLootValue;int weaponLevel[8],weaponCharge[8];u32 seed; Obj enemies[MAXE],shots[MAXS],bullets[MAXB],drops[8],effects[24]; Particle particles[MAXP]; Star stars[NSTARS];
 } Game;
@@ -60,7 +61,7 @@ extern void pc_laser_sound(int,int);
 extern void pc_burst(int,int,int),pc_impact(int,int,int),pc_bomb_start(int,int),pc_transition(void),pc_charge_burst(int,int);
 static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e=slot(g.effects,12);if(e){e->x=x;e->y=y;e->type=big;e->phase=rnd()&255;}for(i=0;i<n;i++){int a=rnd()&255,s=(big?700:400)+(rnd()&(big?1023:511));particle(x*Q,y*Q,(sn(a)*s)>>10,(sn(a+64)*s)>>10,18+(rnd()&23),i&3?1:0);}g.shake=big?7:3;if(ex.soundTick!=g.tick){ex.soundTick=g.tick;sound(2,2,big?118:84,big?0x2800:0x3400);sound_slide(2,1,0x1100,big?30:14);sound_slide(2,0,0,big?42:22);}}
 static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){o->x=x*Q;o->y=y*Q;o->type=type;o->vy=220;}}
-void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=255;g.acquiredWeapons=1;for(i=0;i<8;i++)g.weaponLevel[i]=1;g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
+void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.continues=3;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=255;g.acquiredWeapons=1;for(i=0;i<8;i++)g.weaponLevel[i]=1;g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
 static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-10*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->power=power_level(g.weapon);o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
 static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;o->variant=absn(vx)>absn(vy)?2:0;}return o;}
@@ -78,7 +79,7 @@ static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o
 static void boss(void){Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=ex.phase<0?0:ex.phase;o->hp=300+g.wave*32;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
 static void hit_sparks(int x,int y,int nx,int ny,int tint){pc_impact(x,y,tint);int i;Obj*f=slot(ex.impacts,12);if(f){f->x=x;f->y=y;f->type=tint;}ex.contactX=x;ex.contactY=y;ex.contactTick=g.tick;for(i=0;i<10;i++){int a=rnd()&255;particle(x*Q,y*Q,nx*180+(sn(a)>>1),ny*180+(sn(a+64)>>1),8+(rnd()&7),tint);}}
 static void surface_point(int cx,int cy,int rx,int ry,int ox,int oy,int*out){int dx=ox-cx,dy=oy-cy;if(absn(dx)*ry>absn(dy)*rx){out[0]=cx+(dx<0?-rx:rx);out[1]=cy+clamp(dy,-ry,ry);}else{out[0]=cx+clamp(dx,-rx,rx);out[1]=cy+(dy<0?-ry:ry);}}
-static void hurt_at(int x,int y,int nx,int ny){if(ex.contactTick!=g.tick||ex.contactX!=x||ex.contactY!=y)hit_sparks(x,y,nx,ny,g.shield||g.active?3:1);if(g.shield||g.active){pc_hit_sound(1,0,x);return;}pc_hit_sound(0,4,x);g.barrier-=35;g.shield=28;g.shake=5;sound(3,2,100,0x3000);if(g.barrier<0){g.lives--;g.barrier=75;g.shield=100;burst(g.px>>8,player_y>>8,1);if(g.lives<=0)g.mode=2;}}
+static void hurt_at(int x,int y,int nx,int ny){if(ex.contactTick!=g.tick||ex.contactX!=x||ex.contactY!=y)hit_sparks(x,y,nx,ny,g.shield||g.active?3:1);if(g.shield||g.active){pc_hit_sound(1,0,x);return;}pc_hit_sound(0,4,x);g.barrier-=35;g.shield=28;g.shake=5;sound(3,2,100,0x3000);if(g.barrier<0){g.lives--;g.barrier=75;g.shield=100;burst(g.px>>8,player_y>>8,1);if(g.lives<=0){g.mode=g.continues?3:2;g.continueTicks=450;g.continueReady=0;}}}
 static void carrier_release(const Obj*);
 static void option_fire(void);
 static void stage_boss_step(Obj*);
@@ -94,6 +95,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0;
  if(!g.paused){for(i=0;i<NSTARS;i++){Star*s=g.stars+i;s->y+=((s->z==0?64:s->z==1?160:384)*ex.scrollSpeed)>>8;if(s->y>=232*Q)s->y-=232*Q;}}
  if(g.mode==0){g.tick++;if((mask&4)||(ch>='1'&&ch<='8')){g.mode=1;g.tick=0;if(ch>='1'&&ch<='5')g.wave=ch-'0';if(ch=='6'){g.wave=3;g.clock=300;g.groups=3;}if(ch=='7')g.weapon=6;if(ch=='8')g.weapon=7;}return;}if(g.mode==2){g.tick++;return;}
  if(ch=='p')g.paused=!g.paused;if(g.paused)return;
+ if(g.mode==3){g.tick++;if(!(mask&4))g.continueReady=1;if(ch=='n')g.continueTicks=0;if(ch==13||ch=='c'||(g.continueReady&&(mask&4))){g.continues--;g.continueTicks=0;g.mode=1;g.lives=3;g.barrier=g.energy=100;g.shield=150;g.px=160*Q;player_y=220*Q;if(ex.phase==5)g.px=tunnel_lane(220,0)*Q;pc_charge_burst(g.px/Q,220);return;}if(g.continueTicks>0)g.continueTicks--;if(!g.continueTicks)g.mode=2;return;}
  if(ch>='1'&&ch<='8'&&(g.unlocked&(1<<(ch-'1'))))g.weapon=ch-'1';
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;}
  g.tick++;g.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);

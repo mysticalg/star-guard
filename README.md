@@ -149,3 +149,11 @@ Mission polish: each sector opens with eight seconds of free flight while the fe
 Warp visuals use up to 3,200 deterministic perspective stars in GPU-batched, linearly filtered glow ribbons. Cyan, violet, white and occasional warm stars accelerate through depth during the camera transition. Quality settings scale the field to 1,800 or 900 stars; simulation, pause and camera changes remain independent of the graphical effect. The old pixel warp streak overlay is disabled in modern rendering.
 
 The browser hides the cursor over the active playfield, restoring it on pause. Ship VO focuses on mission briefings, boss and rear-attack warnings, hazards, critical hull/energy and stage completion; item and ship-upgrade chatter is silent, and low-energy reminders are rate limited to thirty seconds.
+
+Scenery pace varies through smoothly blended eight-second phrases, with slower briefings and boss fights and faster open-flight runs. Smoke and flame share the visible foreground cloud/terrain velocity, accounting for side-flight camera scaling. Each run grants three continues: a pause-aware nine-second particle countdown offers recovery with three lives, full hull/energy and three seconds of protection; score entry waits until the final defeat, timeout or Finish Run.
+
+Earth flight replaces stars with three depth layers of rain and three scrolling cloud layers. Cloud cover blends between clear and heavy weather every eight seconds, with faster foreground cloud banks and matching smoke drift.
+
+Regular parallax stars are approximately 25 percent smaller; warp stars keep their cinematic scale. Earth cloud layers scroll at 1400, 2100 and 3100 logical pixels per scenery-clock second, all faster than the 780-pixel ground layer. Rain is faster still, and smoke follows the nearest clouds.
+
+Planet sections automatically climb and descend through smooth altitude phrases. Ground textures zoom around the screen centre from distant high-altitude views to close low passes, while cloud cover thickens when crossing the cloud deck. Ship scale and collision geometry stay consistent.

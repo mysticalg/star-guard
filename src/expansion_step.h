@@ -27,6 +27,8 @@ static void trail_point(int x,int y,int tint){Trail*t=ex.trails+ex.nextTrail;ex.
 static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,tint);if(g.fx){trail_point((x+xx)>>1,(y+yy)>>1,tint);if(absn(xx-x)+absn(yy-y)>8*Q)trail_point((x*3+xx)>>2,(y*3+yy)>>2,tint);}}
 static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);int il,ir,island=tunnel_island(y,&il,&ir)&&x>il&&x<ir;if(x<l||x>r||island){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);return 1;}return 0;}
 static int cruise_speed(int phase){return phase==10?384:phase>=12?320:phase>=6?192:phase==5?3072:phase==4?1536:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
+/* Eight-second pace phrases, blended over two seconds without position jumps. */
+static int section_speed(int phase){int base=cruise_speed(phase);if(phase==5)return cavern_speed();if(ex.intro)return base*176/256;if(ex.victory)return base/2;if(ex.bossSpawned||ex.bossWarning)return base*192/256;static const int pace[6]={180,256,384,224,448,208};int beat=g.clock/400,slot=(beat+phase*2)%6,t=clamp(g.clock%400,0,100);t=t*t*(300-2*t)/10000;int from=pace[(slot+5)%6],to=pace[slot];return base*(from+(to-from)*t/100)/256;}
 static int tunnel_visible(int y){return (ex.phase==5&&(!ex.entryY||y<ex.entryY))||(ex.oldPhase==5&&ex.entryY>0&&y>=ex.entryY);}
 static int encounter_deadline(void){return ex.phase==5?2700:2400;}
 static int storm_kind(void){return !ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.clock>=120&&g.clock<600?(ex.phase==2?1:ex.phase==8?2:ex.phase==9?3:ex.phase>=12?ex.phase-8:0):0;}
@@ -46,7 +48,7 @@ static void expansion_step(int mask,int ch){int i,j,phase=mission_phase(g.wave),
  if(ex.intro&&!ex.travel){ex.intro--;}
  if(ex.victory){if(ex.victory<351)ex.victory++;g.shield=100;if(ex.victory<85){g.shake=clamp((85-ex.victory)/5,0,12);int radius=ex.victory*7;for(int n=0;n<MAXB;n++){Obj*o=g.bullets+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius)o->on=0;}for(int n=0;n<MAXH;n++){Obj*o=ex.obstacles+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius){o->on=0;pc_burst(o->x/Q,o->y/Q,0);}}for(int n=0;n<MAXE;n++){Obj*o=g.enemies+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius)killed(o);}}if(ex.victory>275&&!ex.travel)player_y-=4*Q;}
  phase=ex.phase;
- targetScroll=ex.travel?((cruise_speed(ex.oldPhase)+cruise_speed(ex.nextPhase))/2):phase==5?cavern_speed():cruise_speed(phase);
+ targetScroll=ex.travel?((cruise_speed(ex.oldPhase)+cruise_speed(ex.nextPhase))/2):section_speed(phase);
  targetEnemy=phase==5?192:phase==1?192:phase==2?288:phase==3?352:256;
  if(ex.scrollSpeed<targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed+(ex.travel||phase==5?64:16),0,targetScroll);else if(ex.scrollSpeed>targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed-(ex.travel||phase==5?64:16),targetScroll,8192);
  if(ex.enemySpeed<targetEnemy)ex.enemySpeed+=4;else if(ex.enemySpeed>targetEnemy)ex.enemySpeed-=4;
