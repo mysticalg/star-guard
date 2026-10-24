@@ -9,7 +9,7 @@ static void bug_step(Obj*o){int ordinal=o->phase&31,delay=(ordinal&7)*3+(ordinal
 }
 static void ricochet(Obj*s,Obj*enemy,int id){float nx=(float)(s->x-enemy->x),ny=(float)(s->y-enemy->y),len=sqrtf(nx*nx+ny*ny);if(len<1){nx=0;ny=1;len=1;}nx/=len;ny/=len;float vx=s->vx,vy=s->vy,dot=vx*nx+vy*ny;vx-=2*dot*nx;vy-=2*dot*ny;
  /* A small alternating cant avoids perfectly vertical rebounds. */
- float angle=((g.tick+id)&1)?.32f:-.32f,c=cosf(angle),snv=sinf(angle);s->vx=(int)(vx*c-vy*snv);s->vy=(int)(vx*snv+vy*c);int r=enemy->type==4?34:enemy->type>=10?11:16;s->x=enemy->x+(int)(nx*r*Q);s->y=enemy->y+(int)(ny*r*Q);s->base=3;s->phase=id;if(--s->hp<=0)s->on=0;pc_impact(s->x>>8,s->y>>8,1);sound(1,1,65,0x3800+(4-s->hp)*0x300);
+ float angle=((g.tick+id)&1)?.32f:-.32f,c=cosf(angle),snv=sinf(angle);s->vx=(int)(vx*c-vy*snv);s->vy=(int)(vx*snv+vy*c);int r=enemy->type==4?34:enemy->type>=10?11:16;s->x=enemy->x+(int)(nx*r*Q);s->y=enemy->y+(int)(ny*r*Q);s->base=3;s->phase=id;if(s->type==7)s->heading++;if(--s->hp<=0)s->on=0;pc_impact(s->x>>8,s->y>>8,1);sound(1,1,65,0x3800+(4-s->hp)*0x300);
 }
 static int bomb_reached(int x,int y,int padding){int dx=x-ex.bombX,dy=y-ex.bombY,r=ex.bombRadius+padding;return dx*dx*64+dy*dy*100<=r*r*64;}
 static void bomb_step(void){if(!ex.bombAge)return;ex.bombRadius=ex.bombAge*9;

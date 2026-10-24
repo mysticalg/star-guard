@@ -1,0 +1,8 @@
+{
+  "provider": "ImageGen built-in",
+  "assets": [
+    "ship-upgrades-salvage.png",
+    "ship-upgrades-advanced.png"
+  ],
+  "description": "Eight ship stages, vertical and side silhouettes; bronze silver gold salvage."
+}

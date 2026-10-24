@@ -7,7 +7,7 @@ window.ShipVoice=(()=>{
     context=new (window.AudioContext||window.webkitAudioContext)();
     gain=context.createGain();gain.gain.value=.8;gain.connect(context.destination);
     await context.resume();
-    const [meta,data]=await Promise.all([fetch('vo/announcements.json').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
+    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=14').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=14').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
     clips=meta.clips;buffer=await context.decodeAudioData(data);pump();
   }
   function stop(){if(source){source.onended=null;try{source.stop();}catch{}source=null;}current=null;}
@@ -26,7 +26,7 @@ window.ShipVoice=(()=>{
   }
   function start(){queue=[];stop();previous=null;recent.clear();load().then(()=>{context.resume();say('mission-start',2);}).catch(()=>{const button=document.querySelector('#voice-toggle');if(button)button.textContent='Ship voice unavailable';});}
   function observe(stat){
-    const s={mode:stat(1),sector:stat(15),tick:stat(55),pickup:stat(40),pickupTicks:stat(41),weapon:stat(2),warning:stat(33),morph:stat(46),form:stat(45),laser:stat(52),rear:stat(42),storm:stat(48),clear:stat(34),travel:stat(16),hull:stat(21),energy:stat(22)};
+    const s={mode:stat(1),sector:stat(15),tick:stat(55),pickup:stat(40),pickupTicks:stat(41),weapon:stat(2),ship:stat(56),warning:stat(33),morph:stat(46),form:stat(45),laser:stat(52),rear:stat(42),storm:stat(48),clear:stat(34),travel:stat(16),hull:stat(21),energy:stat(22)};
     muted=!!stat(18);const pause=!!stat(6)||document.hidden||!document.hasFocus();
     if(muted){queue=[];stop();}gain&&(gain.gain.value=muted?0:.8);
     if(pause!==paused){paused=pause;if(context){if(paused)context.suspend();else context.resume().then(pump);}}
@@ -39,11 +39,12 @@ window.ShipVoice=(()=>{
     if(s.laser>0&&s.laser<=60&&(!p.laser||p.laser>60))say('super-laser',4);
     if(s.rear&&!p.rear)say('rear-attack',3);
     if(s.storm&&s.storm!==p.storm)say(['','asteroid-storm','ice-storm','fire-storm'][s.storm],3);
+    if(s.ship>p.ship)say('ship-upgrade',2);
     if(s.clear&&!p.clear)say('sector-clear',2);
     if(s.travel&&!p.travel)say('warp',2);
     if(s.hull<=25&&p.hull>25)say('hull-critical',3);
     if(s.energy<=10&&p.energy>10)say('energy-low',1);
-    if(s.pickupTicks>p.pickupTicks){const key=s.pickup===10?'weapon-'+s.weapon:({2:'shield',4:'repair',5:'nova',6:'option',7:'power',8:'satellite',9:'dropper'})[s.pickup];if(key)say(key,1);}
+    if(s.pickupTicks>p.pickupTicks){const key=s.pickup===10?'weapon-'+s.weapon:({2:'shield',4:'repair',5:'nova',6:'option',7:'power',8:'satellite',9:'dropper',11:'salvage',12:'power-charge'})[s.pickup];if(key)say(key,1);}
     previous=s;
   }
   document.addEventListener('visibilitychange',()=>{if(context&&document.hidden){paused=true;context.suspend();}});

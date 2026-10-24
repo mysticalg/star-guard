@@ -95,7 +95,7 @@ During sector transit the camera eases toward the ship, zooms to 2.4x, holds, th
 
 ## Longer missions, storms and special attacks
 
-Each sector now builds through twelve formations, with mixed insect flights, specialist squads, streams, fans and V formations. Wave spacing and an earliest 42-second boss gate (48 seconds in the cavern) give the encounter time to build; surviving enemies and hazards still gate boss entry. The HUD shows mission time, current sector time and completed wave count. Timers stop while paused and mission time freezes at game over.
+Each sector now builds through twelve formations, with mixed insect flights, specialist squads, streams, fans and V formations. Wave spacing and an earliest 48-second boss gate (54 seconds in the cavern) give the encounter time to build; surviving enemies and hazards still gate boss entry. The HUD shows mission time, current sector time and completed wave count. Timers stop while paused and mission time freezes at game over.
 
 Asteroid Belt, Frost Ridge and Magma Coast include dense destructible asteroid, ice and fire storms. Storms enter from off-screen, leave gaps and use isolated full-alpha ImageGen obstacle sprites. Boss specials alternate a 1.2-second laser aim warning with a brief super-laser, and shootable bomblets that burst into eight ordinary rounds. Armour-piercing bullets remain amber; ordinary, aimed, spiral and bomblet fire have different colours and shapes. Each player weapon also has its own trail and glow colour.
 
@@ -105,4 +105,26 @@ Warp now zooms to an extreme ship close-up, holds, then pulls back. The ship is 
 Impact audio now distinguishes metal hulls, energy shields, rock, ice, molten debris and shot interception. Projectile type shifts the transient pitch and character. Short synthesized metallic, resonant, granular and glass-like responses use the existing 48-voice mixer, stereo impact positions and per-material/global event limits. Master mute still applies to the whole audio stream.
 
 
-The ship computer uses a locally synthesized female Microsoft Zira voice, lightly filtered and modulated into a cybernetic announcer. A compact audio sprite supplies 41 pickup, warning and sector announcements. Urgent warnings interrupt pickup chatter, the music ducks during speech, pause/focus/master mute are respected, and a separate Ship voice button can disable announcements. Voice audio loads after launch and does not block gameplay.
+The ship computer uses a locally synthesized female Microsoft Zira voice, lightly filtered and modulated into a cybernetic announcer. A compact audio sprite supplies 44 pickup, warning and sector announcements. Urgent warnings interrupt pickup chatter, the music ducks during speech, pause/focus/master mute are respected, and a separate Ship voice button can disable announcements. Voice audio loads after launch and does not block gameplay.
+
+
+Pacing refinement: waves are spaced 3.4 seconds apart, with fewer overlapping enemies. Boss volleys and special attacks have about 15 percent more recovery time; storms arrive slightly less frequently. Player movement, firing, projectile speed and the rendering refresh rate remain responsive.
+
+
+Weapon capsules now choose only weapons not yet collected, reserving those already falling so two copies cannot be scheduled together. When every weapon is collected, those drops become salvage. Bronze scrap, silver caches and rare gold tech award 250, 750 and 1500 points. Separate power capsules upgrade owned weapons. Every three weapon-power upgrades evolves the player ship through eight hull marks, with distinct ImageGen hulls in vertical and side flight, additional gun mounts and engines. Auxiliary guns add limited support damage, preserving weapon balance and the small player hitbox. The warp close-up uses the current upgraded hull too.
+
+Caverns scroll four times faster (3072 vs 768) with smooth alternating narrow passages and broad chambers. Eight ship stages add distinct vertical/side ImageGen hulls and up to four pairs of light auxiliary guns. Bomber sorties enter from outside the playfield, leave shootable flashing bomblets and retreat; bombs produce eight interceptable fragments and particle shockwaves. Boss shields absorb six base pulse hits, break under fire and recharge after four seconds without damage. Super-laser firing windows are invincible, visibly shielded and labelled in the boss HUD; telegraph windows remain attackable.
+
+Flying enemies and bosses now emit rotation-aligned engine particles with periodic boost plumes, white-hot cores and blue glow; transformed bosses gain more exhaust ports. All modern-view hazards use ImageGen rock/ice/fire, mine and barrier artwork, including shootable enemy bomblets.
+
+Damaged boss hull parts emit ImageGen grey smoke puffs from the same locations as fire and electrical sparks. Smoke uses normal alpha compositing, expands and drifts separately from additive engine/fire light, with a fixed 160-puff budget.
+
+Engine flames, damage sparks and smoke advect with the same downstream world velocity as the scrolling terrain; faster cavern flight and warp acceleration stretch their wakes. Emitted particles retain their own drift and expand/fade independently of the moving hull, in both flight orientations.
+
+Damaged boss hull parts emit ImageGen grey smoke puffs from the same locations as fire and electrical sparks. Smoke uses normal alpha compositing, expands and drifts separately from additive engine/fire light, with a fixed 160-puff budget.
+
+Bouncing lasers cycle blue, magenta, gold, lime, cyan and violet on enemy/wall rebounds, with thin white cores, coloured glow and three subtle rainbow afterimages. Regular loot now appears every eight kills, and bosses award one alternating power/repair reward: half the prior drop count.
+
+Weapon power progression now requires 2 collected charges for Level 2, another 3 for Level 3 and another 5 for Level 4. Each weapon stores its own charge progress; first acquisition equips the weapon and banks one charge without immediately levelling up. HUD displays the current charge fraction, while level-up messages only appear at the threshold.
+
+Transition camera zoom reduced to approximately half its previous maximum, retaining the smooth close-in and pull-back motion.

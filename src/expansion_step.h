@@ -8,23 +8,24 @@ static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj
 static void hazard(int,int,int);
 static int tunnel_center(int);
 #include "enemies.h"
-static int formation_type(void){static const int table[12][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14}};if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,11)][g.groups%3];}
+static int formation_type(void){static const int table[12][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14}};if(g.groups%4==3)return 25;if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,11)][g.groups%3];}
 static void hazard(int type,int x,int y){Obj*o=slot(ex.obstacles,MAXH);if(o){o->type=type;o->x=x*Q;o->y=y*Q;o->vx=0;o->vy=ex.phase==5?(ex.scrollSpeed>>2):type==2?230:type==3?100:160+(ex.scrollSpeed>>1);o->base=type==1?21:type==3?10:13;o->hp=type==3?2:8;o->phase=rnd()&255;ex.hazardSerial++;}}
 static int tunnel_center(int),tunnel_half(int),tunnel_left(int),tunnel_right(int);
 static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;o->y+=o->type==9?(ex.scrollSpeed>>2):340;y=o->y>>8;if(o->type==9)o->x=((o->phase&1)?tunnel_right(y)-9:tunnel_left(y)+9)*Q;else o->x=clamp(tunnel_center(y)+(sn(o->age*3)*(tunnel_half(y)-22)>>10),tunnel_left(y)+12,tunnel_right(y)-12)*Q;if(remn(o->age,96)==64&&y>35&&y<220)aim(o->x,o->y,430);return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
 static int tunnel_visible(int y);
-static int tunnel_center(int y){int w=(ex.backgroundY>>8)+y;return 160+(sn(w)>>5)+(sn((w>>1)+43)>>6);}
-static int tunnel_half(int y){int w=(ex.backgroundY>>8)+y,ch=absn((w&255)-128),pinch=absn(((w+91)&255)-128);return 46+(sn(w*2)>>8)+(ch<62?(62-ch)>>1:0)-(pinch<24?(24-pinch)>>2:0);}
-static int tunnel_left(int y){int w=(ex.backgroundY>>8)+y,d=absn(((w+39)&127)-64);return tunnel_center(y)-tunnel_half(y)+(d<20?(20-d)>>1:0);}
-static int tunnel_right(int y){int w=(ex.backgroundY>>8)+y,d=absn(((w+87)&127)-64);return tunnel_center(y)+tunnel_half(y)-(d<20?(20-d)>>1:0);}
+/* Long smooth chambers and bottlenecks, continuous across the 512-unit world wrap. */
+static int tunnel_center(int y){int w=(ex.backgroundY>>8)+y;return 160+(sn(w>>1)>>6)+(sn(w)>>7);}
+static int tunnel_half(int y){int w=(ex.backgroundY>>8)+y;return 66+(sn((w>>1)+51)*28>>10)+(sn(w+23)*5>>10);}
+static int tunnel_left(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)-tunnel_half(y)+(sn(w*2+13)+1024)/512;}
+static int tunnel_right(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)+tunnel_half(y)-(sn(w*2+97)+1024)/512;}
 static void trail_point(int x,int y,int tint){Trail*t=ex.trails+ex.nextTrail;ex.nextTrail++;if(ex.nextTrail==384)ex.nextTrail=0;t->x=x;t->y=y;t->life=g.fx?15:8;t->tint=tint;}
 static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,tint);if(g.fx){trail_point((x+xx)>>1,(y+yy)>>1,tint);if(absn(xx-x)+absn(yy-y)>8*Q)trail_point((x*3+xx)>>2,(y*3+yy)>>2,tint);}}
 static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);if(x<l||x>r){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);return 1;}return 0;}
-static int cruise_speed(int phase){return phase==10?384:phase>=6?192:phase==5?768:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
+static int cruise_speed(int phase){return phase==10?384:phase>=6?192:phase==5?3072:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
 static int tunnel_visible(int y){return (ex.phase==5&&(!ex.entryY||y<ex.entryY))||(ex.oldPhase==5&&ex.entryY>0&&y>=ex.entryY);}
-static int encounter_deadline(void){return ex.phase==5?2400:2100;}
+static int encounter_deadline(void){return ex.phase==5?2700:2400;}
 static int storm_kind(void){return !ex.travel&&!ex.bossSpawned&&g.clock>=120&&g.clock<600?(ex.phase==2?1:ex.phase==8?2:ex.phase==9?3:0):0;}
-static void storm_step(void){int kind=storm_kind();if(!kind||g.clock%12)return;int gap=48+remn((g.clock/90)*67,224);for(int n=0;n<2;n++){int x=18+remn(ex.hazardSerial*73+n*113,284);if(absn(x-gap)<29)continue;Obj*o=slot(ex.obstacles,MAXH);if(!o)break;int radius=9+remn(ex.hazardSerial*7,9);*o=(Obj){.on=1,.type=kind+3,.x=x*Q,.y=(-28-n*27)*Q,.vx=(remn(ex.hazardSerial,3)-1)*40,.vy=650+remn(ex.hazardSerial*37,400),.base=radius,.hp=kind==2?2:3,.phase=ex.hazardSerial++*23};}}
+static void storm_step(void){int kind=storm_kind();if(!kind||g.clock%14)return;int gap=48+remn((g.clock/90)*67,224);for(int n=0;n<2;n++){int x=18+remn(ex.hazardSerial*73+n*113,284);if(absn(x-gap)<29)continue;Obj*o=slot(ex.obstacles,MAXH);if(!o)break;int radius=9+remn(ex.hazardSerial*7,9);*o=(Obj){.on=1,.type=kind+3,.x=x*Q,.y=(-28-n*27)*Q,.vx=(remn(ex.hazardSerial,3)-1)*40,.vy=650+remn(ex.hazardSerial*37,400),.base=radius,.hp=kind==2?2:3,.phase=ex.hazardSerial++*23};}}
 static int enemy_count(void){int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}
 static int route_occupied(void){if(ex.rearWarning)return 1;for(int i=0;i<MAXE;i++)if(g.enemies[i].on)return 1;for(int i=0;i<MAXH;i++)if(ex.obstacles[i].on)return 1;return 0;}
 static int hostile_rounds_remain(void){for(int i=0;i<MAXB;i++)if(g.bullets[i].on)return 1;return 0;}
