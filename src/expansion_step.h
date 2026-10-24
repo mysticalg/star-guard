@@ -7,45 +7,53 @@ static int beam_hits(int x,int radius){int d=absn(x-(g.px>>8));return d<radius||
 static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&o->y>12*Q){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
 static void hazard(int,int,int);
 static int tunnel_center(int);
+static int tunnel_lane(int,int);
 #include "enemies.h"
-static int formation_type(void){static const int table[12][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14}};if(g.groups%4==3)return 25;if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,11)][g.groups%3];}
+static int formation_type(void){static const int table[17][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14},{12,14,18},{15,19,25},{20,21,15},{13,18,17},{19,16,25}};if(g.groups==7)return 26;if(g.groups%4==3)return 25;if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,16)][g.groups%3];}
 static void hazard(int type,int x,int y){Obj*o=slot(ex.obstacles,MAXH);if(o){o->type=type;o->x=x*Q;o->y=y*Q;o->vx=0;o->vy=ex.phase==5?(ex.scrollSpeed>>2):type==2?230:type==3?100:160+(ex.scrollSpeed>>1);o->base=type==1?21:type==3?10:13;o->hp=type==3?2:8;o->phase=rnd()&255;ex.hazardSerial++;}}
 static int tunnel_center(int),tunnel_half(int),tunnel_left(int),tunnel_right(int);
-static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;o->y+=o->type==9?(ex.scrollSpeed>>2):340;y=o->y>>8;if(o->type==9)o->x=((o->phase&1)?tunnel_right(y)-9:tunnel_left(y)+9)*Q;else o->x=clamp(tunnel_center(y)+(sn(o->age*3)*(tunnel_half(y)-22)>>10),tunnel_left(y)+12,tunnel_right(y)-12)*Q;if(remn(o->age,96)==64&&y>35&&y<220)aim(o->x,o->y,430);return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
+static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;o->y+=o->type==9?(ex.scrollSpeed>>2):340;y=o->y>>8;if(o->type==9)o->x=((o->phase&1)?tunnel_right(y)-9:tunnel_left(y)+9)*Q;else o->x=tunnel_lane(y,o->phase&1)*Q;if(remn(o->age,96)==64&&y>35&&y<220)aim(o->x,o->y,430);return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
 static int tunnel_visible(int y);
 /* Long smooth chambers and bottlenecks, continuous across the 512-unit world wrap. */
 static int tunnel_center(int y){int w=(ex.backgroundY>>8)+y;return 160+(sn(w>>1)>>6)+(sn(w)>>7);}
-static int tunnel_half(int y){int w=(ex.backgroundY>>8)+y;return 66+(sn((w>>1)+51)*28>>10)+(sn(w+23)*5>>10);}
+static int tunnel_half(int y){int w=(ex.backgroundY>>8)+y,half=66+(sn((w>>1)+51)*28>>10)+(sn(w+23)*5>>10),pinch=absn((w&511)-400);if(pinch<48)half-=(half-14)*(48-pinch)/48;int arena=ex.bossWarning?(100-ex.bossWarning)*256/100:ex.bossSpawned?256:0;return half+(110-half)*arena/256;}
 static int tunnel_left(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)-tunnel_half(y)+(sn(w*2+13)+1024)/512;}
 static int tunnel_right(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)+tunnel_half(y)-(sn(w*2+97)+1024)/512;}
+static int tunnel_island(int y,int*l,int*r){int world=(ex.backgroundY>>8)+y,w=world&511,taper=w-112;if(288-w<taper)taper=288-w;int radius=clamp(taper,0,40)*(((world>>9)&1)?18:14)/40;int arena=ex.bossWarning?(100-ex.bossWarning)*256/100:ex.bossSpawned?256:0;radius=radius*(256-arena)/256;if(radius<2)return 0;int center=tunnel_center(y);*l=center-radius;*r=center+radius;return 1;}
+static int tunnel_lane(int y,int side){int l,r;if(tunnel_island(y,&l,&r))return side?(r+tunnel_right(y))/2:(tunnel_left(y)+l)/2;return tunnel_center(y);}
+static int cavern_speed(void){int w=((ex.backgroundY>>8)+(player_y>>8))&511;return w>=350&&w<448?1536:w>=112&&w<288?3072:w<96?3840:2304;}
+static void cavern_crash(int x,int y){if(g.shield||g.active){hit_sparks(x,y,0,0,3);return;}g.barrier=0;hurt_at(x,y,0,0);int yy=player_y>>8,center=tunnel_center(yy);g.px=tunnel_lane(yy,(g.px>>8)>center)*Q;}
 static void trail_point(int x,int y,int tint){Trail*t=ex.trails+ex.nextTrail;ex.nextTrail++;if(ex.nextTrail==384)ex.nextTrail=0;t->x=x;t->y=y;t->life=g.fx?15:8;t->tint=tint;}
 static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,tint);if(g.fx){trail_point((x+xx)>>1,(y+yy)>>1,tint);if(absn(xx-x)+absn(yy-y)>8*Q)trail_point((x*3+xx)>>2,(y*3+yy)>>2,tint);}}
-static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);if(x<l||x>r){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);return 1;}return 0;}
-static int cruise_speed(int phase){return phase==10?384:phase>=6?192:phase==5?3072:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
+static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);int il,ir,island=tunnel_island(y,&il,&ir)&&x>il&&x<ir;if(x<l||x>r||island){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);return 1;}return 0;}
+static int cruise_speed(int phase){return phase==10?384:phase>=12?320:phase>=6?192:phase==5?3072:phase==4?1536:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
 static int tunnel_visible(int y){return (ex.phase==5&&(!ex.entryY||y<ex.entryY))||(ex.oldPhase==5&&ex.entryY>0&&y>=ex.entryY);}
 static int encounter_deadline(void){return ex.phase==5?2700:2400;}
-static int storm_kind(void){return !ex.travel&&!ex.bossSpawned&&g.clock>=120&&g.clock<600?(ex.phase==2?1:ex.phase==8?2:ex.phase==9?3:0):0;}
-static void storm_step(void){int kind=storm_kind();if(!kind||g.clock%14)return;int gap=48+remn((g.clock/90)*67,224);for(int n=0;n<2;n++){int x=18+remn(ex.hazardSerial*73+n*113,284);if(absn(x-gap)<29)continue;Obj*o=slot(ex.obstacles,MAXH);if(!o)break;int radius=9+remn(ex.hazardSerial*7,9);*o=(Obj){.on=1,.type=kind+3,.x=x*Q,.y=(-28-n*27)*Q,.vx=(remn(ex.hazardSerial,3)-1)*40,.vy=650+remn(ex.hazardSerial*37,400),.base=radius,.hp=kind==2?2:3,.phase=ex.hazardSerial++*23};}}
+static int storm_kind(void){return !ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.clock>=120&&g.clock<600?(ex.phase==2?1:ex.phase==8?2:ex.phase==9?3:ex.phase>=12?ex.phase-8:0):0;}
+static int storm_hp(int kind,int radius){if(kind==2||kind==4)return radius>=22?2:1;if(kind==5)return radius>=22?5:3;if(kind==6||kind==8)return radius>=22?3:2;if(kind==7)return radius>=22?4:2;return radius>=24?3:2;}
+static void storm_step(void){int kind=storm_kind();if(!kind)return;int dense=g.clock>=240&&g.clock<540;if(dense){int spacing=kind==5?60:40;if(g.clock%spacing)return;int free=0;for(int n=0;n<MAXH;n++)free+=!ex.obstacles[n].on;if(free<8)return;static const int widths[8]={32,44,36,52,40,48,36,32};int edge=0;for(int n=0;n<8;n++){Obj*o=slot(ex.obstacles,MAXH);int width=widths[(n+(g.clock/40)%8)%8],radius=width/2+2;*o=(Obj){.on=1,.type=kind+3,.x=(edge+width/2)*Q,.y=-32*Q,.vy=700,.base=radius,.hp=storm_hp(kind,radius),.phase=ex.hazardSerial++*23};edge+=width;}return;}if(g.clock%14)return;int gap=48+remn((g.clock/90)*67,224);for(int n=0;n<2;n++){int x=18+remn(ex.hazardSerial*73+n*113,284);if(absn(x-gap)<29)continue;Obj*o=slot(ex.obstacles,MAXH);if(!o)break;int radius=6+remn(ex.hazardSerial*7,21);*o=(Obj){.on=1,.type=kind+3,.x=x*Q,.y=(-28-n*27)*Q,.vx=(remn(ex.hazardSerial,3)-1)*40,.vy=650+remn(ex.hazardSerial*37,400),.base=radius,.hp=storm_hp(kind,radius),.phase=ex.hazardSerial++*23};}}
 static int enemy_count(void){int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}
 static int route_occupied(void){if(ex.rearWarning)return 1;for(int i=0;i<MAXE;i++)if(g.enemies[i].on)return 1;for(int i=0;i<MAXH;i++)if(ex.obstacles[i].on)return 1;return 0;}
 static int hostile_rounds_remain(void){for(int i=0;i<MAXB;i++)if(g.bullets[i].on)return 1;return 0;}
-static void rear_group(void){for(int n=0;n<3;n++){Obj*o=slot(g.enemies,MAXE);if(o){int x=ex.phase==5?tunnel_center(288)+(n-1)*12:clamp((g.px>>8)+(n-1)*62,28,292);*o=(Obj){.on=1,.type=22,.hp=3+enemy_bonus(),.x=x*Q,.y=(288+n*22)*Q,.base=x,.phase=n*35};}}}
-static void detonate_charge(Obj*charge){int x=charge->x>>8,y=charge->y>>8;charge->on=0;pc_charge_burst(x,y);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&!enemy_guarded(o)&&absn((o->x>>8)-x)<25&&absn((o->y>>8)-y)<25){damage_enemy(o,160);if(o->hp<=0)killed(o);}}for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<22&&absn((o->y>>8)-y)<22)o->on=0;}}
+static void rear_group(void){for(int n=0;n<3;n++){Obj*o=slot(g.enemies,MAXE);if(o){int x=ex.phase==5?tunnel_lane(288,n&1)+(n-1)*2:clamp((g.px>>8)+(n-1)*62,28,292);*o=(Obj){.on=1,.type=22,.hp=3+enemy_bonus(),.x=x*Q,.y=(288+n*22)*Q,.base=x,.phase=n*35};}}}
+static void detonate_charge(Obj*charge){int x=charge->x>>8,y=charge->y>>8;charge->on=0;pc_charge_burst(x,y);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&(!enemy_guarded(o)||o->type==4)&&absn((o->x>>8)-x)<25&&absn((o->y>>8)-y)<25){damage_enemy(o,160);if(o->hp<=0)killed(o);}}for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<22&&absn((o->y>>8)-y)<22)o->on=0;}}
 static void dropper_fire(void){int side=ex.phase&1;for(int n=-1;n<=1;n++){Obj*o=slot(g.shots,MAXS);if(o)*o=(Obj){.on=1,.type=8,.x=g.px+(side?8:n*3)*Q,.y=player_y+(side?n*3:8)*Q,.vx=side?180:n*140,.vy=side?n*140:70,.phase=side,.power=1};}}
-static void satellite_step(void){if(!ex.satellite)return;int x=satellite_x(),y=satellite_y();if(ex.satelliteCool)ex.satelliteCool--;for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<7&&absn((o->y>>8)-y)<7){o->on=0;pc_impact(x,y,3);}}if(!ex.satelliteCool)for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&!enemy_guarded(o)&&absn((o->x>>8)-x)<13&&absn((o->y>>8)-y)<13){damage_enemy(o,150);ex.satelliteCool=15;pc_impact(x,y,3);if(o->hp<=0)killed(o);break;}}}
-static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,12),targetScroll,targetEnemy;
- if(ex.phase<0){ex.phase=phase;ex.oldPhase=phase==5?0:phase;ex.entryY=phase==5?24:0;ex.phaseAge=0;ex.transition=0;if(phase==5){g.shield=100;}}
+static void satellite_step(void){if(!ex.satellite)return;int x=satellite_x(),y=satellite_y();if(ex.satelliteCool)ex.satelliteCool--;for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<7&&absn((o->y>>8)-y)<7){o->on=0;pc_impact(x,y,3);}}if(!ex.satelliteCool)for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&(!enemy_guarded(o)||o->type==4)&&absn((o->x>>8)-x)<13&&absn((o->y>>8)-y)<13){damage_enemy(o,150);ex.satelliteCool=15;pc_impact(x,y,3);if(o->hp<=0)killed(o);break;}}}
+static void expansion_step(int mask,int ch){int i,j,phase=mission_phase(g.wave),targetScroll,targetEnemy;
+ if(ex.phase<0){ex.intro=400;ex.stageScore=g.score;ex.stageKills=g.kills;ex.stageSalvage=g.salvagePicked;ex.phase=phase;ex.oldPhase=phase==5?0:phase;ex.entryY=phase==5?24:0;ex.phaseAge=0;ex.transition=0;if(phase==5){g.shield=100;}}
  else if(phase!=ex.phase&&!ex.travel){ex.nextPhase=phase;ex.travel=1;ex.travelTick=0;pc_transition();/* Keep every live enemy, shot, pickup and hazard moving through the handover. */g.shield=120;}
- if(ex.travel){ex.travelTick++;if(ex.travel==1&&ex.travelTick>=90){ex.oldPhase=ex.phase;ex.phase=ex.nextPhase;ex.entryY=24;ex.entryDistance=0;ex.travel=2;ex.travelTick=0;ex.bossSpawned=0;ex.bossWarning=0;ex.clearTicks=0;ex.rearSpawned=0;ex.rearWarning=0;ex.phaseAge=0;}else if(ex.travel==2&&ex.travelTick>=90&&!ex.entryY&&ex.scrollSpeed<=cruise_speed(ex.phase)+48){ex.travel=0;ex.travelTick=0;ex.phaseAge=0;g.shield=50;}}
+ if(ex.travel){ex.travelTick++;if(ex.travel==1&&ex.travelTick>=90){ex.oldPhase=ex.phase;ex.phase=ex.nextPhase;player_y=230*Q;g.px=160*Q;ex.intro=400;ex.victory=0;ex.stageScore=g.score;ex.stageKills=g.kills;ex.stageSalvage=g.salvagePicked;ex.entryY=24;ex.entryDistance=0;ex.travel=2;ex.travelTick=0;ex.bossSpawned=0;ex.bossWarning=0;ex.clearTicks=0;ex.rearSpawned=0;ex.rearWarning=0;ex.phaseAge=0;}else if(ex.travel==2&&ex.travelTick>=90&&!ex.entryY&&ex.scrollSpeed<=cruise_speed(ex.phase)+48){ex.travel=0;ex.travelTick=0;ex.phaseAge=0;g.shield=50;}}
+ if(ex.intro&&!ex.travel){ex.intro--;}
+ if(ex.victory){if(ex.victory<351)ex.victory++;g.shield=100;if(ex.victory<85){g.shake=clamp((85-ex.victory)/5,0,12);int radius=ex.victory*7;for(int n=0;n<MAXB;n++){Obj*o=g.bullets+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius)o->on=0;}for(int n=0;n<MAXH;n++){Obj*o=ex.obstacles+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius){o->on=0;pc_burst(o->x/Q,o->y/Q,0);}}for(int n=0;n<MAXE;n++){Obj*o=g.enemies+n;if(o->on&&absn(o->x/Q-ex.victoryX)+absn(o->y/Q-ex.victoryY)<radius)killed(o);}}if(ex.victory>275&&!ex.travel)player_y-=4*Q;}
  phase=ex.phase;
- targetScroll=ex.travel?((cruise_speed(ex.oldPhase)+cruise_speed(ex.nextPhase))/2):cruise_speed(phase);
+ targetScroll=ex.travel?((cruise_speed(ex.oldPhase)+cruise_speed(ex.nextPhase))/2):phase==5?cavern_speed():cruise_speed(phase);
  targetEnemy=phase==5?192:phase==1?192:phase==2?288:phase==3?352:256;
- if(ex.scrollSpeed<targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed+(ex.travel?64:16),0,targetScroll);else if(ex.scrollSpeed>targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed-(ex.travel?48:16),targetScroll,8192);
+ if(ex.scrollSpeed<targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed+(ex.travel||phase==5?64:16),0,targetScroll);else if(ex.scrollSpeed>targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed-(ex.travel||phase==5?64:16),targetScroll,8192);
  if(ex.enemySpeed<targetEnemy)ex.enemySpeed+=4;else if(ex.enemySpeed>targetEnemy)ex.enemySpeed-=4;
  /* Subtracting world position moves scenery down toward the ship: forward flight. */
- ex.backgroundY=(ex.backgroundY-(ex.scrollSpeed>>2))&131071;ex.landScroll=(ex.landScroll+ex.scrollSpeed/2)&16777215;
+ ex.backgroundY=(ex.backgroundY-(ex.scrollSpeed>>2))&262143;ex.landScroll=(ex.landScroll+ex.scrollSpeed/2)&16777215;
  if(ex.entryY){ex.entryDistance+=clamp(ex.scrollSpeed>>2,512,2048);ex.entryY=24+(ex.entryDistance>>8);if(ex.entryY>=256){ex.entryY=0;ex.oldPhase=ex.phase;}}
- if(!ex.travel)ex.phaseAge++;
+ if(!ex.travel&&!ex.intro)ex.phaseAge++;
  if(ex.pickupTicks)ex.pickupTicks--;
  if(!ex.travel&&!ex.bossSpawned&&!ex.rearSpawned&&g.clock>=260){ex.rearSpawned=1;ex.rearWarning=60;}
  if(ex.rearWarning&&--ex.rearWarning==0)rear_group();
@@ -54,7 +62,7 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,12),targ
  for(i=0;i<384;i++)if(ex.trails[i].life)ex.trails[i].life--;
  for(i=0;i<12;i++)if(ex.impacts[i].on&&++ex.impacts[i].age>9)ex.impacts[i].on=0;
  ex.followX[ex.followHead]=g.px;ex.followY[ex.followHead]=player_y;ex.followHead=(ex.followHead+1)&63;
- if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-5;yy<=(player_y>>8)+5;yy+=5){int l=tunnel_left(yy),r=tunnel_right(yy);if(px-6<l){if((g.tick&3)==0||!g.shield)hurt_at(clamp(l,px-6,px+6),yy,1,0);break;}if(px+6>r){if((g.tick&3)==0||!g.shield)hurt_at(clamp(r,px-6,px+6),yy,-1,0);break;}}}
+ if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-5;yy<=(player_y>>8)+5;yy+=5){int l=tunnel_left(yy),r=tunnel_right(yy),il,ir;if(tunnel_island(yy,&il,&ir)&&px+6>il&&px-6<ir){cavern_crash(px,yy);break;}if(px-6<l){cavern_crash(l,yy);break;}if(px+6>r){cavern_crash(r,yy);break;}}}
  if(phase>=6&&phase<10&&player_y>222*Q)player_y-=Q;
  if(phase==11&&!ex.travel)g.px=clamp(g.px,14*Q,278*Q);
  if(ch=='o')ex.optionsOn=!ex.optionsOn;
@@ -65,6 +73,7 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,12),targ
  if(phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()-40&&ex.phaseAge>75&&remn(ex.phaseAge,110)==0){Obj*o=slot(g.enemies,MAXE);if(o){o->type=(ex.phaseAge&128)?9:8;o->hp=o->type==9?5:3;o->phase=ex.hazardSerial++&1;o->x=tunnel_center(-32)*Q;o->y=-32*Q;o->vy=o->type==9?(ex.scrollSpeed>>2):340;}}
  if(phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()-40&&ex.phaseAge>140&&remn(ex.phaseAge,170)==0&&tunnel_right(-12)-tunnel_left(-12)>128)hazard(0,tunnel_center(-12),-12);
  if(phase>=6&&phase<10&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()&&g.clock>100&&remn(g.clock,110)==0)hazard(phase==9?3:0,30+remn(ex.hazardSerial*89,260),-18);
+ if(phase>=12&&!ex.travel&&!ex.bossSpawned&&g.clock>100&&g.clock<encounter_deadline()&&g.clock%65==0){hazard(phase-5,24+remn(ex.hazardSerial*71,272),-26);Obj*ore=0;for(int n=0;n<MAXH;n++)if(ex.obstacles[n].on&&ex.obstacles[n].age==0)ore=ex.obstacles+n;if(ore){ore->base=8+remn(ex.hazardSerial*7,19);ore->hp=storm_hp(phase-8,ore->base);}}
  storm_step();
  /* Telegraph each hazard at the top edge while it enters. Gate gaps stay at least 104 pixels wide. */
  if(!ex.travel&&!ex.bossSpawned&&phase==2&&g.clock<encounter_deadline()&&g.clock>60&&remn(g.clock,64)==0)hazard((ex.hazardSerial&3)==0?1:0,26+remn(ex.hazardSerial*79,268),-26);
@@ -72,9 +81,10 @@ static void expansion_step(int mask,int ch){int i,j,phase=remn(g.wave-1,12),targ
  for(i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;o->age++;o->y+=o->vy;o->x+=o->vx;x=o->x>>8;y=o->y>>8;
   if(y>288){o->on=0;continue;}
   if(o->type==2){if(absn(y-(player_y>>8))<12&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-7,(player_y>>8)+7),0,y<(player_y>>8)?1:-1);continue;}
-  for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){s->on=0;o->hp--;hit_sparks(s->x>>8,s->y>>8,0,1,1);pc_hit_sound(o->type==5?3:o->type==6?4:2,s->type,x);}}
-  if(g.beam&&beam_hits(x,o->base)&&(g.tick&3)==0&&y<(player_y>>8)){o->hp--;pc_hit_sound(o->type==5?3:o->type==6?4:2,g.weapon,x);}
-  if(o->hp<=0){o->on=0;g.score+=25;burst(x,y,0);continue;}
+  for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){s->on=0;o->hp--;hit_sparks(s->x>>8,s->y>>8,0,1,1);pc_hit_sound(o->type==5||o->type==7||o->type==10?3:o->type==6||o->type==9||o->type==11?4:o->type==8?0:2,s->type,x);}}
+  if(g.beam&&beam_hits(x,o->base)&&(g.tick&3)==0&&y<(player_y>>8)){o->hp--;pc_hit_sound(o->type==5||o->type==7||o->type==10?3:o->type==6||o->type==9||o->type==11?4:o->type==8?0:2,g.weapon,x);}
+  if(o->hp<=0){o->on=0;g.score+=25;burst(x,y,0);if(o->type==9||o->type==11)for(int a=0;a<256;a+=64){Obj*shard=bullet(o->x,o->y,sn(a)*400/1024,sn(a+64)*400/1024);if(shard)shard->variant=2;}continue;}
+  if((o->type==9||o->type==11)&&g.tick%35==0&&absn(x-(g.px>>8))<o->base+22&&absn(y-(player_y>>8))<o->base+22)hurt_at(g.px/Q,player_y/Q,0,1);
   if(absn(x-(g.px>>8))<o->base+4&&absn(y-(player_y>>8))<o->base+5){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);o->on=0;burst(x,y,0);}
  }
 }

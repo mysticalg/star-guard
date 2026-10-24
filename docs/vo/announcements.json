@@ -49,178 +49,228 @@
     },
     "sector-clear": {
       "start": 31.291337868480724,
-      "duration": 1.6342403628117914,
-      "text": "Sector clear."
+      "duration": 5.933560090702948,
+      "text": "Sector secured. Excellent work, pilot. Mission debrief incoming."
     },
     "warp": {
-      "start": 33.095555555555556,
+      "start": 37.39487528344671,
       "duration": 1.8892970521541952,
       "text": "Warp drive engaged."
     },
     "game-over": {
-      "start": 35.15482993197279,
+      "start": 39.454149659863944,
       "duration": 1.709297052154195,
       "text": "Mission terminated."
     },
     "hull-critical": {
-      "start": 37.03410430839002,
+      "start": 41.33342403628118,
       "duration": 3.3039909297052157,
       "text": "Warning. Hull integrity critical."
     },
     "energy-low": {
-      "start": 40.50807256235828,
+      "start": 44.80739229024943,
       "duration": 1.7141950113378686,
       "text": "Weapon energy low."
     },
     "power": {
-      "start": 42.39224489795918,
+      "start": 46.69156462585034,
       "duration": 1.959183673469388,
       "text": "Weapon power increased."
     },
     "option": {
-      "start": 44.52140589569161,
+      "start": 48.82072562358277,
       "duration": 1.9392743764172335,
       "text": "Option drone acquired."
     },
     "satellite": {
-      "start": 46.63065759637188,
+      "start": 50.929977324263035,
       "duration": 2.1691156462585033,
       "text": "Orbital satellite acquired."
     },
     "dropper": {
-      "start": 48.969750566893424,
+      "start": 53.26907029478458,
       "duration": 1.8942403628117914,
       "text": "Bomb dropper online."
     },
     "shield": {
-      "start": 51.033968253968254,
+      "start": 55.333287981859414,
       "duration": 1.6393197278911564,
       "text": "Shield restored."
     },
     "repair": {
-      "start": 52.84326530612245,
+      "start": 57.14258503401361,
       "duration": 1.90421768707483,
       "text": "Repair unit acquired."
     },
     "nova": {
-      "start": 54.91746031746032,
+      "start": 59.21678004535148,
       "duration": 1.849342403628118,
       "text": "Nova bomb acquired."
     },
     "weapon-0": {
-      "start": 56.936780045351476,
+      "start": 61.23609977324263,
       "duration": 1.9142857142857144,
       "text": "Pulse cannon online."
     },
     "weapon-1": {
-      "start": 59.021043083900224,
+      "start": 63.320362811791384,
       "duration": 1.9992290249433107,
       "text": "Spread cannon online."
     },
     "weapon-2": {
-      "start": 61.19024943310657,
+      "start": 65.48956916099773,
       "duration": 1.9742403628117915,
       "text": "Rapid fire online."
     },
     "weapon-3": {
-      "start": 63.33446712018141,
+      "start": 67.63378684807256,
       "duration": 1.9393197278911565,
       "text": "Rainbow beam online."
     },
     "weapon-4": {
-      "start": 65.4437641723356,
+      "start": 69.74308390022675,
       "duration": 1.8542857142857143,
       "text": "Heat seeker online."
     },
     "weapon-5": {
-      "start": 67.46802721088436,
+      "start": 71.7673469387755,
       "duration": 2.239183673469388,
       "text": "Triple rainbow beam online."
     },
     "weapon-6": {
-      "start": 69.87718820861679,
+      "start": 74.17650793650793,
       "duration": 2.0392290249433107,
       "text": "Ricochet cannon online."
     },
     "weapon-7": {
-      "start": 72.08639455782313,
+      "start": 76.38571428571429,
       "duration": 2.049160997732426,
       "text": "Bouncing laser online."
     },
     "sector-0": {
-      "start": 74.3055328798186,
-      "duration": 1.9392743764172335,
-      "text": "Entering Deep space."
+      "start": 78.60485260770974,
+      "duration": 7.49328798185941,
+      "text": "Entering deep space. Clear the hostile formations, blast incoming debris, and defeat the sector command ship."
     },
     "sector-1": {
-      "start": 76.41478458049886,
-      "duration": 1.939138321995465,
-      "text": "Entering Ion nebula."
+      "start": 86.2681179138322,
+      "duration": 7.898231292517007,
+      "text": "Ion nebula ahead. Expect flanking attacks. Keep moving, clear the waves, then destroy the Oracle."
     },
     "sector-2": {
-      "start": 78.52390022675738,
-      "duration": 2.029206349206349,
-      "text": "Entering Asteroid belt."
+      "start": 94.33632653061224,
+      "duration": 7.238185941043084,
+      "text": "Asteroid belt ahead. Blast a path through dense rock formations. Save energy for the Iron Harvester."
     },
     "sector-3": {
-      "start": 80.72308390022675,
-      "duration": 1.9142857142857144,
-      "text": "Entering Hyperlane."
+      "start": 101.74448979591837,
+      "duration": 7.7030839002267575,
+      "text": "Entering the hyperlane. High speed traffic and enemy interceptors ahead. Secure the route and defeat the Rift Lancer."
     },
     "sector-4": {
-      "start": 82.80734693877551,
-      "duration": 1.9043083900226758,
-      "text": "Entering Siege arena."
+      "start": 109.61755102040816,
+      "duration": 7.648299319727891,
+      "text": "Giant asteroid surface ahead. We are making a high speed approach. Clear the defences before entering the caverns."
     },
     "sector-5": {
-      "start": 84.88163265306123,
-      "duration": 2.0192743764172336,
-      "text": "Entering Rocky cavern."
+      "start": 117.4358276643991,
+      "duration": 7.763219954648526,
+      "text": "Entering rocky caverns. Choose your route through the forks. Walls are lethal. Defeat the Cavern Warden."
     },
     "sector-6": {
-      "start": 87.07088435374149,
-      "duration": 1.9991836734693877,
-      "text": "Entering Verdant skies."
+      "start": 125.36902494331066,
+      "duration": 6.583446712018141,
+      "text": "Verdant skies ahead. Enemy aircraft are gathering over the forests. Clear the airspace and defeat the Sky Manta."
     },
     "sector-7": {
-      "start": 89.24004535147392,
-      "duration": 1.7792743764172336,
-      "text": "Entering Dune sea."
+      "start": 132.12244897959184,
+      "duration": 7.47827664399093,
+      "text": "Entering the dune sea. Watch for ambushes from behind. Break the enemy formations and destroy the Dune Scorpion."
     },
     "sector-8": {
-      "start": 91.18929705215419,
-      "duration": 1.969297052154195,
-      "text": "Entering Frost ridge."
+      "start": 139.7707029478458,
+      "duration": 7.3684353741496595,
+      "text": "Frost ridge ahead. Shatter the ice storm and avoid the mountains. Destroy the Frost Crown to secure passage."
     },
     "sector-9": {
-      "start": 93.32857142857142,
-      "duration": 1.9792743764172336,
-      "text": "Entering Magma coast."
+      "start": 147.3091156462585,
+      "duration": 7.383310657596372,
+      "text": "Fire storm sector ahead. Blast the burning meteors and clear the hostile waves. Destroy the Magma Hydra."
     },
     "sector-10": {
-      "start": 95.4778231292517,
-      "duration": 1.9291609977324264,
-      "text": "Entering Low Earth orbit."
+      "start": 154.8624036281179,
+      "duration": 7.338321995464852,
+      "text": "Earth orbit confirmed. Protect the planet below. Clear the incoming formations and destroy the Orbital Sentinel."
     },
     "sector-11": {
-      "start": 97.57696145124717,
-      "duration": 1.9393197278911565,
-      "text": "Entering Ground assault."
+      "start": 162.3707029478458,
+      "duration": 7.928072562358277,
+      "text": "Ground assault commencing. Stay above the surface. Destroy tanks and turrets, then eliminate the Ground Leviathan."
     },
     "salvage": {
-      "start": 99.68625850340136,
+      "start": 170.46875283446713,
       "duration": 1.7992743764172336,
       "text": "Salvage secured."
     },
     "ship-upgrade": {
-      "start": 101.65551020408164,
+      "start": 172.4380045351474,
       "duration": 1.6292970521541952,
       "text": "Ship upgraded."
     },
     "power-charge": {
-      "start": 103.45478458049887,
+      "start": 174.23727891156463,
       "duration": 2.1741496598639456,
       "text": "Weapon charge acquired."
+    },
+    "sector-12": {
+      "start": 176.5814058956916,
+      "duration": 7.3933333333333335,
+      "text": "Ice asteroids ahead. Shatter the frozen barrage and keep a clear flight path. Defeat the Glacial Colossus."
+    },
+    "sector-13": {
+      "start": 184.144716553288,
+      "duration": 7.148344671201814,
+      "text": "Metal asteroid field ahead. These rocks have heavy armour. Focus your fire and eliminate the Ferro Titan."
+    },
+    "sector-14": {
+      "start": 191.46303854875285,
+      "duration": 7.893242630385488,
+      "text": "Heavy isotope radiation detected. Avoid the glowing cores and their radiation halos. Destroy the Isotope Overmind."
+    },
+    "sector-15": {
+      "start": 199.52625850340135,
+      "duration": 6.013378684807257,
+      "text": "Diamond asteroid field ahead. Shatter the crystal walls and conserve energy for the Diamond Seraph."
+    },
+    "sector-16": {
+      "start": 205.70961451247166,
+      "duration": 7.373151927437641,
+      "text": "Uranium asteroids detected. Avoid the radioactive ore. Keep your distance and destroy the Uranium Monarch."
+    },
+    "ice-asteroid-storm": {
+      "start": 213.25274376417232,
+      "duration": 3.9140589569161,
+      "text": "Ice asteroid barrage. Clear a path."
+    },
+    "metal-asteroid-storm": {
+      "start": 217.33678004535147,
+      "duration": 4.149024943310658,
+      "text": "Heavy metal asteroid wall. Keep firing."
+    },
+    "radiation-zone": {
+      "start": 221.65578231292517,
+      "duration": 5.613877551020408,
+      "text": "Warning. Heavy radiation. Avoid the glowing cores."
+    },
+    "diamond-asteroid-storm": {
+      "start": 227.43963718820862,
+      "duration": 3.833922902494331,
+      "text": "Diamond storm. Shatter the crystals."
+    },
+    "uranium-asteroid-storm": {
+      "start": 231.443537414966,
+      "duration": 5.193922902494331,
+      "text": "Warning. Uranium ore. Radiation hazard."
     }
   }
 }

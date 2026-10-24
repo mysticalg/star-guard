@@ -15,3 +15,10 @@
 #mission-timer{position:absolute;top:9.6%;left:1.5%;font-size:clamp(6px,.8vw,10px);letter-spacing:1px;color:#d4edf6;background:#061020d9;padding:4px 7px;border-radius:3px;text-shadow:0 0 8px #3acfe866} @media(max-width:650px){#mission-timer{letter-spacing:.2px;padding:2px 4px;font-size:6px}}
 
 #boss-hud{top:14%}#transit-message{top:21%}
+
+#boss-hud .boss-meter{display:flex;align-items:center;gap:8px;font-size:8px;margin-top:7px}#boss-hud .boss-meter span{min-width:105px;text-align:left;letter-spacing:1px}#boss-hud .boss-meter i{margin:0;height:4px}#boss-hud #boss-shield{background:#56dfff;box-shadow:0 0 9px #56dfff}@media(max-width:650px){#boss-hud .boss-meter{font-size:6px;gap:4px}#boss-hud .boss-meter span{min-width:76px}}
+
+#mission-briefing,#mission-debrief{position:absolute;z-index:12;left:50%;top:25%;transform:translateX(-50%);width:min(560px,80%);padding:24px 30px;background:linear-gradient(135deg,rgba(3,15,29,.91),rgba(8,28,43,.83));border:1px solid #72e9ff66;box-shadow:0 0 55px #32caff22;border-radius:12px;pointer-events:none;color:#eafaff;text-align:center;backdrop-filter:blur(8px)}
+#mission-briefing[hidden],#mission-debrief[hidden]{display:none}#mission-briefing small,#mission-debrief small{color:#87d8e8;letter-spacing:.16em;font-size:11px}#mission-briefing h2,#mission-debrief h2{font-size:clamp(18px,2.5vw,28px);letter-spacing:.1em;margin:14px 0}#mission-briefing p,#mission-debrief p{font:16px/1.7 system-ui;color:#c6dee7}#mission-briefing span,#mission-debrief span{font-size:11px;letter-spacing:.12em;color:#8bffca}#mission-debrief{border-color:#ffc76a88;box-shadow:0 0 70px #ffc76a22}#mission-debrief b{color:#fff1be;margin-left:20px}
+
+@keyframes boss-impact-shake{0%,100%{transform:translate(0,0)}25%{transform:translate(5px,-4px)}50%{transform:translate(-5px,3px)}75%{transform:translate(3px,4px)}}#canvas.boss-shake{animation:boss-impact-shake .085s linear infinite}
