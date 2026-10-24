@@ -1,16 +1,13 @@
 /* Licensed sample bus: decoded once, mixed by Web Audio, never in the render loop. */
 window.SoundSamples=(()=>{
   let context,master,meter,bossNode=null,loading=null,lastRear=null,rearPlays=0,errors=0,phase=1,peak=0;
-  const combatNames=["explosion-small","explosion-small-alt1","explosion-small-alt2","explosion-medium","explosion-medium-alt1","explosion-medium-alt2","explosion-large","explosion-large-alt1","explosion-large-alt2","explosion-boss","explosion","bomb","laser","bounce","metal","shield","rock","glass","organic","energy","tesla","gun","gun-alt","gun-rapid","gun-spread","gun-heavy","gun-ricochet","pickup","warning","warp","super","victory-blast","victory"],plays={},lastPlay={},active=new Set();
-  let dropped=0,cavern=false,shotSerial=0;const explosionSerial=[0,0,0],teslaRates=[];
+  const combatNames=["explosion-small","explosion-small-alt1","explosion-small-alt2","explosion-medium","explosion-medium-alt1","explosion-medium-alt2","explosion-large","explosion-large-alt1","explosion-large-alt2","explosion-boss","explosion","bomb","laser","bounce","metal","metal-alt1","metal-alt2","shield","rock","rock-alt1","rock-alt2","glass","glass-alt1","glass-alt2","organic","energy","tesla","gun","gun-alt","gun-rapid","gun-spread","gun-heavy","gun-ricochet","pickup","warning","warp","super","victory-blast","victory","torpedo-launch","torpedo-blast","chaff-deploy"],plays={},lastPlay={},active=new Set();
+  let dropped=0,cavern=false,shotSerial=0;const explosionSerial=[0,0,0],teslaRates=[],materialSerial={};
   const buffers={},rearSources=new Set(),wave=new Float32Array(256);
   async function start(){
     if(!context){context=new AudioContext();master=context.createGain();master.gain.value=.7;meter=context.createAnalyser();meter.fftSize=256;master.connect(meter);const limiter=context.createDynamicsCompressor();limiter.threshold.value=-12;limiter.knee.value=8;limiter.ratio.value=8;limiter.attack.value=.003;limiter.release.value=.12;meter.connect(limiter);limiter.connect(context.destination);}
     await context.resume();
-    if(!loading)loading=Promise.all(['boss-reactor','rear-booster',...combatNames].map(async name=>{
-      const response=await fetch('audio/sfx/'+name+'.ogg?v=28');if(!response.ok)throw Error('Sample '+name+' unavailable');
-      buffers[name]=await context.decodeAudioData(await response.arrayBuffer());
-    })).catch(error=>{errors++;console.error(error);});
+    if(!loading)loading=(async()=>{const names=['boss-reactor','rear-booster',...combatNames];let next=0;async function worker(){while(next<names.length){const name=names[next++];let failure;for(let attempt=0;attempt<3;attempt++){try{const response=await fetch('audio/sfx/'+name+'.ogg?v=29');if(!response.ok)throw Error('Sample '+name+' unavailable');buffers[name]=await context.decodeAudioData(await response.arrayBuffer());failure=null;break;}catch(error){failure=error;await new Promise(resolve=>setTimeout(resolve,150*(attempt+1)));}}if(failure)throw failure;}}await Promise.all(Array.from({length:4},worker));})().catch(error=>{errors++;console.error(error);});
     return loading;
   }
   function stopBoss(){if(!bossNode)return;const old=bossNode;bossNode=null;old.g.gain.setTargetAtTime(0,context.currentTime,.1);old.s.stop(context.currentTime+.4);}
@@ -21,11 +18,12 @@ window.SoundSamples=(()=>{
   function event(kind,volume,pitch,pan,triple){
     if(!context||!buffers.tesla)return 0;
     const materials=['metal','shield','rock','glass','organic','energy'];
-    let name=kind===21?['explosion-small','explosion-medium','explosion-large','explosion-boss'][Math.max(0,Math.min(3,triple))]:kind===2?(volume>100?'bomb':'explosion'):kind>=5&&kind<=10?materials[kind-5]:kind===15?materials[Math.max(0,Math.min(5,triple))]:kind===3?'laser':kind===11||kind===14?'bounce':kind===12?'super':kind===13?'victory-blast':kind===16||kind===22?'tesla':kind===1?(triple===1?'gun-spread':triple===2?'gun-rapid':triple===4?'gun-heavy':triple===6?'gun-ricochet':(shotSerial++%2?'gun-alt':'gun')):kind===4?'warp':kind===17?'pickup':kind===18?'warning':kind===20?'victory':null;
+    let name=kind===25?'chaff-deploy':kind===23?'torpedo-launch':kind===24?'torpedo-blast':kind===21?['explosion-small','explosion-medium','explosion-large','explosion-boss'][Math.max(0,Math.min(3,triple))]:kind===2?(volume>100?'bomb':'explosion'):kind>=5&&kind<=10?materials[kind-5]:kind===15?materials[Math.max(0,Math.min(5,triple))]:kind===3?'laser':kind===11||kind===14?'bounce':kind===12?'super':kind===13?'victory-blast':kind===16||kind===22?'tesla':kind===1?(triple===1?'gun-spread':triple===2?'gun-rapid':triple===4?'gun-heavy':triple===6?'gun-ricochet':(shotSerial++%2?'gun-alt':'gun')):kind===4?'warp':kind===17?'pickup':kind===18?'warning':kind===20?'victory':null;
     if(kind===21&&triple<3){const variant=explosionSerial[triple]++%3;if(variant)name+='-alt'+variant;}
+    let materialBase='';if(((kind>=5&&kind<=10)||kind===15)&&['metal','rock','glass'].includes(name)){materialBase=name;const variant=(materialSerial[name]||0)%3;materialSerial[name]=(materialSerial[name]||0)+1;if(variant)name+='-alt'+variant;}
     if(!name||!buffers[name])return 1;
-    const eventKey=kind===22?'tesla-chain':kind===21?'explosion-tier-'+triple:name;
-    const now=context.currentTime,gap=name==='explosion-boss'?1:name.startsWith('explosion-large')?.09:name.startsWith('explosion-medium')?.065:name.startsWith('explosion-small')?.045:kind===22?.08:name==='tesla'?.24:name==='laser'?.085:name==='bounce'?.075:name==='bomb'?.12:name.startsWith('gun')?.035:name==='warp'?1:name==='victory'?3:.045;
+    const eventKey=kind===22?'tesla-chain':kind===21?'explosion-tier-'+triple:materialBase||name;
+    const now=context.currentTime,gap=name==='torpedo-launch'?.2:name==='torpedo-blast'?.2:name==='explosion-boss'?1:name.startsWith('explosion-large')?.09:name.startsWith('explosion-medium')?.065:name.startsWith('explosion-small')?.045:kind===22?.08:name==='tesla'?.24:name==='laser'?.085:name==='bounce'?.075:name==='bomb'?.12:name.startsWith('gun')?.035:name==='warp'?1:name==='victory'?3:.045;
     if(name==='explosion-boss'&&active.size>=24){const old=active.values().next().value;old.stop();active.delete(old);}
     if(name==='tesla'&&Array.from(active,s=>s.sampleName).filter(n=>n==='tesla'||n==='tesla-chain').length>=4){dropped++;return 1;}
     if(now-(lastPlay[eventKey]??-10)<gap||active.size>=24){dropped++;return 1;}
@@ -34,7 +32,7 @@ window.SoundSamples=(()=>{
     source.buffer=buffers[name];source.sampleName=kind===22?eventKey:name;
     const reference=kind>=5&&kind<=10?[0x3600,0x4200,0x2300,0x4b00,0x2800,0x4800][kind-5]:kind===14?0x4900:kind===16||kind===22?0x4000:kind===3?0x2a00:0x3800;
     source.playbackRate.value=Math.max(.65,Math.min(1.6,Math.pow(2,(pitch-reference)/12288)));
-    gain.gain.value=(name==='explosion-boss'?.8:name.startsWith('explosion-large')?.56:name.startsWith('explosion-medium')?.4:name.startsWith('explosion-small')?.25:kind===22?.18:name==='tesla'?.42:name==='victory'?.48:name==='warp'?.55:name==='gun-heavy'?.32:name==='gun-spread'?.27:name.startsWith('gun')?.23:name==='warning'?.32:name==='pickup'?.28:name==='bomb'?.65:name==='explosion'?.48:name==='laser'?.26:name==='bounce'?.19:.32)*Math.min(1.2,volume/65);
+    gain.gain.value=(name==='torpedo-launch'?.3:name==='torpedo-blast'?.6:name==='explosion-boss'?.8:name.startsWith('explosion-large')?.56:name.startsWith('explosion-medium')?.4:name.startsWith('explosion-small')?.25:kind===22?.18:name==='tesla'?.42:name==='victory'?.48:name==='warp'?.55:name==='gun-heavy'?.32:name==='gun-spread'?.27:name.startsWith('gun')?.23:name==='warning'?.32:name==='pickup'?.28:name==='bomb'?.65:name==='explosion'?.48:name==='laser'?.26:name==='bounce'?.19:.32)*Math.min(1.2,volume/65);
     filter.type='lowpass';filter.frequency.value=name==='explosion-boss'?3400:name==='tesla'?6200:10000;filter.Q.value=.4;
     stereo.pan.value=Math.max(-.85,Math.min(.85,pan));
     source.connect(filter);filter.connect(gain);gain.connect(stereo);stereo.connect(master);

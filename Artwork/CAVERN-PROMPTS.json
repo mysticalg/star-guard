@@ -1,0 +1,20 @@
+[
+  {
+    "asset": "Assets/modern/asteroid-cavern.jpg",
+    "method": "built-in ImageGen; JPEG conversion only",
+    "prompt": "Photorealistic orthographic top-down asteroid cavern bed: charcoal basalt, iron-grey cratered strata, mineral ridges, dark low-contrast central region, amber mineral glints, dusty depth haze; no sky, stars, craft, lettering, pixel art or fixed corridor outline; full-frame texture suitable for mirrored horizontal/vertical scrolling.",
+    "size": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "asset": "Assets/modern/diamond-cavern.jpg",
+    "method": "built-in ImageGen; JPEG conversion only",
+    "prompt": "Photorealistic orthographic top-down diamond-rich asteroid cavern: indigo graphite rock, clear immense diamond facets, cyan/violet reflected glints, iridescent crystal veins, dark readable central region and subterranean haze; no sky, stars, craft, lettering, pixel art or fixed corridor outline; full-frame texture for mirrored scrolling in both directions.",
+    "size": [
+      1536,
+      1024
+    ]
+  }
+]

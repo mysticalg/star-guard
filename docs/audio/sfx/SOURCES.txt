@@ -44,3 +44,12 @@ Edited, filtered, level matched; boss layers slowed and echoed into a 5.5-second
 Ballistic gunfire replaces the previous sci-fi gun sample:
 Gunshot Sounds by Tabasco (CC0), https://opengameart.org/content/gunshot-sounds
 Original recordings: SKS rifle (standard, two takes), CZ-52 (rapid), shotgun (spread), Mosin Nagant (heavy and ricochet). Isolated single shots, denoised, filtered, level-matched and faded.
+
+Material impacts (replacing earlier metal/rock/glass impact samples):
+Metal Impact Sounds by BMacZero / Brian MacIntosh, CC0, https://opengameart.org/content/metal-impact-sounds (clink2, clink3, bing1).
+Rock breakage: rubberduck, CC0, https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx (rock_breaking_01/02/03).
+Ice recordings: Ice Crack 7 and Ice Crack 9 by ecfike (CC0), https://freesound.org/people/ecfike/sounds/177215/ and https://freesound.org/people/ecfike/sounds/177223/ ; Ice Breaking 2 by giwake (CC0), https://freesound.org/s/666477/ .
+Trimmed, filtered and level matched.
+Torpedo launch: Kenney thrusterFire_001 (CC0); blast: rubberduck cannon_04 (CC0), sources above.
+
+Chaff deploy: same edited Kenney thrusterFire_001 sample as torpedo launch (CC0). Mine blasts use the recorded small-explosion variations listed above.

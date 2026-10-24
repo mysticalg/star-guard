@@ -208,3 +208,23 @@ Ballistic weapons use isolated real CC0 firearm recordings by Tabasco: alternati
 Progression tuning: regular drops now arrive every 8 kills (previously 16); 5 of each 16 drops are weapon-power pickups. Upgrade requirements remain incremental at 2, 3 and 4 charges (previously 2, 3 and 5).
 
 Tesla playback is reduced from .72 to .42 gain, with quieter 130 ms chain accents, random per-discharge pitch shifts and a subtle 15% wet four-stage allpass phaser. Tesla voices are capped at four during dense feedback chains.
+
+
+## Torpedoes and material impacts
+
+A forward torpedo automatically launches while fire is held, with a 150-tick (3-second) reload shown on the HUD. It accelerates forward in both flight modes and detonates on enemies, destructible hazards, cavern walls or timeout, dealing 800 damage units at the centre falling to 300 at the 48-unit blast edge. Boss shields, protected phases and enemy guards still apply. It clears ordinary hostile rounds without damaging the player; weak bullets do not intercept the torpedo. Terrain walls remain intact.
+
+Bomb-dropper charges retain their visual explosions and damage but their own impact/detonation sounds are silent. Enemy destruction still uses normal explosion audio. Metal impacts cycle recorded clinks/rings, rock hits use crunching breakage and ice hits use recorded cracking ice. Original source links and CC0 licences are recorded in docs/audio/sfx/SOURCES.txt.
+
+
+## Weapon banks and deployables
+
+Each main weapon has a separate 100-unit battery, its own recharge rate and a fire cadence that persists while switching. All banks recharge in the background. Running empty triggers a 150-tick (3-second) overheat lockout; swapping weapons cannot bypass it. The weapon strip shows energy, time to full charge and cooldowns. Spread starts with a five-direction semicircle including left/right shots and gains 7/9/11 projectiles. Other projectile weapons gain extra angled shots as they level; single/triple rainbow beams become wider, brighter and more damaging, with collision widths matching their visuals.
+
+C deploys a chaff-drone charge: 48 friendly proximity mines scatter into a grid and persist up to seven seconds; carry limit two, with rearm drops. E deploys one EMP bomb per mission, freezing all enemy ships (including bosses) and hostile ordnance for four seconds while electrical shocks play over them. Boss invulnerability rules remain intact. Shield drops grant six seconds of invincibility, with at most four shield drops per mission. HUD counters and touch buttons show the new equipment.
+
+Asteroid Belt and Diamond Asteroids now have dedicated ImageGen cavern artwork (Artwork/CAVERN-PROMPTS.json). Their three four-wave legs alternate vertical/horizontal/vertical flight (reversed for Diamond). Turns wait for all enemy ships, hazards and hostile ordnance to leave or be destroyed; no enemies are cleared to force a turn. Cavern walls, islands and collisions use the visible tunnel geometry; the boss gets a wider cavern arena.
+
+
+### Cinematic title screen
+The opening menu uses bespoke built-in ImageGen key art: a silver interceptor above Earth, an asteroid field and a distant alien flagship. The title, launch button, seventeen-mission selector and render-detail selector are real accessible HTML controls. Artwork drifts gently; reduced-motion preferences disable that animation. Mobile uses a taller menu and readable touch targets. Loading and failure messages remain visible. Artwork and full prompts: `docs/images/title-keyart.jpg`, `Artwork/title-concept.jpg`, `Artwork/TITLE-PROMPTS.json`.

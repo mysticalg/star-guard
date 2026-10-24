@@ -1,0 +1,29 @@
+{
+  "method": "Built-in ImageGen",
+  "conceptPrompt": "Use case: ui-mockup. Design the complete startup title screen for STAR GUARD, a polished modern browser arcade spaceship shooter. Landscape 1536x1024. Full-bleed cinematic photoreal 3D key art: a large angular silver spacecraft with cyan engines banking toward camera on the right half, blue Earth curvature below, fractured asteroids and a distant colossal purple alien warship in nebula behind. Left 40% dark navy negative space. Elegant game title menu on left, huge condensed italic white STAR on one line, GUARD below with subtle cyan metallic edge. Under title exact copy 'ONE PILOT. SEVENTEEN WORLDS.' Two dark thin-line select controls labelled 'STARTING SECTOR' with '01 / Earth Orbit' and 'RENDER DETAIL' with 'Cinematic / 2880 x 2400'. Wide bright cyan button 'LAUNCH MISSION'. Small bottom-left 'MOVE  WASD / ARROWS     FIRE  SPACE / CLICK'. Bottom right tiny 'NOVA B   CHAFF C   EMP E'. No other text, badges, browser chrome or fake metrics. Clean deliberate typography, crisp geometric controls, restrained cyan accents, no rounded card container. Full menu is code-native HTML/CSS in implementation; this image is visual concept only. All controls/readability practical at smaller viewport. Cinematic, premium finished PC game title screen.",
+  "assetPrompt": "Use case: precise-object-edit. Production background asset extraction from this game title screen concept. Remove ALL text, title letters, interface controls, button, bottom labels and boxes. Reconstruct only the cinematic scene underneath those removed elements. Keep exact spacecraft, blue Earth, asteroids, purple colossal boss warship, composition, lighting, navy palette, framing and detail unchanged. Left 40 percent must remain dark navy quiet space suitable for overlaying HTML title and controls. Do not introduce new objects on the left. Same landscape dimensions. No text or UI anywhere. This is the standalone background for implementation of the concept.",
+  "concept": "Artwork/title-concept.jpg",
+  "asset": "docs/images/title-keyart.jpg",
+  "design": {
+    "palette": {
+      "background": "#020e1a",
+      "text": "#f4fcff",
+      "accent": "#19dcff"
+    },
+    "type": "Impact italic condensed title, Segoe UI controls",
+    "layout": "Full bleed 3:2, title upper left, stacked selectors and cyan CTA, controls footer",
+    "copy": [
+      "STAR GUARD",
+      "ONE PILOT. SEVENTEEN WORLDS.",
+      "STARTING SECTOR",
+      "RENDER DETAIL",
+      "LAUNCH MISSION"
+    ],
+    "motion": "Slow artwork drift, CTA glow; reduced-motion disables both",
+    "intentionalAdaptations": [
+      "Full sector options preserve all seventeen existing missions",
+      "Loading status retained for accessibility",
+      "Mobile menu grows vertically to preserve touch target sizes"
+    ]
+  }
+}
