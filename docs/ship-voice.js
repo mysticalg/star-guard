@@ -7,7 +7,7 @@ window.ShipVoice=(()=>{
     context=new (window.AudioContext||window.webkitAudioContext)();
     gain=context.createGain();gain.gain.value=.8;gain.connect(context.destination);
     await context.resume();
-    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=25').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=25').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
+    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=26').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=26').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
     clips=meta.clips;buffer=await context.decodeAudioData(data);pump();
   }
   function stop(){if(source){source.onended=null;try{source.stop();}catch{}source=null;}current=null;}

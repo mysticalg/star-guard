@@ -62,6 +62,7 @@ static void particle(int x,int y,int vx,int vy,int life,int tint){int i;if(!g.fx
 extern void pc_hit_sound(int,int,int);
 extern void pc_laser_sound(int,int);
 extern void pc_emp_sound(int,int);
+extern void pc_rear_boost(int);
 extern void pc_reflection_sound(int,int,int),pc_crush_sound(int,int,int);
 extern void pc_burst(int,int,int),pc_impact(int,int,int),pc_bomb_start(int,int),pc_transition(void),pc_charge_burst(int,int);
 static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e=slot(g.effects,12);if(e){e->x=x;e->y=y;e->type=big;e->phase=rnd()&255;}for(i=0;i<n;i++){int a=rnd()&255,s=(big?700:400)+(rnd()&(big?1023:511));particle(x*Q,y*Q,(sn(a)*s)>>10,(sn(a+64)*s)>>10,18+(rnd()&23),i&3?1:0);}g.shake=big?7:3;if(ex.soundTick!=g.tick){ex.soundTick=g.tick;sound(2,2,big?118:84,big?0x2800:0x3400);sound_slide(2,1,0x1100,big?30:14);sound_slide(2,0,0,big?42:22);}}
@@ -148,6 +149,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0;
   }
   }
   if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else{int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
+  if(o->type==22&&oldy>252*Q&&o->y<=252*Q)pc_rear_boost(o->x/Q);
   x=o->x>>8;y=o->y>>8;if(y>304||(o->age>120&&(x< -80||x>400||y< -96))){o->on=0;continue;}
   if(g.beam&&g.tick%3==0&&beam_hits(x,o->type==4?32+o->power/24:13)&&y<(player_y>>8)-7&&y>15){if(!enemy_guarded(o)||o->type==4)weapon_damage_enemy(o,100+20*(power_level(ex.multi?5:3)-1),ex.multi?5:3);pc_hit_sound(enemy_guarded(o)?1:0,g.weapon,x);}
   for(j=0;j<MAXS;j++){Obj *s=g.shots+j;if(s->on&&!((s->type==6||s->type==7)&&s->base>0)&&absn((s->x>>8)-x)<(o->type==4?33+o->power/24:o->type>=14?15:o->type>=10?10:14)&&absn((s->y>>8)-y)<(o->type==4?26:o->type>=10?10:15)){int pt[2];if(s->type==8){detonate_charge(s);if(!o->on)break;continue;}if(s->type==6||s->type==7)ricochet(s,o,i);else s->on=0;if(!enemy_guarded(o)||o->type==4)weapon_damage_enemy(o,projectile_damage(s),s->type);surface_point(x,y,o->type==4?30:12,o->type==4?23:12,s->x>>8,s->y>>8,pt);hit_sparks(pt[0],pt[1],0,1,1);pc_hit_sound(enemy_guarded(o)?1:0,s->type,x);}}

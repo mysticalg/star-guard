@@ -1,0 +1,6 @@
+Kenney Sci-Fi Sounds (CC0-1.0)
+https://kenney.nl/assets/sci-fi-sounds
+
+Boss reactor: spaceEngineLow_000 + computerNoise_000, filtered, mixed and seam-crossfaded.
+Rear booster: thrusterFire_000, trimmed and level-matched.
+Retrieved 24 October 2026. Original licence included.
