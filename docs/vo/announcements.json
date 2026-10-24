@@ -1,0 +1,211 @@
+{
+  "voice": "Microsoft Zira Desktop, locally synthesized female voice",
+  "style": "Filtered cybernetic ship computer",
+  "clips": {
+    "mission-start": {
+      "start": 0.0,
+      "duration": 3.4390022675736964,
+      "text": "Systems online. Mission commencing."
+    },
+    "boss-approach": {
+      "start": 3.608979591836735,
+      "duration": 2.9291609977324264,
+      "text": "Warning. Boss approaching."
+    },
+    "form-two": {
+      "start": 6.7081179138322,
+      "duration": 3.633922902494331,
+      "text": "Warning. Enemy transformation detected."
+    },
+    "final-form": {
+      "start": 10.51201814058957,
+      "duration": 3.4489795918367347,
+      "text": "Critical threat. Final combat form."
+    },
+    "super-laser": {
+      "start": 14.130975056689342,
+      "duration": 4.428979591836735,
+      "text": "Warning. Super laser charging. Evade."
+    },
+    "rear-attack": {
+      "start": 18.729931972789117,
+      "duration": 2.3891156462585035,
+      "text": "Hostiles approaching from behind."
+    },
+    "asteroid-storm": {
+      "start": 21.289024943310658,
+      "duration": 3.179138321995465,
+      "text": "Asteroid storm. Clear a path."
+    },
+    "ice-storm": {
+      "start": 24.63814058956916,
+      "duration": 2.9941496598639454,
+      "text": "Warning. Ice storm ahead."
+    },
+    "fire-storm": {
+      "start": 27.802267573696145,
+      "duration": 3.319092970521542,
+      "text": "Warning. Fire storm incoming."
+    },
+    "sector-clear": {
+      "start": 31.291337868480724,
+      "duration": 1.6342403628117914,
+      "text": "Sector clear."
+    },
+    "warp": {
+      "start": 33.095555555555556,
+      "duration": 1.8892970521541952,
+      "text": "Warp drive engaged."
+    },
+    "game-over": {
+      "start": 35.15482993197279,
+      "duration": 1.709297052154195,
+      "text": "Mission terminated."
+    },
+    "hull-critical": {
+      "start": 37.03410430839002,
+      "duration": 3.3039909297052157,
+      "text": "Warning. Hull integrity critical."
+    },
+    "energy-low": {
+      "start": 40.50807256235828,
+      "duration": 1.7141950113378686,
+      "text": "Weapon energy low."
+    },
+    "power": {
+      "start": 42.39224489795918,
+      "duration": 1.959183673469388,
+      "text": "Weapon power increased."
+    },
+    "option": {
+      "start": 44.52140589569161,
+      "duration": 1.9392743764172335,
+      "text": "Option drone acquired."
+    },
+    "satellite": {
+      "start": 46.63065759637188,
+      "duration": 2.1691156462585033,
+      "text": "Orbital satellite acquired."
+    },
+    "dropper": {
+      "start": 48.969750566893424,
+      "duration": 1.8942403628117914,
+      "text": "Bomb dropper online."
+    },
+    "shield": {
+      "start": 51.033968253968254,
+      "duration": 1.6393197278911564,
+      "text": "Shield restored."
+    },
+    "repair": {
+      "start": 52.84326530612245,
+      "duration": 1.90421768707483,
+      "text": "Repair unit acquired."
+    },
+    "nova": {
+      "start": 54.91746031746032,
+      "duration": 1.849342403628118,
+      "text": "Nova bomb acquired."
+    },
+    "weapon-0": {
+      "start": 56.936780045351476,
+      "duration": 1.9142857142857144,
+      "text": "Pulse cannon online."
+    },
+    "weapon-1": {
+      "start": 59.021043083900224,
+      "duration": 1.9992290249433107,
+      "text": "Spread cannon online."
+    },
+    "weapon-2": {
+      "start": 61.19024943310657,
+      "duration": 1.9742403628117915,
+      "text": "Rapid fire online."
+    },
+    "weapon-3": {
+      "start": 63.33446712018141,
+      "duration": 1.9393197278911565,
+      "text": "Rainbow beam online."
+    },
+    "weapon-4": {
+      "start": 65.4437641723356,
+      "duration": 1.8542857142857143,
+      "text": "Heat seeker online."
+    },
+    "weapon-5": {
+      "start": 67.46802721088436,
+      "duration": 2.239183673469388,
+      "text": "Triple rainbow beam online."
+    },
+    "weapon-6": {
+      "start": 69.87718820861679,
+      "duration": 2.0392290249433107,
+      "text": "Ricochet cannon online."
+    },
+    "weapon-7": {
+      "start": 72.08639455782313,
+      "duration": 2.049160997732426,
+      "text": "Bouncing laser online."
+    },
+    "sector-0": {
+      "start": 74.3055328798186,
+      "duration": 1.9392743764172335,
+      "text": "Entering Deep space."
+    },
+    "sector-1": {
+      "start": 76.41478458049886,
+      "duration": 1.939138321995465,
+      "text": "Entering Ion nebula."
+    },
+    "sector-2": {
+      "start": 78.52390022675738,
+      "duration": 2.029206349206349,
+      "text": "Entering Asteroid belt."
+    },
+    "sector-3": {
+      "start": 80.72308390022675,
+      "duration": 1.9142857142857144,
+      "text": "Entering Hyperlane."
+    },
+    "sector-4": {
+      "start": 82.80734693877551,
+      "duration": 1.9043083900226758,
+      "text": "Entering Siege arena."
+    },
+    "sector-5": {
+      "start": 84.88163265306123,
+      "duration": 2.0192743764172336,
+      "text": "Entering Rocky cavern."
+    },
+    "sector-6": {
+      "start": 87.07088435374149,
+      "duration": 1.9991836734693877,
+      "text": "Entering Verdant skies."
+    },
+    "sector-7": {
+      "start": 89.24004535147392,
+      "duration": 1.7792743764172336,
+      "text": "Entering Dune sea."
+    },
+    "sector-8": {
+      "start": 91.18929705215419,
+      "duration": 1.969297052154195,
+      "text": "Entering Frost ridge."
+    },
+    "sector-9": {
+      "start": 93.32857142857142,
+      "duration": 1.9792743764172336,
+      "text": "Entering Magma coast."
+    },
+    "sector-10": {
+      "start": 95.4778231292517,
+      "duration": 1.9291609977324264,
+      "text": "Entering Low Earth orbit."
+    },
+    "sector-11": {
+      "start": 97.57696145124717,
+      "duration": 1.9393197278911565,
+      "text": "Entering Ground assault."
+    }
+  }
+}

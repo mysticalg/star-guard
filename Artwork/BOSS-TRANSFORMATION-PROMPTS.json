@@ -1,0 +1,29 @@
+{
+  "forms": [
+    {
+      "name": "phase2",
+      "prompt": "Create a production game sprite sheet showing PHASE 2 TRANSFORMATIONS of all twelve reference bosses. Exactly FOUR columns and THREE rows in the same order. Transparent background. Keep the central original hull, color identity, overhead camera and nose orientation of every corresponding reference craft, but radically expand the silhouette with physically attached new parts: two substantial articulated armored wing assemblies, twin long external cannon arms, additional engine nacelles, exposed glowing conduits; clear intermediate war-machine transformation. These must be visibly bigger and more elaborate transformed designs, not alternate lighting or a tiny pose change. Central core remains recognizably the original vessel. Match realistic detailed sci-fi rendering. Each complete boss occupies at most 78 percent of its own equal grid cell, with generous transparent margins on all sides. Absolutely no cropped tips, no touching neighboring cells, no text, no grid lines, no detached floating objects. All twelve bosses fully visible, aligned centers; consistent scale within their cells. Crisp mechanical detail with radiant emissive reactors and weapon coils.",
+      "repairedPrompt": "Repair this production sprite sheet layout. Keep exactly twelve same transformed spacecraft, four columns by three rows. REDUCE EACH SPACECRAFT to only SIXTY PERCENT of its cell width and height. Keep all four-by-three cell centers fixed. Reconstruct any cut-off weapon or wing tips so each ship is fully intact. There must be broad completely transparent gutters between every ship, and broad transparent margins around the entire outer sheet. No ship may touch the image boundary or its cell edge. Maintain all original detailed mechanical parts, color identity, view direction and lighting. Transparent background, no text, no grid. This is an asset-spacing and complete-silhouette repair, not a redesign."
+    },
+    {
+      "name": "phase3",
+      "prompt": "Create a production game sprite sheet showing PHASE 3 TRANSFORMATIONS of all twelve reference bosses. Exactly FOUR columns and THREE rows in the same order. Transparent background. Keep the central original hull, color identity, overhead camera and nose orientation of every corresponding reference craft, but radically expand the silhouette with physically attached new parts: four large segmented armored wings, six attached weapon cannons, massive outer reactor rings or claw assemblies, multiple secondary engines, thick glowing energy conduits; a colossal final-form war machine. These must be visibly bigger and more elaborate transformed designs, not alternate lighting or a tiny pose change. Central core remains recognizably the original vessel. Match realistic detailed sci-fi rendering. Each complete boss occupies at most 78 percent of its own equal grid cell, with generous transparent margins on all sides. Absolutely no cropped tips, no touching neighboring cells, no text, no grid lines, no detached floating objects. All twelve bosses fully visible, aligned centers; consistent scale within their cells. Crisp mechanical detail with radiant emissive reactors and weapon coils.",
+      "repairedPrompt": "Repair this production sprite sheet layout. Keep exactly twelve same transformed spacecraft, four columns by three rows. REDUCE EACH SPACECRAFT to only SIXTY PERCENT of its cell width and height. Keep all four-by-three cell centers fixed. Reconstruct any cut-off weapon or wing tips so each ship is fully intact. There must be broad completely transparent gutters between every ship, and broad transparent margins around the entire outer sheet. No ship may touch the image boundary or its cell edge. Maintain all original detailed mechanical parts, color identity, view direction and lighting. Transparent background, no text, no grid. This is an asset-spacing and complete-silhouette repair, not a redesign."
+    }
+  ],
+  "storms": [
+    {
+      "name": "asteroid",
+      "prompt": "Single irregular rugged asteroid game sprite, isolated overhead view, realistic dark grey basalt rock with intricate craters, subtle metallic mineral veins, angular complete silhouette. Detailed photorealistic science fiction arcade game asset. Centered with generous transparent margin. Transparent background, no text, no scenery."
+    },
+    {
+      "name": "ice",
+      "prompt": "Single irregular frozen asteroid or enormous ice hail chunk game sprite, isolated overhead view, realistic translucent blue-white glacial ice with sharp fractured facets, bright cyan luminous cracks and frosty rim. Detailed cinematic game asset, complete silhouette, generous transparent margin. Transparent background, no text no scenery."
+    },
+    {
+      "name": "fire",
+      "prompt": "Single irregular volcanic meteor game sprite, isolated overhead view, realistic black rock with vivid glowing molten orange fissures and a short fiery corona contained around its rim. Detailed cinematic arcade game asset. Full silhouette with generous transparent margin. Transparent background, no text no scenery."
+    }
+  ],
+  "mode": "built-in ImageGen"
+}

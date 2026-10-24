@@ -1,7 +1,7 @@
 typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
  int phase,oldPhase,transition,scrollSpeed,enemySpeed,backgroundY,bombs,bombFlash,options,optionsOn,followHead,multi,hazardSerial,nextParticle,soundTick;
- int followX[64],followY[64];Obj obstacles[12];
+ int followX[64],followY[64];Obj obstacles[MAXH];
  int travel,travelTick,nextPhase,entryY,entryDistance,phaseAge,optionCool,contactX,contactY,contactTick,bossSpawned;Obj impacts[12];Trail trails[384];int nextTrail;
  int bombAge,bombX,bombY,bombRadius,landScroll,bossWarning,clearTicks,satellite,satelliteCool,dropper,dropperCool,weaponDrop,pickupKind,pickupTicks,rearWarning,rearSpawned,bombSerial;
 } Expansion;

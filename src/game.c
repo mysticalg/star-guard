@@ -6,14 +6,16 @@ typedef unsigned int u32;
 #define Q 256
 #define MAXE 64
 #define MAXS 56
-#define MAXB 72
+#define MAXB 128
+#define MAXH 24
+#define SECTOR_WAVES 12
 #define MAXP 160
 #define NSTARS 144
-typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit;} Obj;
+typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
- int tick,mode,quit,paused,wave,clock,groups,score,kills,lives,px,weapon,unlocked,energy,barrier,shield,cool,beam,active,shake,fx,bossPhase,playerVX,lastPlayerX;
+ int tick,missionTicks,mode,quit,paused,wave,clock,groups,score,kills,lives,px,weapon,unlocked,energy,barrier,shield,cool,beam,active,shake,fx,bossPhase,playerVX,lastPlayerX;
  int weaponLevel[8];u32 seed; Obj enemies[MAXE],shots[MAXS],bullets[MAXB],drops[8],effects[24]; Particle particles[MAXP]; Star stars[NSTARS];
 } Game;
 Game g;
@@ -22,6 +24,7 @@ int player_y;
 #include "expansion_state.h"
 extern void pc_sprite(int,float,float);
 extern void pc_equipment_sprite(int,float,float,float);
+extern void pc_hazard_sprite(int,Obj*,float,float);
 extern void pc_enemy_sprite(int,Obj*,float,float);
 extern void read_mouse(int*);
 
@@ -43,28 +46,29 @@ static int divn(int a,int b){return b?a/b:0;}
 static int remn(int a,int b){return b?a%b:0;}
 static Obj *slot(Obj *a,int n){int i;for(i=0;i<n;i++)if(!a[i].on){a[i]=(Obj){.on=1};return a+i;}return 0;}
 static void particle(int x,int y,int vx,int vy,int life,int tint){int i;if(!g.fx)return;for(i=0;i<MAXP;i++){int n=ex.nextParticle++;Particle*p;if(ex.nextParticle==MAXP)ex.nextParticle=0;p=g.particles+n;if(!p->on){p->on=1;p->x=x;p->y=y;p->vx=vx;p->vy=vy;p->life=life;p->tint=tint;return;}}}
+extern void pc_hit_sound(int,int,int);
 extern void pc_burst(int,int,int),pc_impact(int,int,int),pc_bomb_start(int,int),pc_transition(void),pc_charge_burst(int,int);
 static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e=slot(g.effects,12);if(e){e->x=x;e->y=y;e->type=big;e->phase=rnd()&255;}for(i=0;i<n;i++){int a=rnd()&255,s=(big?700:400)+(rnd()&(big?1023:511));particle(x*Q,y*Q,(sn(a)*s)>>10,(sn(a+64)*s)>>10,18+(rnd()&23),i&3?1:0);}g.shake=big?7:3;if(ex.soundTick!=g.tick){ex.soundTick=g.tick;sound(2,2,big?118:84,big?0x2800:0x3400);sound_slide(2,1,0x1100,big?30:14);sound_slide(2,0,0,big?42:22);}}
 static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){o->x=x*Q;o->y=y*Q;o->type=type;o->vy=220;}}
 void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=255;for(i=0;i<8;i++)g.weaponLevel[i]=1;g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
 static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-10*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->power=power_level(g.weapon);o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
-static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;}return o;}
+static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;o->variant=absn(vx)>absn(vy)?2:0;}return o;}
 static void armored_bullet(int x,int y,int vx,int vy){Obj*o=bullet(x,y,vx,vy);if(o)o->type=1;}
 static void armored_aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;armored_bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
 /* Relative swept segments catch fast shots crossing between fixed simulation ticks. */
 static int projectile_crosses(const Obj*s,const Obj*b){float dx=(b->x-s->x)/(float)Q,dy=(b->y-s->y)/(float)Q,vx=(b->vx-s->vx)/(float)Q,vy=(b->vy-s->vy)/(float)Q;if(fabsf(dx)>fabsf(vx)+5||fabsf(dy)>fabsf(vy)+5)return 0;float vv=vx*vx+vy*vy,t=vv>0?fmaxf(0,fminf(1,(dx*vx+dy*vy)/vv)):0;dx-=vx*t;dy-=vy*t;return dx*dx+dy*dy<=25;}
-static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
+static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;Obj*o=bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));if(o)o->variant=1;}
 static void killed(Obj*);
 static int enemy_guarded(const Obj*);
 #include "bugs.h"
 static void specialist_group(int,int);
 static void ground_group(int,int);
-static void group(int type,int groupno){if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+((g.wave-1)>>2);if(n>8)n=8;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=(type==6?6:type==7?3:type==3?4:1)+enemy_bonus();o->phase=i*27+groupno*41;o->base=28+i*38;o->x=o->base*Q;o->y=(-24-i*14)*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
+static void group(int type,int groupno){if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+((g.wave-1)>>2);if(n>8)n=8;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=(type==6?6:type==7?3:type==3?4:1)+enemy_bonus();o->phase=i*27+groupno*41;int pattern=groupno%5;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:28+i*38;o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
 static void boss(void){Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=ex.phase<0?0:ex.phase;o->hp=300+g.wave*32;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
 static void hit_sparks(int x,int y,int nx,int ny,int tint){pc_impact(x,y,tint);int i;Obj*f=slot(ex.impacts,12);if(f){f->x=x;f->y=y;f->type=tint;}ex.contactX=x;ex.contactY=y;ex.contactTick=g.tick;for(i=0;i<10;i++){int a=rnd()&255;particle(x*Q,y*Q,nx*180+(sn(a)>>1),ny*180+(sn(a+64)>>1),8+(rnd()&7),tint);}}
 static void surface_point(int cx,int cy,int rx,int ry,int ox,int oy,int*out){int dx=ox-cx,dy=oy-cy;if(absn(dx)*ry>absn(dy)*rx){out[0]=cx+(dx<0?-rx:rx);out[1]=cy+clamp(dy,-ry,ry);}else{out[0]=cx+clamp(dx,-rx,rx);out[1]=cy+(dy<0?-ry:ry);}}
-static void hurt_at(int x,int y,int nx,int ny){if(ex.contactTick!=g.tick||ex.contactX!=x||ex.contactY!=y)hit_sparks(x,y,nx,ny,g.shield||g.active?3:1);if(g.shield||g.active)return;g.barrier-=35;g.shield=28;g.shake=5;sound(3,2,100,0x3000);if(g.barrier<0){g.lives--;g.barrier=75;g.shield=100;burst(g.px>>8,player_y>>8,1);if(g.lives<=0)g.mode=2;}}
+static void hurt_at(int x,int y,int nx,int ny){if(ex.contactTick!=g.tick||ex.contactX!=x||ex.contactY!=y)hit_sparks(x,y,nx,ny,g.shield||g.active?3:1);if(g.shield||g.active){pc_hit_sound(1,0,x);return;}pc_hit_sound(0,4,x);g.barrier-=35;g.shield=28;g.shake=5;sound(3,2,100,0x3000);if(g.barrier<0){g.lives--;g.barrier=75;g.shield=100;burst(g.px>>8,player_y>>8,1);if(g.lives<=0)g.mode=2;}}
 static void carrier_release(const Obj*);
 static void option_fire(void);
 static void stage_boss_step(Obj*);
@@ -78,17 +82,17 @@ void game_step(int mask,int ch){int i,j,alive=0;
  if(ch=='p')g.paused=!g.paused;if(g.paused)return;
  if(ch>='1'&&ch<='8'&&(g.unlocked&(1<<(ch-'1'))))g.weapon=ch-'1';
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;}
- g.tick++;if(!ex.travel)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);
+ g.tick++;g.missionTicks++;if(!ex.travel)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);
  if(g.shield)g.shield--;if(g.active)g.active--;if(g.shake)g.shake--;if(g.cool)g.cool--;if(g.beam)g.beam--;
  if((g.tick&3)==0&&g.energy<100)g.energy++;if((g.tick&15)==0&&g.barrier<100)g.barrier++;
  if((mask&4)&&!g.cool){if(g.weapon==3||g.weapon==5){int cost=g.weapon==5?3:2;if(g.energy>=cost){g.energy-=cost;g.beam=8;g.cool=6;ex.multi=g.weapon==5;sound(1,1,80,0x4000);}else g.cool=3;}else{shot(g.px,g.weapon==6?((g.tick&1)?600:-600):0,g.weapon);if(g.weapon==7){shot(g.px-3*Q,-1100,7);shot(g.px+3*Q,1100,7);}if(g.weapon==1){shot(g.px-3*Q,-350,1);shot(g.px+3*Q,350,1);}g.cool=weapon_delay(g.weapon==7?12:g.weapon==6?9:g.weapon==4?14:g.weapon==2?3:g.weapon==1?6:4);sound(1,1,62,g.weapon==2?0x4100+(sn(g.tick*17)>>1):0x3800+(sn(g.tick*7)>>2));sound_slide(1,1,g.weapon==2?0x2c00:0x2000,g.weapon==2?3:7);particle(g.px,player_y-10*Q,-160,-250,7,3);particle(g.px,player_y-10*Q,160,-250,7,1);}}
  if(g.beam&&(g.tick&3)==0)sound_mod(1,85,0x3800+sn(g.tick*21)*2);
  if((g.tick&1)==0){particle(g.px-2*Q,player_y+8*Q,-50,350,10,0);particle(g.px+2*Q,player_y+8*Q,50,350,10,3);}
- if(!ex.travel&&!ex.bossSpawned&&g.groups>=3&&g.clock>=encounter_deadline()&&!route_occupied()){
+ if(!ex.travel&&!ex.bossSpawned&&g.groups>=SECTOR_WAVES&&g.clock>=encounter_deadline()&&!route_occupied()){
   if(!ex.bossWarning){ex.bossWarning=100;sound(5,1,90,0x2800);sound_slide(5,1,0x4800,90);}
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
  }
- if(ex.travel!=1&&!ex.bossSpawned&&ex.phase!=5&&g.groups<3&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*105){group(formation_type(),g.groups);g.groups++;}
+ if(ex.travel!=1&&!ex.bossSpawned&&g.groups<SECTOR_WAVES&&enemy_count()<=24&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*145){group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
  for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;o->age++;if(o->base>0)o->base--;if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||(ex.phase==11&&o->x>=288*Q)||o->age>=28||o->x<3*Q||o->x>317*Q||o->y>252*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0))continue;if(o->type==6||o->type==7){if(o->x<3*Q||o->x>317*Q){o->x=clamp(o->x,3*Q,317*Q);o->vx=-o->vx;}if(o->y<26*Q||o->y>252*Q){o->y=clamp(o->y,26*Q,252*Q);o->vy=-o->vy;}if(o->age>150)o->on=0;}else if(o->y<20*Q||o->x<0||o->x>320*Q)o->on=0;}
  for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;int oldx=o->x,oldy=o->y;o->age++;
   if(o->type==4){stage_boss_step(o);
@@ -100,14 +104,14 @@ void game_step(int mask,int ch){int i,j,alive=0;
   }
   if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else{int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
   x=o->x>>8;y=o->y>>8;if(y>304||(o->age>120&&(x< -80||x>400||y< -96))){o->on=0;continue;}
-  if(g.beam&&g.tick%3==0&&!enemy_guarded(o)&&beam_hits(x,o->type==4?32+o->power/24:13)&&y<(player_y>>8)-7&&y>15)damage_enemy(o,100+20*(power_level(g.weapon)-1));
-  for(j=0;j<MAXS;j++){Obj *s=g.shots+j;if(s->on&&!((s->type==6||s->type==7)&&s->base>0)&&absn((s->x>>8)-x)<(o->type==4?33+o->power/24:o->type>=14?15:o->type>=10?10:14)&&absn((s->y>>8)-y)<(o->type==4?26:o->type>=10?10:15)){int pt[2];if(s->type==8){detonate_charge(s);if(!o->on)break;continue;}if(s->type==6||s->type==7)ricochet(s,o,i);else s->on=0;if(!enemy_guarded(o))damage_enemy(o,projectile_damage(s));surface_point(x,y,o->type==4?30:12,o->type==4?23:12,s->x>>8,s->y>>8,pt);hit_sparks(pt[0],pt[1],0,1,1);}}
+  if(g.beam&&g.tick%3==0&&beam_hits(x,o->type==4?32+o->power/24:13)&&y<(player_y>>8)-7&&y>15){if(!enemy_guarded(o))damage_enemy(o,100+20*(power_level(g.weapon)-1));pc_hit_sound(enemy_guarded(o)?1:0,g.weapon,x);}
+  for(j=0;j<MAXS;j++){Obj *s=g.shots+j;if(s->on&&!((s->type==6||s->type==7)&&s->base>0)&&absn((s->x>>8)-x)<(o->type==4?33+o->power/24:o->type>=14?15:o->type>=10?10:14)&&absn((s->y>>8)-y)<(o->type==4?26:o->type>=10?10:15)){int pt[2];if(s->type==8){detonate_charge(s);if(!o->on)break;continue;}if(s->type==6||s->type==7)ricochet(s,o,i);else s->on=0;if(!enemy_guarded(o))damage_enemy(o,projectile_damage(s));surface_point(x,y,o->type==4?30:12,o->type==4?23:12,s->x>>8,s->y>>8,pt);hit_sparks(pt[0],pt[1],0,1,1);pc_hit_sound(enemy_guarded(o)?1:0,s->type,x);}}
   if(!o->on)continue;if(o->hp<=0){killed(o);continue;}if(absn(y-(player_y>>8))<17&&absn(x-(g.px>>8))<17){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);if(o->type!=4){o->on=0;burst(x,y,0);}}
  }
- for(i=0;i<MAXB;i++){Obj *o=g.bullets+i;if(!o->on)continue;trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,2);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,1))continue;
- if(!o->type){int intercepted=g.beam&&beam_hits(o->x>>8,6)&&o->y<player_y-12*Q;for(j=0;j<MAXS&&!intercepted;j++){Obj*s=g.shots+j;if(s->on&&projectile_crosses(s,o)){intercepted=1;if(s->type==8)detonate_charge(s);else if(s->type==6||s->type==7){if(--s->hp<=0)s->on=0;}else s->on=0;}}if(intercepted){o->on=0;hit_sparks(o->x>>8,o->y>>8,0,0,3);continue;}}
- if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<6*Q&&absn(o->y-player_y)<7*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,6,7,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
- for(i=0;i<8;i++){Obj *o=g.drops+i;if(!o->on)continue;o->y+=o->vy;o->age++;if(o->y>267*Q)o->on=0;else if(absn(o->x-g.px)<20*Q&&absn(o->y-player_y)<20*Q){o->on=0;if(o->type==0||o->type==1||o->type==3||o->type==10){int w=o->type==10?o->variant:o->type==3?3:o->type+1;g.weapon=clamp(w,0,7);if(g.weaponLevel[g.weapon]<4)g.weaponLevel[g.weapon]++;ex.pickupKind=10;ex.pickupTicks=100;}
+ for(i=0;i<MAXB;i++){Obj *o=g.bullets+i;if(!o->on)continue;o->age++;trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,2);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,1))continue;
+ if(o->type!=1){int intercepted=g.beam&&beam_hits(o->x>>8,6)&&o->y<player_y-12*Q;for(j=0;j<MAXS&&!intercepted;j++){Obj*s=g.shots+j;if(s->on&&projectile_crosses(s,o)){intercepted=1;if(s->type==8)detonate_charge(s);else if(s->type==6||s->type==7){if(--s->hp<=0)s->on=0;}else s->on=0;}}if(intercepted){o->on=0;hit_sparks(o->x>>8,o->y>>8,0,0,3);pc_hit_sound(5,g.weapon,o->x>>8);continue;}}
+ if(o->type==2&&o->age>=65){int x=o->x,y=o->y;o->on=0;pc_impact(x/Q,y/Q,1);for(int a=0;a<256;a+=32){Obj*fragment=bullet(x,y,sn(a)*520/1024,sn(a+64)*520/1024);if(fragment){fragment->variant=1;fragment->age=1;}}continue;}if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<6*Q&&absn(o->y-player_y)<7*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,6,7,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
+ for(i=0;i<8;i++){Obj *o=g.drops+i;if(!o->on)continue;o->y+=o->vy;o->age++;if(o->y>267*Q)o->on=0;else if(absn(o->x-g.px)<20*Q&&absn(o->y-player_y)<20*Q){o->on=0;ex.pickupKind=o->type;ex.pickupTicks=100;if(o->type==0||o->type==1||o->type==3||o->type==10){int w=o->type==10?o->variant:o->type==3?3:o->type+1;g.weapon=clamp(w,0,7);if(g.weaponLevel[g.weapon]<4)g.weaponLevel[g.weapon]++;ex.pickupKind=10;ex.pickupTicks=100;}
  if(o->type==7){if(g.weaponLevel[g.weapon]<4)g.weaponLevel[g.weapon]++;else{g.energy=clamp(g.energy+20,0,100);g.score+=100;}ex.pickupKind=7;ex.pickupTicks=100;}
  if(o->type==5&&ex.bombs<5)ex.bombs++;
  if(o->type==6){ex.options=clamp(ex.options+1,0,5);ex.optionsOn=1;ex.pickupKind=6;ex.pickupTicks=100;}
@@ -146,7 +150,7 @@ void game_render(u8 *b){int y,i,x,dx=0,dy=0,busy=0;int scroll=(ex.backgroundY>>8
   if(!pc_modern)for(i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int bx=o->x>>8,by=o->y>>8,k,t=i<MAXS?(o->type==2||o->type==4?1:3):2;int vx=i<MAXS?0:-(o->vx>>8),vy=i<MAXS?1:-(o->vy>>8);if(!vy)vy=1;pixel(b,bx-1,by,t==1?87:t==2?143:235);pixel(b,bx+1,by,t==1?87:t==2?143:235);projectile_bloom(b,bx,by,t,i<MAXS?i<12:i<MAXS+12);if(i<MAXS&&o->type==7){int speed=absn(o->vx)+absn(o->vy);if(speed){int tx=bx-divn(o->vx*12,speed),ty=by-divn(o->vy*12,speed);stroke(b,bx-1,by,tx-1,ty,139);stroke(b,bx+1,by,tx+1,ty,235);stroke(b,bx,by,tx,ty,255);}}pixel(b,bx,by,255);pixel(b,bx,by-1,255);pixel(b,bx+1,by,255);}}
   if(!pc_modern){draw_beams(b);draw_impacts(b);}
   if(!pc_modern)for(i=0;i<12;i++)if(g.effects[i].on)draw_explosion(b,g.effects+i,i<(busy>4?1:4));
-  if(g.mode==1){x=g.px>>8;if(ex.travel||!g.shield||(g.tick&2)==0)pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-2,(player_y>>8)+8,3,1);projectile_bloom(b,x+2,(player_y>>8)+8,3,1);}if(!pc_modern&&(g.shield||g.active)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
+  if(g.mode==1){x=g.px>>8;if(!ex.travel&&(!g.shield||(g.tick&2)==0))pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-2,(player_y>>8)+8,3,1);projectile_bloom(b,x+2,(player_y>>8)+8,3,1);}if(!pc_modern&&(g.shield||g.active)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
  }
  if(pc_modern)return;
  rowcopy(b,clear_hud,1920);text(b,4,3,"SCORE",219,1);number(b,40,3,g.score,255);text(b,108,3,"WAVE",219,1);number(b,138,3,g.wave,255);text(b,178,3,"LIVES",219,1);number(b,214,3,g.lives,255);text(b,250,3,"GUN",219,1);number(b,274,3,g.weapon+1,255);

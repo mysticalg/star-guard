@@ -88,6 +88,21 @@ The twelve-sector campaign adds Low Earth Orbit with a fast top-down Earth flyov
 
 ## Boss forms and warp camera
 
-All twelve bosses have two extra ImageGen poses, played as a three-pose ping-pong animation. Boss health is now 300 + 32 per campaign sector. At two-thirds and one-third health, a protected 55-tick transformation unfolds additional weapon pods and changes the attack cadence. The final form adds more fire from the deployed pods. Damage cannot skip a transformation threshold. Hull scorch points and orange/electrical sparking accumulate with damage. Nova bombs deal one heavy 90-HP hit per boss per detonation instead of deleting bosses.
+All twelve bosses now have two larger ImageGen transformation forms with additional attached armour and weapons. The former rapid pose loop has been replaced by smooth blends during transformations; each phase keeps a stable hull, with continuous bank, movement and reactor pulses. Boss health is now 300 + 32 per campaign sector. At two-thirds and one-third health, a protected 55-tick transformation unfolds additional weapon pods and changes the attack cadence. The final form adds more fire from the deployed pods. Damage cannot skip a transformation threshold. Hull scorch points and orange/electrical sparking accumulate with damage. Nova bombs deal one heavy 90-HP hit per boss per detonation instead of deleting bosses.
 
 During sector transit the camera eases toward the ship, zooms to 2.4x, holds, then smoothly returns. Input mapping accounts for zoom, and combat continues through the transition. The additional scene target is reused, and the extra compositing pass runs only during warp. Animation poses and their prompts are recorded in Artwork/BOSS-ANIMATION-PROMPTS.json.
+
+
+## Longer missions, storms and special attacks
+
+Each sector now builds through twelve formations, with mixed insect flights, specialist squads, streams, fans and V formations. Wave spacing and an earliest 42-second boss gate (48 seconds in the cavern) give the encounter time to build; surviving enemies and hazards still gate boss entry. The HUD shows mission time, current sector time and completed wave count. Timers stop while paused and mission time freezes at game over.
+
+Asteroid Belt, Frost Ridge and Magma Coast include dense destructible asteroid, ice and fire storms. Storms enter from off-screen, leave gaps and use isolated full-alpha ImageGen obstacle sprites. Boss specials alternate a 1.2-second laser aim warning with a brief super-laser, and shootable bomblets that burst into eight ordinary rounds. Armour-piercing bullets remain amber; ordinary, aimed, spiral and bomblet fire have different colours and shapes. Each player weapon also has its own trail and glow colour.
+
+Warp now zooms to an extreme ship close-up, holds, then pulls back. The ship is rendered directly from source artwork in the close-up to avoid magnifying the small combat rendering. Prompt records for the new sprites are in Artwork/BOSS-TRANSFORMATION-PROMPTS.json.
+
+
+Impact audio now distinguishes metal hulls, energy shields, rock, ice, molten debris and shot interception. Projectile type shifts the transient pitch and character. Short synthesized metallic, resonant, granular and glass-like responses use the existing 48-voice mixer, stereo impact positions and per-material/global event limits. Master mute still applies to the whole audio stream.
+
+
+The ship computer uses a locally synthesized female Microsoft Zira voice, lightly filtered and modulated into a cybernetic announcer. A compact audio sprite supplies 41 pickup, warning and sector announcements. Urgent warnings interrupt pickup chatter, the music ducks during speech, pause/focus/master mute are respected, and a separate Ship voice button can disable announcements. Voice audio loads after launch and does not block gameplay.

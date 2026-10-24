@@ -15,6 +15,6 @@ static int bomb_reached(int x,int y,int padding){int dx=x-ex.bombX,dy=y-ex.bombY
 static void bomb_step(void){if(!ex.bombAge)return;ex.bombRadius=ex.bombAge*9;
  for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&!(o->type==4&&o->age<=120)&&bomb_reached(o->x>>8,o->y>>8,o->type==4?30:10)){if(o->type!=4)killed(o);else if(!enemy_guarded(o)&&o->bombHit!=ex.bombSerial){o->bombHit=ex.bombSerial;damage_enemy(o,9000);pc_impact(o->x>>8,o->y>>8,1);if(o->hp<=0)killed(o);}}}
  for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&bomb_reached(o->x>>8,o->y>>8,3)){o->on=0;pc_impact(o->x>>8,o->y>>8,3);}}
- for(int i=0;i<12;i++){Obj*o=ex.obstacles+i;int contact=o->on&&bomb_reached(o->x>>8,o->y>>8,o->base);if(o->on&&o->type==2){int gx=o->x>>8,gy=o->y>>8,yy=clamp(ex.bombY,gy-6,gy+6);contact=bomb_reached(clamp(ex.bombX,0,gx-52),yy,0)||bomb_reached(clamp(ex.bombX,gx+53,320),yy,0);}if(contact){o->on=0;g.score+=25;pc_impact(o->x>>8,o->y>>8,3);}}
+ for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int contact=o->on&&bomb_reached(o->x>>8,o->y>>8,o->base);if(o->on&&o->type==2){int gx=o->x>>8,gy=o->y>>8,yy=clamp(ex.bombY,gy-6,gy+6);contact=bomb_reached(clamp(ex.bombX,0,gx-52),yy,0)||bomb_reached(clamp(ex.bombX,gx+53,320),yy,0);}if(contact){o->on=0;g.score+=25;pc_impact(o->x>>8,o->y>>8,3);}}
  if(++ex.bombAge>60){ex.bombAge=0;ex.bombRadius=0;}
 }
