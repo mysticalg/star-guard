@@ -4,7 +4,7 @@ const music=document.querySelector("#music"),musicVolume=document.querySelector(
 
 let ready=false,started=false,touchActive=false;
 
-var Module={canvas,locateFile(path){return path+"?v=17";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
+var Module={canvas,locateFile(path){return path+"?v=19";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
 
 startButton.onclick=()=>{if(!ready||started)return;started=true;HighScores.beginRun(+document.querySelector('#sector').value+1);music.play().catch(()=>{});document.querySelector('#cover').hidden=true;Module.callMain([document.querySelector("#sector").value,document.querySelector("#resolution").value]);document.querySelector("#hud").hidden=false;document.querySelector('#sound').disabled=false;canvas.focus();ShipVoice.start();};
 
@@ -85,3 +85,5 @@ setInterval(()=>{if(!started)return;const stat=Module._web_stat,intro=stat(64),v
 const continuePanel=document.createElement('section');continuePanel.id='continue-panel';continuePanel.hidden=true;continuePanel.innerHTML='<small>FLIGHT SYSTEM LOST / SIGNAL RECOVERY</small><h2>CONTINUE?</h2><div id="continue-number">9</div><p id="continue-remaining"></p><button id="use-continue">CONTINUE / ENTER</button><button id="finish-run">FINISH RUN</button>';document.querySelector('#cabinet').append(continuePanel);
 document.querySelector('#use-continue').onclick=()=>{Module._web_command(13);canvas.focus();};document.querySelector('#finish-run').onclick=()=>{Module._web_command(110);canvas.focus();};
 setInterval(()=>{if(!started)return;const stat=Module._web_stat;continuePanel.hidden=stat(1)!==3||!!stat(6);document.querySelector('#continue-number').textContent=Math.ceil(stat(75)/50);document.querySelector('#continue-remaining').textContent=stat(74)+' CONTINUES REMAINING';},80);
+
+setInterval(()=>{if(!started)return;const weakness=Module._web_stat(82);document.querySelector('#boss-weakness').textContent=weakness?'WEAKNESS: '+weaponNames[weakness-1]+' ['+weakness+'] / +75% DAMAGE':'';},100);

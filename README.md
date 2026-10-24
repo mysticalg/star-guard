@@ -157,3 +157,7 @@ Earth flight replaces stars with three depth layers of rain and three scrolling 
 Regular parallax stars are approximately 25 percent smaller; warp stars keep their cinematic scale. Earth cloud layers scroll at 1400, 2100 and 3100 logical pixels per scenery-clock second, all faster than the 780-pixel ground layer. Rain is faster still, and smoke follows the nearest clouds.
 
 Planet sections automatically climb and descend through smooth altitude phrases. Ground textures zoom around the screen centre from distant high-altitude views to close low passes, while cloud cover thickens when crossing the cloud deck. Ship scale and collision geometry stay consistent.
+
+Weapon and impact SFX pass through a fixed-buffer stereo reverb with damped reflections and diffusion. Caverns smoothly increase wet level and feedback for longer tails. Player/bouncing/boss lasers additionally use a six-stage 0.10 Hz phaser with 82 percent resonant feedback; dry attacks remain in the mix. Music and voice stay on their separate browser buses.
+
+Each boss has one displayed counter-weapon that deals 75 percent extra shield and hull damage. The first boss is weak to Pulse, the second to Triple Rainbow; later counters rotate across all eight weapons, without consecutive repeats. Nova/support damage and protected boss phases keep their existing rules. Boss warnings smoothly decelerate scenery to a moderate battle pace across every biome, including caverns.
