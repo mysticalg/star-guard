@@ -67,3 +67,9 @@ The player hull renders at half width and height in both flight modes, with a ma
 Bosses bank up to twelve degrees with their actual lateral movement, easing back toward level while keeping their collision centres aligned.
 
 Right-click over the canvas triggers the nova bomb (B and the touch button still work). Music loops within each level and advances to the next OVG track when the next sector begins; the manual track selector remains available.
+
+## Shared high scores
+
+The game remains on GitHub Pages. `score-service/` is a separate Netlify Functions/Postgres backend for the world top-20 table at `https://star-guard-scores-mysticalg.netlify.app/api/scores`. Runs register at launch, and game-over scores are saved after the player submits a public pilot name. Gameplay does not depend on the score service. The browser remembers only the pilot name and an unsent result for retry; the table itself lives online.
+
+The API validates names and score ranges, registers run start times, limits requests and accepts one entry per run. This is a casual arcade table, not a server-authoritative anti-cheat system. SQL parameters are bound and names render as text. Schema changes use the timestamped migrations under `score-service/netlify/database/migrations/`; connection strings and Netlify state are excluded from Git. Run API tests with `npm test` from `score-service/`.

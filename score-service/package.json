@@ -1,0 +1,1 @@
+{"name":"star-guard-score-service","version":"1.0.0","private":true,"type":"module","scripts":{"build":"node --check lib/score-api.mjs","test":"node --test tests/*.test.mjs"},"dependencies":{"@netlify/database":"2.0.1"}}
