@@ -10,8 +10,8 @@
   }
   function render(scores){
     rows.replaceChildren();
-    if(!scores.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=4;td.textContent='No scores yet. Set the first high score.';return;}
-    scores.forEach((s,i)=>{const tr=rows.insertRow();[String(i+1).padStart(2,'0'),s.name,Number(s.score).toLocaleString(),String(s.level).padStart(2,'0')].forEach(value=>{tr.insertCell().textContent=value;});tr.title='Started at sector '+s.starting_level;});
+    if(!scores.length){const tr=rows.insertRow(),td=tr.insertCell();td.colSpan=5;td.textContent='No scores yet. Set the first high score.';return;}
+    scores.forEach((s,i)=>{const tr=rows.insertRow();[String(i+1).padStart(2,'0'),s.name,Number(s.score).toLocaleString(),String(s.level).padStart(2,'0')].forEach(value=>{tr.insertCell().textContent=value;});const cell=tr.insertCell(),date=new Date(s.created_at);cell.style.whiteSpace='nowrap';if(Number.isFinite(date.getTime())){const time=document.createElement('time');time.dateTime=date.toISOString();time.textContent=date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'});time.title=date.toUTCString();cell.append(time);}else cell.textContent='—';tr.title='Started at sector '+s.starting_level;});
   }
   async function refresh(){
     status.textContent='Loading the world table…';

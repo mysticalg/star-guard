@@ -25,7 +25,7 @@ static int cavern_speed(void){int w=((ex.backgroundY>>8)+(player_y>>8))&511;retu
 static void cavern_crash(int x,int y){if(g.shield||g.active){hit_sparks(x,y,0,0,3);return;}g.barrier=0;hurt_at(x,y,0,0);int yy=player_y>>8,center=tunnel_center(yy);g.px=tunnel_lane(yy,(g.px>>8)>center)*Q;}
 static void trail_point(int x,int y,int tint){Trail*t=ex.trails+ex.nextTrail;ex.nextTrail++;if(ex.nextTrail==384)ex.nextTrail=0;t->x=x;t->y=y;t->life=g.fx?15:8;t->tint=tint;}
 static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,tint);if(g.fx){trail_point((x+xx)>>1,(y+yy)>>1,tint);if(absn(xx-x)+absn(yy-y)>8*Q)trail_point((x*3+xx)>>2,(y*3+yy)>>2,tint);}}
-static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);int il,ir,island=tunnel_island(y,&il,&ir)&&x>il&&x<ir;if(x<l||x>r||island){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);return 1;}return 0;}
+static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);int il,ir,island=tunnel_island(y,&il,&ir)&&x>il&&x<ir;if(x<l||x>r||island){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);pc_hit_sound(2,o->type,x);if(o->type==7)pc_reflection_sound(2,0,x);return 1;}return 0;}
 static int cruise_speed(int phase){return phase==10?384:phase>=12?320:phase>=6?192:phase==5?3072:phase==4?1536:phase==0?128:phase==1?80:phase==2?224:phase==3?(g.clock<240?384:640):96;}
 /* Eight-second pace phrases, blended over two seconds without position jumps. */
 static int section_speed(int phase){int base=cruise_speed(phase);if(ex.bossSpawned||ex.bossWarning)return phase==5?640:clamp(base/2,64,192);if(phase==5)return cavern_speed();if(ex.intro)return base*176/256;if(ex.victory)return base/2;static const int pace[6]={180,256,384,224,448,208};int beat=g.clock/400,slot=(beat+phase*2)%6,t=clamp(g.clock%400,0,100);t=t*t*(300-2*t)/10000;int from=pace[(slot+5)%6],to=pace[slot];return base*(from+(to-from)*t/100)/256;}
@@ -83,9 +83,9 @@ static void expansion_step(int mask,int ch){int i,j,phase=mission_phase(g.wave),
  for(i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;o->age++;o->y+=o->vy;o->x+=o->vx;x=o->x>>8;y=o->y>>8;
   if(y>288){o->on=0;continue;}
   if(o->type==2){if(absn(y-(player_y>>8))<12&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-7,(player_y>>8)+7),0,y<(player_y>>8)?1:-1);continue;}
-  for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){s->on=0;o->hp--;hit_sparks(s->x>>8,s->y>>8,0,1,1);pc_hit_sound(o->type==5||o->type==7||o->type==10?3:o->type==6||o->type==9||o->type==11?4:o->type==8?0:2,s->type,x);}}
-  if(g.beam&&beam_hits(x,o->base)&&(g.tick&3)==0&&y<(player_y>>8)){o->hp--;pc_hit_sound(o->type==5||o->type==7||o->type==10?3:o->type==6||o->type==9||o->type==11?4:o->type==8?0:2,g.weapon,x);}
-  if(o->hp<=0){o->on=0;g.score+=25;burst(x,y,0);if(o->type==9||o->type==11)for(int a=0;a<256;a+=64){Obj*shard=bullet(o->x,o->y,sn(a)*400/1024,sn(a+64)*400/1024);if(shard)shard->variant=2;}continue;}
+  for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){s->on=0;o->hp--;if(s->type==7)pc_reflection_sound(hazard_material(o),o->type,x);hit_sparks(s->x>>8,s->y>>8,0,1,1);pc_hit_sound(hazard_material(o),s->type,x);}}
+  if(g.beam&&beam_hits(x,o->base)&&(g.tick&3)==0&&y<(player_y>>8)){o->hp--;pc_hit_sound(hazard_material(o),g.weapon,x);}
+  if(o->hp<=0){o->on=0;g.score+=25;if(o->type!=2&&o->type!=3){pc_crush_sound(hazard_material(o),o->base,x);ex.soundTick=g.tick;}burst(x,y,0);if(o->type==9||o->type==11)for(int a=0;a<256;a+=64){Obj*shard=bullet(o->x,o->y,sn(a)*400/1024,sn(a+64)*400/1024);if(shard)shard->variant=2;}continue;}
   if((o->type==9||o->type==11)&&g.tick%35==0&&absn(x-(g.px>>8))<o->base+22&&absn(y-(player_y>>8))<o->base+22)hurt_at(g.px/Q,player_y/Q,0,1);
   if(absn(x-(g.px>>8))<o->base+4&&absn(y-(player_y>>8))<o->base+5){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);o->on=0;burst(x,y,0);}
  }

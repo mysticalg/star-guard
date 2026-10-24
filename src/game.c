@@ -60,6 +60,7 @@ static Obj *slot(Obj *a,int n){int i;for(i=0;i<n;i++)if(!a[i].on){a[i]=(Obj){.on
 static void particle(int x,int y,int vx,int vy,int life,int tint){int i;if(!g.fx)return;for(i=0;i<MAXP;i++){int n=ex.nextParticle++;Particle*p;if(ex.nextParticle==MAXP)ex.nextParticle=0;p=g.particles+n;if(!p->on){p->on=1;p->x=x;p->y=y;p->vx=vx;p->vy=vy;p->life=life;p->tint=tint;return;}}}
 extern void pc_hit_sound(int,int,int);
 extern void pc_laser_sound(int,int);
+extern void pc_reflection_sound(int,int,int),pc_crush_sound(int,int,int);
 extern void pc_burst(int,int,int),pc_impact(int,int,int),pc_bomb_start(int,int),pc_transition(void),pc_charge_burst(int,int);
 static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e=slot(g.effects,12);if(e){e->x=x;e->y=y;e->type=big;e->phase=rnd()&255;}for(i=0;i<n;i++){int a=rnd()&255,s=(big?700:400)+(rnd()&(big?1023:511));particle(x*Q,y*Q,(sn(a)*s)>>10,(sn(a+64)*s)>>10,18+(rnd()&23),i&3?1:0);}g.shake=big?7:3;if(ex.soundTick!=g.tick){ex.soundTick=g.tick;sound(2,2,big?118:84,big?0x2800:0x3400);sound_slide(2,1,0x1100,big?30:14);sound_slide(2,0,0,big?42:22);}}
 static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){o->x=x*Q;o->y=y*Q;o->type=type;o->vy=220;}}
@@ -74,6 +75,9 @@ static int projectile_crosses(const Obj*s,const Obj*b){float dx=(b->x-s->x)/(flo
 static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;Obj*o=bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));if(o)o->variant=1;}
 static void killed(Obj*);
 static int enemy_guarded(const Obj*);
+static int hazard_material(const Obj*o){return o->type==5||o->type==7||o->type==10||(o->type<2&&ex.phase==8)?3:o->type==6?4:o->type==9||o->type==11?5:o->type==8||o->type==2?0:2;}
+static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(o->type==4)return o->variant==8||o->variant==12||o->variant==15?3:o->variant==9?4:o->variant==14||o->variant==16?5:0;return o->type>=10&&o->type<=13?4:o->type==18||o->type==21?5:0;}
+
 #include "bugs.h"
 static void specialist_group(int,int);
 static void ground_group(int,int);
@@ -112,7 +116,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0;
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
  }
  if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<SECTOR_WAVES&&enemy_count()<=20&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*170){group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
- for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;o->age++;if(o->base>0)o->base--;if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||(ex.phase==11&&o->x>=288*Q)||o->age>=28||o->x<3*Q||o->x>317*Q||o->y>252*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0))continue;if(o->type==6||o->type==7){if(o->x<3*Q||o->x>317*Q){o->x=clamp(o->x,3*Q,317*Q);o->vx=-o->vx;if(o->type==7)o->heading++;}if(o->y<26*Q||o->y>252*Q){o->y=clamp(o->y,26*Q,252*Q);o->vy=-o->vy;if(o->type==7)o->heading++;}if(o->age>150)o->on=0;}else if(o->y<20*Q||o->x<0||o->x>320*Q)o->on=0;}
+ for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;o->age++;if(o->base>0)o->base--;if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||(ex.phase==11&&o->x>=288*Q)||o->age>=28||o->x<3*Q||o->x>317*Q||o->y>252*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0))continue;if(o->type==6||o->type==7){if(o->x<3*Q||o->x>317*Q){o->x=clamp(o->x,3*Q,317*Q);o->vx=-o->vx;if(o->type==7){o->heading++;pc_reflection_sound(ex.phase==5?2:5,0,o->x/Q);}}if(o->y<26*Q||o->y>252*Q){o->y=clamp(o->y,26*Q,252*Q);o->vy=-o->vy;if(o->type==7){o->heading++;pc_reflection_sound(ex.phase==5?2:5,0,o->x/Q);}}if(o->age>150)o->on=0;}else if(o->y<20*Q||o->x<0||o->x>320*Q)o->on=0;}
  for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;int oldx=o->x,oldy=o->y;o->age++;
   if(o->type==4){stage_boss_step(o);
   }else{if(o->type<8)o->y+=(o->vy*ex.enemySpeed)>>8;new_enemy_step(o);if(o->type==0)o->x=o->base*Q+sn(o->age*2+o->phase)*5;
