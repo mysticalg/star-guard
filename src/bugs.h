@@ -12,9 +12,9 @@ static void ricochet(Obj*s,Obj*enemy,int id){float nx=(float)(s->x-enemy->x),ny=
  float angle=((g.tick+id)&1)?.32f:-.32f,c=cosf(angle),snv=sinf(angle);s->vx=(int)(vx*c-vy*snv);s->vy=(int)(vx*snv+vy*c);int r=enemy->type==4?34:enemy->type>=10?11:16;s->x=enemy->x+(int)(nx*r*Q);s->y=enemy->y+(int)(ny*r*Q);s->base=3;s->phase=id;if(s->type==7)s->heading++;if(--s->hp<=0)s->on=0;pc_impact(s->x>>8,s->y>>8,1);if(s->type==7)pc_reflection_sound(enemy_material(enemy),enemy->type==4?enemy->variant+4:enemy->type,s->x/Q);else sound(1,1,65,0x3800+(4-s->hp)*0x300);
 }
 static int bomb_reached(int x,int y,int padding){int dx=x-ex.bombX,dy=y-ex.bombY,r=ex.bombRadius+padding;return dx*dx*64+dy*dy*100<=r*r*64;}
-static void bomb_step(void){if(!ex.bombAge)return;ex.bombRadius=ex.bombAge*9;
+static void bomb_step(void){if(!ex.bombAge)return;int before=g.kills,previous=ex.novaKills;ex.bombRadius=ex.bombAge*9;
  for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&!(o->type==4&&o->age<=120)&&bomb_reached(o->x>>8,o->y>>8,o->type==4?30:10)){if(o->type!=4)killed(o);else if(!o->morph&&!(o->attack>60&&o->attack<=85)&&o->bombHit!=ex.bombSerial){o->bombHit=ex.bombSerial;damage_enemy(o,9000);pc_impact(o->x>>8,o->y>>8,1);if(o->hp<=0)killed(o);}}}
  for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&bomb_reached(o->x>>8,o->y>>8,3)){o->on=0;pc_impact(o->x>>8,o->y>>8,3);}}
  for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int contact=o->on&&bomb_reached(o->x>>8,o->y>>8,o->base);if(o->on&&o->type==2){int gx=o->x>>8,gy=o->y>>8,yy=clamp(ex.bombY,gy-6,gy+6);contact=bomb_reached(clamp(ex.bombX,0,gx-52),yy,0)||bomb_reached(clamp(ex.bombX,gx+53,320),yy,0);}if(contact){if(o->type!=2&&o->type!=3)pc_crush_sound(hazard_material(o),o->base,o->x/Q);o->on=0;g.score+=25;pc_impact(o->x>>8,o->y>>8,3);}}
- if(++ex.bombAge>60){ex.bombAge=0;ex.bombRadius=0;}
+ ex.novaKills+=g.kills-before;aoe_combo(ex.novaKills,previous);if(++ex.bombAge>60){ex.bombAge=0;ex.bombRadius=0;}
 }

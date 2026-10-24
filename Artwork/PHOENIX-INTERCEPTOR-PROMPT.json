@@ -1,0 +1,8 @@
+{
+  "method": "Built-in ImageGen",
+  "prompt": "Use case: precise-object-edit. Edit this top-down spaceship sprite. User correction: make it WHITE and REMOVE ALL PHOENIX / BIRD / FLAME WING imagery. Sleek white ceramic and polished pale titanium interceptor, long pointed nose, slender fuselage, dark smoked cockpit, sharply swept delta wings, twin angular tail fins and twin rear engine nozzles. More like the fictional Firefox MiG-31 interceptor from the movie Firefox, adapted as a spacecraft. Extremely sleek realistic hard-surface aerospace design, crisp white panels with fine dark seams, restrained ice-blue engine glow ONLY directly behind two exhausts. No orange or purple wing flames, no fire feathers, no bird details, no decorative plasma wings. Keep clean mechanical ship silhouette. Strict orthographic TOP-DOWN, nose straight UP, symmetric, centered whole ship with15percent transparent padding on all sides so NO tips or exhaust are cropped. Square actual transparent background, no lettering, no scene, no shadow. Readable as a white spacecraft at80px size.",
+  "asset": "docs/images/phoenix.png",
+  "nativeAsset": "Assets/modern/phoenix.png",
+  "processing": "Downscaled to512px, alpha retained",
+  "mode": "Phoenix Mode; sleek white interceptor; no bird appearance"
+}

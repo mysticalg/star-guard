@@ -1,0 +1,18 @@
+{
+  "method": "Built-in ImageGen",
+  "prompt": "Use case: stylized-concept. Asset type: game ability icon atlas. Create exactly NINE square painted ability icons in a perfectly aligned 3 by 3 grid, 1536x1536, each cell exactly512x512 with no gutters. Rich hand-painted collectible RPG action-bar icon craftsmanship, dramatic lighting, chunky readable silhouettes, saturated jewel colors and deep near-black backgrounds; sci-fi spaceship weapon abilities, consistent style. NO text, NO numbers, NO borders, NO UI. Each icon self-contained, centred and has plenty of dark edge padding, never crosses cell boundaries. Ordered row-major: 1 PULSE: one gold-white energy cannon bullet with hot orange muzzle flare. 2 SPREAD: a fan of five luminous orange projectiles on dark teal. 3 RAPID: a diagonal stream of small golden tracer rounds, speedy motion streaks. 4 DEATH LASER: a powerful coherent red energy blade with white-hot core and red corona across black. 5 HEATSEEKER: sleek silver missile with fiery orange rocket engine, curving smoke trail. 6 TRIPLE DEATH LASER: exactly three parallel vivid green coherent beams with white cores, on black. 7 RICOCHET: heavy metallic bullet rebounding at an angle from a steel plate with bright yellow sparks. 8 BOUNCING LASER: vivid magenta cyan beam zigzag reflected from two metal surfaces with electric glints. 9 TESLA EMP: branching blue violet electrical lightning storm emanating from a compact tesla coil. Make each cell a distinct beautifully painted actual inventory/ability icon, strong material detail, game-ready at64pixels. No letters, labels, logos, character faces or extraneous frames.",
+  "asset": "docs/images/weapon-icons.jpg",
+  "layout": "3 x 3 row-major",
+  "weapons": [
+    "Pulse",
+    "Spread",
+    "Rapid",
+    "Death laser",
+    "Heatseeker",
+    "Triple death laser",
+    "Ricochet",
+    "Bouncing laser",
+    "Tesla EMP"
+  ],
+  "processing": "JPEG conversion and downscale only; icons addressed with CSS atlas positions. Numbers, cooldown wipes and frames are real HTML/CSS."
+}

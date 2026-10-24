@@ -5,6 +5,8 @@ typedef struct {
  int shieldDrops,invincibleTicks,empBombs,empStop;
  int chaff,chaffDeploy;Obj mines[96];
  int torpedoCool,torpedoSerial,torpedoBlasts;
+ int phoenixMeter,phoenixTicks,phoenixSerial;
+ int comboKills,comboBonus,comboTicks,novaKills,missileBlasts;
  int intro,victory,victoryX,victoryY,stageScore,stageKills,stageSalvage,clearScore,clearKills,clearSalvage,clearBonus;
  int phase,oldPhase,transition,scrollSpeed,enemySpeed,backgroundY,bombs,bombFlash,options,optionsOn,followHead,multi,hazardSerial,nextParticle,soundTick;
  int followX[64],followY[64];Obj obstacles[MAXH];
