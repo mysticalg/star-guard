@@ -7,7 +7,7 @@ window.ShipVoice=(()=>{
     context=new (window.AudioContext||window.webkitAudioContext)();
     gain=context.createGain();gain.gain.value=.8;gain.connect(context.destination);
     await context.resume();
-    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=15').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=15').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
+    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=16').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=16').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
     clips=meta.clips;buffer=await context.decodeAudioData(data);pump();
   }
   function stop(){if(source){source.onended=null;try{source.stop();}catch{}source=null;}current=null;}
@@ -19,7 +19,7 @@ window.ShipVoice=(()=>{
   }
   function say(key,priority=1){
     if(!enabled||muted)return;
-    const now=performance.now();if(now-(recent.get(key)||-100000)<1500)return;
+    const now=performance.now(),cooldown=key==='energy-low'?30000:key==='hull-critical'?15000:1500;if(now-(recent.get(key)||-100000)<cooldown)return;
     recent.set(key,now);
     if(priority>=3){queue=queue.filter(x=>x.priority>=priority);if(current&&current.priority<priority)stop();}
     queue.push({key,priority});queue.sort((a,b)=>b.priority-a.priority);if(queue.length>4)queue.length=4;pump();
@@ -39,12 +39,10 @@ window.ShipVoice=(()=>{
     if(s.laser>0&&s.laser<=60&&(!p.laser||p.laser>60))say('super-laser',4);
     if(s.rear&&!p.rear)say('rear-attack',3);
     if(s.storm&&s.storm!==p.storm)say(['','asteroid-storm','ice-storm','fire-storm','ice-asteroid-storm','metal-asteroid-storm','radiation-zone','diamond-asteroid-storm','uranium-asteroid-storm'][s.storm],3);
-    if(s.ship>p.ship)say('ship-upgrade',2);
     if(s.clear&&!p.clear)say('sector-clear',2);
     if(s.travel&&!p.travel)say('warp',2);
     if(s.hull<=25&&p.hull>25)say('hull-critical',3);
     if(s.energy<=10&&p.energy>10)say('energy-low',1);
-    if(s.pickupTicks>p.pickupTicks){const key=s.pickup===10?'weapon-'+s.weapon:({2:'shield',4:'repair',5:'nova',6:'option',7:'power',8:'satellite',9:'dropper',11:'salvage',12:'power-charge'})[s.pickup];if(key)say(key,1);}
     previous=s;
   }
   document.addEventListener('visibilitychange',()=>{if(context&&document.hidden){paused=true;context.suspend();}});

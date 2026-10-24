@@ -22,3 +22,5 @@
 #mission-briefing[hidden],#mission-debrief[hidden]{display:none}#mission-briefing small,#mission-debrief small{color:#87d8e8;letter-spacing:.16em;font-size:11px}#mission-briefing h2,#mission-debrief h2{font-size:clamp(18px,2.5vw,28px);letter-spacing:.1em;margin:14px 0}#mission-briefing p,#mission-debrief p{font:16px/1.7 system-ui;color:#c6dee7}#mission-briefing span,#mission-debrief span{font-size:11px;letter-spacing:.12em;color:#8bffca}#mission-debrief{border-color:#ffc76a88;box-shadow:0 0 70px #ffc76a22}#mission-debrief b{color:#fff1be;margin-left:20px}
 
 @keyframes boss-impact-shake{0%,100%{transform:translate(0,0)}25%{transform:translate(5px,-4px)}50%{transform:translate(-5px,3px)}75%{transform:translate(3px,4px)}}#canvas.boss-shake{animation:boss-impact-shake .085s linear infinite}
+
+#canvas.hide-cursor{cursor:none!important}
