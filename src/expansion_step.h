@@ -4,8 +4,9 @@ static int satellite_x(void){return (g.px>>8)+(sn(g.tick*3)*19>>10);}
 static int satellite_y(void){return (player_y>>8)+(sn(g.tick*3+64)*16>>10);}
 static void option_fire(void){if(!ex.optionsOn||ex.empDisable)return;for(int n=0;n<ex.options;n++){Obj*o=slot(g.shots,MAXS);if(o){o->x=option_x(n)*Q;o->y=(option_y(n)-7)*Q;o->vx=(n&1?65:-65)+g.playerVX;o->vy=g.weapon==4?-1300:-2200;o->type=g.weapon==4?4:0;o->phase=-2;o->power=power_level(g.weapon);}}}
 static int beam_half_width(void){if(ex.phoenixTicks)return flight_side_mode()?58:80;static const int single[4]={3,6,11,18},triple[4]={3,5,9,14};return (ex.multi?triple:single)[power_level(ex.multi?5:3)-1];}
-static int beam_center(int lane,int y){if(ex.phoenixTicks)return g.px/Q;int level=power_level(ex.multi?5:3);return g.px/Q+lane*(6+(player_y/Q-7-y)*(8+4*(level-1))/100);}
-static int beam_hits(int x,int y,int radius){for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++)if(absn(x-beam_center(lane,y))<radius+beam_half_width())return 1;return 0;}
+static int beam_slope(int lane){int fan=ex.multi&&!ex.phoenixTicks?lane*(8+4*(power_level(5)-1))*256/100:0;int angle=clamp(ex.beamAim+fan,-256,256);return flight_side_mode()?angle*960*960/(696*696):angle;}
+static int beam_center(int lane,int y){return g.px/Q+lane*6+(player_y/Q-7-y)*beam_slope(lane)/256;}
+static int beam_hits(int x,int y,int radius){for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float slope=beam_slope(lane)/256.0f;if(absn(x-beam_center(lane,y))<(radius+beam_half_width())*sqrtf(1+slope*slope))return 1;}return 0;}
 static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&o->y>12*Q){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
 static void hazard(int,int,int);
 static int tunnel_center(int);

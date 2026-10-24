@@ -145,7 +145,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  if(g.mode==3){g.tick++;if(!(mask&4))g.continueReady=1;if(ch=='n')g.continueTicks=0;if(ch==13||ch=='c'||(g.continueReady&&(mask&4))){g.continues--;ex.empDisable=ex.empGrace=0;g.continueTicks=0;g.mode=1;g.lives=3;g.barrier=g.energy=100;weapon_batteries_reset();g.shield=150;g.px=160*Q;player_y=220*Q;if(ex.phase==5)g.px=tunnel_lane(220,0)*Q;pc_charge_burst(g.px/Q,220);return;}if(g.continueTicks>0)g.continueTicks--;if(!g.continueTicks)g.mode=2;return;}
  if(ch>='1'&&ch<='9'&&(g.unlocked&(1<<(ch-'1')))){if(g.weapon!=ch-'1')g.beam=0;g.weapon=ch-'1';}
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;pc_hit_sound(1,0,g.px/Q);}
- g.tick++;g.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;expansion_step(mask,ch);
+ g.tick++;g.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;int beamTargetAim=clamp(g.playerVX*256/(flight_side_mode()?940:1024),-256,256);ex.beamAim+=(beamTargetAim-ex.beamAim)/3;if(absn(beamTargetAim-ex.beamAim)<3)ex.beamAim=beamTargetAim;expansion_step(mask,ch);
  if(ex.empDisable)ex.empDisable--;if(ex.empGrace)ex.empGrace--;if(ex.empTicks)ex.empTicks--;if(ex.empPulse)ex.empPulse--;if(g.shield)g.shield--;if(g.active)g.active--;if(g.shake)g.shake--;if(g.beam)g.beam--;
  if(ex.comboTicks)ex.comboTicks--;weapon_batteries_step();if(ex.invincibleTicks)ex.invincibleTicks--;
  emp_feedback_step();
