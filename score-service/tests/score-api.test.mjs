@@ -39,3 +39,5 @@ test('preflight allows the game origin, and malformed bodies cannot write',async
     const response=await handler(new Request('https://score.test/api/scores',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body}));assert.ok([400,413].includes(response.status));
   }assert.equal(scores.size,0);
 });
+
+test("all seventeen starting sectors are accepted, out-of-range sectors are rejected",async()=>{const {call}=setup();for(let startingLevel=1;startingLevel<=17;startingLevel++)assert.equal((await call("runs",{startingLevel})).status,201);for(const startingLevel of [0,18,-1])assert.equal((await call("runs",{startingLevel})).status,400);});
