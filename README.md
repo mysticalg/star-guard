@@ -195,3 +195,8 @@ Dense connected packs (at least five enemies, average two nearby neighbours) tri
 Crowded-scene shadow passes clear and composite only each transformed sprite bounding rectangle, with clipped caster geometry, rather than copying the entire framebuffer per receiver. This retains opaque silhouette shadows while reducing fill cost in dense critical swarms.
 
 Enemies and transforming bosses now cast altitude-dependent, correctly rotated cloud silhouettes alongside the player. During fast Earth flight, frontal enemy engine trails are suppressed for projectile readability; rear raiders retain stronger twin booster plumes and a positional entry sound. Sample-based boss reactor/computer ambience grows with boss phase and fades on defeat, sharing mute/pause controls.
+
+
+## Sample-based browser audio
+
+Browser effects now use decoded audio samples only (Kenney/OpenGameArt CC0; Tesla recording by Why_O under CC BY 4.0): gunfire, lasers, material impacts, shields, explosions, bombs, electric buzz, warning and pickup cues, engines, warp and a victory fanfare. Procedural C voices are bypassed in WebAssembly. Pitch shifts, sampled fifth/seventh laser harmonies, per-reflection flangers and short cavern reflections process the samples. Twenty-four bounded one-shot events and category cooldowns prevent dense hits from flooding the mixer. Original source links and licences are in docs/audio/sfx/SOURCES.txt.

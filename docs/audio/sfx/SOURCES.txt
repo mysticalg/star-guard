@@ -4,3 +4,33 @@ https://kenney.nl/assets/sci-fi-sounds
 Boss reactor: spaceEngineLow_000 + computerNoise_000, filtered, mixed and seam-crossfaded.
 Rear booster: thrusterFire_000, trimmed and level-matched.
 Retrieved 24 October 2026. Original licence included.
+
+Additional game effects (trimmed, filtered and level-matched):
+explosion: explosionCrunch_002.ogg
+bomb: lowFrequency_explosion_000.ogg
+laser: laserLarge_000.ogg
+bounce: laserSmall_003.ogg
+metal: impactMetal_medium_000.ogg
+shield: forceField_001.ogg
+rock: impactMining_001.ogg
+glass: impactGlass_medium_002.ogg
+organic: slime_000.ogg
+energy: forceField_003.ogg
+Tesla Coil - Electricity by Why_O
+https://freesound.org/people/Why_O/sounds/633172/
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Recorded with Zoom H1. Excerpt trimmed, filtered and level-matched for gameplay.
+Sci-fi assets: https://kenney.nl/assets/sci-fi-sounds
+Impact assets: https://kenney.nl/assets/impact-sounds
+Tesla: real Tesla coil recording; previous Electric Buzz sample replaced.
+Kenney assets: CC0-1.0. Tesla recording: CC BY 4.0.
+
+Additional sample cues:
+gun: laserSmall_000.ogg
+pickup: computerNoise_001.ogg
+warning: computerNoise_003.ogg
+warp: spaceEngineLarge_002.ogg
+super: forceField_004.ogg
+victory-blast: lowFrequency_explosion_001.ogg
+Victory Fanfare Short by cynicmusic (CC0), https://opengameart.org/content/victory-fanfare-short
+Trimmed/level matched. Retrieved 24 October 2026.
