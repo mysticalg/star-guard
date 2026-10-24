@@ -1,0 +1,12 @@
+[
+  {
+    "name": "pose1",
+    "prompt": "Edit this exact transparent twelve-boss sprite sheet into animation pose 1 of a three-pose ping-pong loop. Keep precisely the same four-column three-row grid, each craft in exactly the same cell center, same overhead view, orientation, scale and colors. Preserve every complete silhouette and generous transparent margins. Animate small mechanical parts only: slightly open wing armor flaps and spread articulated claws about 4 degrees, brighten central reactor and engine vents. Subtle plausible mechanical movement, no translation or camera rotation, no new objects, no background, no text, no flames extending outside the cells. This is production game animation art; precise registration and recognizable original identities matter. Preserve transparent background.",
+    "mode": "built-in ImageGen"
+  },
+  {
+    "name": "pose2",
+    "prompt": "Edit this exact transparent twelve-boss sprite sheet into animation pose 2 of a three-pose ping-pong loop. Keep precisely the same four-column three-row grid, each craft in exactly the same cell center, same overhead view, orientation, scale and colors. Preserve every complete silhouette and generous transparent margins. Animate small mechanical parts only: open armor flaps and articulated claws about 8 degrees, extend weapon barrels a little, reactor and vents at brightest pulse. Subtle plausible mechanical movement, no translation or camera rotation, no new objects, no background, no text, no flames extending outside the cells. This is production game animation art; precise registration and recognizable original identities matter. Preserve transparent background.",
+    "mode": "built-in ImageGen"
+  }
+]

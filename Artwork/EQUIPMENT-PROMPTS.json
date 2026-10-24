@@ -1,0 +1,74 @@
+[
+  {
+    "name": "pickup-power",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. A floating weapon power-core collectible: compact hexagonal capsule with a luminous rainbow crystal in its center and a clearly engraved small P emblem; vivid cyan, magenta and gold energy.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-power.png"
+  },
+  {
+    "name": "pickup-option",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. An option-drone collectible: a compact blue metallic capsule containing the unmistakable silhouette of a small winged escort drone behind a glowing cyan window; engraved O emblem.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-option.png"
+  },
+  {
+    "name": "pickup-shield",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. A shield collectible: a compact silver hexagonal module with a brilliant turquoise shield-shaped energy emblem in the center.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-shield.png"
+  },
+  {
+    "name": "pickup-repair",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. An extra-life and repair collectible: a compact red and silver rescue module with a bold luminous white plus-shaped medical emblem.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-repair.png"
+  },
+  {
+    "name": "pickup-nova",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. A nova-bomb collectible: a compact orange and white spherical antimatter bomb canister, brilliant blue energy core, engraved B emblem. Friendly collectible, not an enemy.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-nova.png"
+  },
+  {
+    "name": "pickup-satellite",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. An orbiting-satellite collectible: compact violet and silver hexagonal capsule containing a golden circular orbital ring and a tiny satellite symbol, luminous purple energy.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-satellite.png"
+  },
+  {
+    "name": "pickup-dropper",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. A dispersal-bomb-dropper collectible: compact amber and silver equipment crate with three small round explosive canisters and a down-arrow emblem, warm golden glow.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-pickup-dropper.png"
+  },
+  {
+    "name": "option-drone",
+    "prompt": "Create one production-ready high-resolution game sprite for a modern photoreal-style sci-fi arcade shooter. A single isolated object, physically detailed silver titanium and dark graphite machinery, cinematic cool rim light, emissive accents, crisp readable silhouette at tiny in-game size. Orthographic top-down view, centered, fully within frame with at least 20 percent transparent margin. True transparent background, no floor, no cast shadow, no other objects, no frame, no labels outside the object. Smooth rendered detail, absolutely no pixel art. A small friendly escort drone spacecraft, nose pointing straight toward the top of the image. Sleek swept silver wings, two short cyan engine nozzles at the bottom, round blue power core, compact symmetrical silhouette. No pickup capsule, this is the actual flying drone.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-option-drone.png"
+  },
+  {
+    "name": "satellite",
+    "prompt": "One single fictional arcade-game spacecraft sprite, polished high-resolution 3D rendered science-fiction artwork, orthographic top-down view. Centered complete silhouette with 20% empty transparent margin all around. True transparent alpha background. No scenery, floor, shadows, other objects or text. Smooth realistic metal materials, tiny-game-size readability, no pixel art. This is a game asset with no people, action, damage or battle. Small friendly gold orbital satellite, round violet energy core, four silver swept fins and a thin gold navigation ring.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-satellite.png"
+  },
+  {
+    "name": "bomb-dropper",
+    "prompt": "One single fictional arcade-game spacecraft sprite, polished high-resolution 3D rendered science-fiction artwork, orthographic top-down view. Centered complete silhouette with 20% empty transparent margin all around. True transparent alpha background. No scenery, floor, shadows, other objects or text. Smooth realistic metal materials, tiny-game-size readability, no pixel art. This is a game asset with no people, action, damage or battle. Small friendly silver and amber spacecraft equipment module with three rounded orange cargo pods in a fan-shaped rack, release ports toward the bottom, blue status lights.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-bomb-dropper.png"
+  },
+  {
+    "name": "enemy-gunship",
+    "prompt": "One single fictional arcade-game spacecraft sprite, polished high-resolution 3D rendered science-fiction artwork, orthographic top-down view. Centered complete silhouette with 20% empty transparent margin all around. True transparent alpha background. No scenery, floor, shadows, other objects or text. Smooth realistic metal materials, tiny-game-size readability, no pixel art. This is a game asset with no people, action, damage or battle. Broad dark gunmetal arcade spacecraft, front toward top, four long orange mechanical antenna-like projections, layered armored panels, red propulsion lights at bottom, complete symmetrical wing tips.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-enemy-gunship.png"
+  },
+  {
+    "name": "enemy-crawler",
+    "prompt": "One single fictional arcade-game spacecraft sprite, polished high-resolution 3D rendered science-fiction artwork, orthographic top-down view. Centered complete silhouette with 20% empty transparent margin all around. True transparent alpha background. No scenery, floor, shadows, other objects or text. Smooth realistic metal materials, tiny-game-size readability, no pixel art. This is a game asset with no people, action, damage or battle. Narrow bronze segmented insect-shaped arcade spacecraft, front toward top, six short swept stabilizer fins, purple power core, red propulsion lights at bottom.",
+    "mode": "built-in ImageGen",
+    "file": "equipment-enemy-crawler.png"
+  }
+]

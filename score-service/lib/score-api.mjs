@@ -29,7 +29,7 @@ export function createScoreHandler(repo, now = Date.now) {
       try { body = JSON.parse(text); } catch { return reply({error:'Invalid JSON.'}, 400); }
       if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({error:'Invalid request.'}, 400);
       if (path === '/api/runs') {
-        if (!integer(body.startingLevel, 1, 10)) return reply({error:'Invalid starting level.'}, 400);
+        if (!integer(body.startingLevel, 1, 12)) return reply({error:'Invalid starting level.'}, 400);
         const id = randomUUID();
         await repo.start(id, body.startingLevel);
         return reply({runId:id}, 201);

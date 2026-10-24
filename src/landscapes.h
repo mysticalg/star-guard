@@ -4,7 +4,7 @@ static const u8 landscape_cloud[4]={249, 95, 253, 57};
 static int row_phase(int y){return ex.entryY&&y>=ex.entryY?ex.oldPhase:ex.phase;}
 static void landscape_pixel(u8*b,int x,int y,int c,int phase){if(row_phase(y)==phase)pixel(b,x,y,c);}
 static void draw_landscapes(u8*b){int scroll=ex.landScroll>>8;
- for(int y=24;y<256;y++){int phase=row_phase(y);if(phase<6)continue;int v=phase-6,c=landscape_sky[v][clamp((y-24)*15/210,0,15)];solid_span(b,y,0,320,c);}
+ for(int y=24;y<256;y++){int phase=row_phase(y);if(phase<6||phase>9)continue;int v=phase-6,c=landscape_sky[v][clamp((y-24)*15/210,0,15)];solid_span(b,y,0,320,c);}
  for(int phase=6;phase<10;phase++){if(phase!=ex.phase&&(!ex.entryY||phase!=ex.oldPhase))continue;int v=phase-6;
  /* A distant sun and high clouds move slowly; each mountain layer has its own velocity. */
  int sunx=245-(scroll/24)%38,suny=phase==9?93:76;
@@ -19,8 +19,8 @@ static void draw_landscapes(u8*b){int scroll=ex.landScroll>>8;
  }}
  }
 }
-static void draw_stage_boss(u8*b,Obj*o,int x,int y){int v=o->variant;if(pc_modern){pc_enemy_sprite(40+v,o,o->x/256.0f,o->y/256.0f);return;}if(v==0){pc_sprite(2,o->x/256.0f,o->y/256.0f);return;}
- int colours[10]={143,235,7,139,143,87,235,223,235,87},c=colours[v];
+static void draw_stage_boss(u8*b,Obj*o,int x,int y){int v=o->variant;if(pc_modern){pc_enemy_sprite(v<10?40+v:65+v-10,o,o->x/256.0f,o->y/256.0f);float form=o->power/256.0f;for(int tier=0;tier<2;tier++){float deploy=fmaxf(0,fminf(1,form-tier));if(deploy<=0)continue;float ease=deploy*deploy*(3-2*deploy);for(int side=-1;side<=1;side+=2){float a=(o->heading/16.0f+180)*3.14159265f/180,dx=side*(16+26*ease),dy=tier?12:-12;pc_equipment_sprite(tier?59:58,o->x/256.0f+dx*cosf(a)-dy*sinf(a),o->y/256.0f+dx*sinf(a)+dy*cosf(a),o->heading/16.0f+180+side*(1-ease)*80);}}return;}if(v==0){pc_sprite(2,o->x/256.0f,o->y/256.0f);return;}
+ int colours[12]={143,235,7,139,143,87,235,223,235,87,139,223},c=colours[v];
  /* Distinct silhouettes: orbital oracle, armoured harvester, lance, citadel,
     rock warden, broad manta, scorpion, ice crown and three-headed hydra. */
  for(int yy=-22;yy<=22;yy++){int w=v==1?24-absn(yy)/2:v==2?32-absn(yy)/3:v==3?8+(yy+22)/2:v==4?36-((absn(yy)/6)&1)*9:v==5?24-absn(yy)/3:v==6?43-absn(yy)*3/2:v==7?26-absn(yy)/2:v==8?30-absn(yy):20-absn(yy)/3;

@@ -77,3 +77,17 @@ The API validates names and score ranges, registers run start times, limits requ
 Weapon 4 is a thin translucent rainbow beam: two energy every six simulation ticks, sustained while held. Weapon 6 fires three rainbow beams for three energy per pulse. Weapon 8 fires narrow cyan bouncing laser bolts with five-hit persistence and much lighter trails.
 
 Scroll the mouse wheel over the canvas to change weapon (down: next, up: previous), wrapping through all eight. High-resolution wheel deltas accumulate into steps; wheel input outside the canvas scrolls the page normally.
+
+
+## Earned equipment and new stages
+
+Start with no option pods. Collect up to five, plus a separate orbiting satellite and bomb dropper. Weapon capsules equip their weapon and raise its saved power tier (maximum four); generic power capsules upgrade the current weapon. Higher tiers increase projectile size, damage and fire rate. Weak support shots, capped tiers, enemy armour progression and larger boss health keep upgrades useful without instantly erasing encounters. Pickups pulse, glow and orbit with sparks; equipment and remaining enemy hulls now use full-alpha ImageGen sprites.
+
+The twelve-sector campaign adds Low Earth Orbit with a fast top-down Earth flyover and quality-scaled directional background blur, and Ground Assault with a horizontal solid floor, tanks and aimed turrets. Contact with the floor blocks movement without damaging the player. Ground guns enter from outside the viewport and flash before firing. Each new stage has its own boss artwork and attacks. Blur only affects scenery, leaving combat and the HUD sharp. New ImageGen prompts are recorded in Artwork/EQUIPMENT-PROMPTS.json and Artwork/LEVEL-PROMPTS.json.
+
+
+## Boss forms and warp camera
+
+All twelve bosses have two extra ImageGen poses, played as a three-pose ping-pong animation. Boss health is now 300 + 32 per campaign sector. At two-thirds and one-third health, a protected 55-tick transformation unfolds additional weapon pods and changes the attack cadence. The final form adds more fire from the deployed pods. Damage cannot skip a transformation threshold. Hull scorch points and orange/electrical sparking accumulate with damage. Nova bombs deal one heavy 90-HP hit per boss per detonation instead of deleting bosses.
+
+During sector transit the camera eases toward the ship, zooms to 2.4x, holds, then smoothly returns. Input mapping accounts for zoom, and combat continues through the transition. The additional scene target is reused, and the extra compositing pass runs only during warp. Animation poses and their prompts are recorded in Artwork/BOSS-ANIMATION-PROMPTS.json.

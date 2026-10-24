@@ -1,0 +1,38 @@
+[
+  {
+    "name": "orbit",
+    "prompt": "Photorealistic cinematic top-down satellite view of low Earth orbit for a fast vertical scrolling arcade space game. Entire frame filled with detailed blue ocean, coastal land, mountain ridges, thin wisps of cloud, city lights at twilight, viewed straight down. No horizon, no curvature, no spacecraft, no text. Detailed realistic terrain with subdued contrast for bright game sprites, wide landscape image.",
+    "mode": "built-in ImageGen",
+    "file": "level-orbit.png"
+  },
+  {
+    "name": "ground",
+    "prompt": "Cinematic photorealistic alien industrial ground assault landscape for a side scrolling sci-fi arcade game. Wide landscape, distant atmospheric mountains and huge futuristic industrial structures, smoky orange twilight sky covering top 80 percent, continuous dark rocky ground and metal installations along bottom 20 percent. No vehicles, no text, no characters. Realistic materials, atmospheric depth, subtle colors so game sprites stand out.",
+    "mode": "built-in ImageGen",
+    "file": "level-ground.png"
+  },
+  {
+    "name": "tank",
+    "prompt": "Single isolated futuristic tracked armored ground tank sprite, side profile facing left, broad caterpillar tracks, dark titanium and orange armor, long cannon angled up-left. Realistic detailed 3D rendered game asset, no shadow plane, no text, no scenery, transparent background. Entire silhouette centered with generous clear margin, no cropped parts.",
+    "mode": "built-in ImageGen",
+    "file": "level-tank.png"
+  },
+  {
+    "name": "turret",
+    "prompt": "Single isolated futuristic stationary ground defense turret sprite side profile, aiming cannon up-left, broad compact anchored base, silver titanium and red glowing energy coils. Realistic detailed 3D rendered arcade game asset, no text, no scenery, transparent background. Entire silhouette centered with generous clear margin.",
+    "mode": "built-in ImageGen",
+    "file": "level-turret.png"
+  },
+  {
+    "name": "orbital-boss",
+    "prompt": "Single isolated massive orbital satellite guardian spacecraft game sprite viewed directly from above, symmetrical blue-white solar panel wings and gold central reactor with circular sensor arrays, nose pointing down. Photorealistic 3D game asset, entire silhouette with generous empty margin, transparent background, no text no background.",
+    "mode": "built-in ImageGen",
+    "file": "level-orbital-boss.png"
+  },
+  {
+    "name": "ground-boss",
+    "prompt": "Single isolated massive futuristic ground assault hover fortress spacecraft game sprite directly overhead view, broad dark orange armored body, four heavy engine pods and twin forward cannons pointing down, green reactor core. Photorealistic 3D game asset, full silhouette centered with generous clear margins, transparent background, no scenery no text.",
+    "mode": "built-in ImageGen",
+    "file": "level-ground-boss.png"
+  }
+]
