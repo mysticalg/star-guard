@@ -29,7 +29,8 @@ typedef struct{float x,y,w,h,u,v,uw,vh;} Sprite;
 static Sprite sprites[51];
 #include "modern_sprites.h"
 static SDL_Texture*scenes[6],*cloudTexture,*combatTarget;
-static float sideBlend;
+static float sideBlend,backgroundClock;
+static int visibleStars;
 static int side_mode(void){return (ex.phase<0?(g.wave-1)%10:ex.phase)&1;}
 static void flight_delta(float sx,float sy,float*wx,float*wy){float a=sideBlend*1.57079632679f,c=cosf(a),ss=sinf(a),w=960-264*sideBlend,h=696+264*sideBlend;*wx=(sx*c+sy*ss)*3*320/w;*wy=(-sx*ss+sy*c)*3*232/h;}
 static void flight_pointer(int*x,int*y){float wx,wy;flight_delta(*x-160,*y-140,&wx,&wy);*x=(int)(160+wx);*y=(int)(140+wy);}
@@ -84,9 +85,11 @@ static void mix_audio(float*out,int frames){audio_commands();for(int n=0;n<frame
  }l=l/(1+fabsf(l));r=r/(1+fabsf(r));if(!isfinite(l)||!isfinite(r)){l=r=0;SDL_AddAtomicInt(&audioErrors,1);}audioPeak=fmaxf(audioPeak,fmaxf(fabsf(l),fabsf(r)));if(fabsf(l)+fabsf(r)>.00001f)audioNonzero++;out[n*2]=l;out[n*2+1]=r;}SDL_AddAtomicInt(&audioFrames,frames);}
 static void SDLCALL audio_callback(void*unused,SDL_AudioStream*s,int additional,int total){(void)unused;(void)total;float block[512*2];int frames=additional/8;while(frames>0){int n=frames>512?512:frames;mix_audio(block,n);SDL_PutAudioStreamData(s,block,n*8);frames-=n;}}
 static void quad(float x,float y,float w,float h,SDL_FColor c,float u,float v,float uw,float vh){if(nquad>=NQ)return;int k=nquad*4;vertices[k]=(SDL_Vertex){{x,y},c,{u,v}};vertices[k+1]=(SDL_Vertex){{x+w,y},c,{u+uw,v}};vertices[k+2]=(SDL_Vertex){{x+w,y+h},c,{u+uw,v+vh}};vertices[k+3]=(SDL_Vertex){{x,y+h},c,{u,v+vh}};nquad++;}
+/* Cancel the camera's nonuniform scale on local artwork, keeping world positions intact. */
+static void unwarp_quad(float cx,float cy){float sx=960/(960-264*sideBlend),sy=696/(696+264*sideBlend);for(int i=(nquad-1)*4;i<nquad*4;i++){vertices[i].position.x=cx+(vertices[i].position.x-cx)*sx;vertices[i].position.y=cy+(vertices[i].position.y-cy)*sy;}}
 static void flush(SDL_Texture*t){if(nquad)SDL_RenderGeometry(renderer,t,vertices,nquad*4,indices,nquad*6);nquad=0;}
-static void light(float x,float y,float size,float r,float gg,float b,float alpha){quad((x-size)*3,(y-size)*3,size*6,size*6,(SDL_FColor){r,gg,b,alpha},0,0,1,1);}
-static void streak(float x,float y,float vx,float vy,float length,int hostile){float speed=sqrtf(vx*vx+vy*vy);if(speed<1)return;float dx=vx/speed,dy=vy/speed,cx=(x-dx*length*.4f)*3,cy=(y-dy*length*.4f)*3;int begin=nquad;quad(cx-length*1.5f,cy-2,length*3,4,(SDL_FColor){hostile?1:.6f,hostile?.18f:1,hostile?.3f:.9f,.95f},0,0,1,1);if(nquad==begin)return;for(int i=begin*4;i<begin*4+4;i++){float px=vertices[i].position.x-cx,py=vertices[i].position.y-cy;vertices[i].position.x=cx+px*dx-py*dy;vertices[i].position.y=cy+px*dy+py*dx;}}
+static void light(float x,float y,float size,float r,float gg,float b,float alpha){quad((x-size)*3,(y-size)*3,size*6,size*6,(SDL_FColor){r,gg,b,alpha},0,0,1,1);unwarp_quad(x*3,y*3);}
+static void streak(float x,float y,float vx,float vy,float length,int hostile){float speed=sqrtf(vx*vx+vy*vy);if(speed<1)return;float dx=vx/speed,dy=vy/speed,cx=(x-dx*length*.4f)*3,cy=(y-dy*length*.4f)*3;int begin=nquad;quad(cx-length*1.5f,cy-2,length*3,4,(SDL_FColor){hostile?1:.6f,hostile?.18f:1,hostile?.3f:.9f,.95f},0,0,1,1);if(nquad==begin)return;for(int i=begin*4;i<begin*4+4;i++){float px=vertices[i].position.x-cx,py=vertices[i].position.y-cy;vertices[i].position.x=cx+px*dx-py*dy;vertices[i].position.y=cy+px*dy+py*dx;}unwarp_quad(cx,cy);}
 static void init_graphics(void){for(int i=0;i<NQ;i++){int k=i*6,a=i*4;indices[k]=a;indices[k+1]=a+1;indices[k+2]=a+2;indices[k+3]=a;indices[k+4]=a+2;indices[k+5]=a+3;}
  for(int c=0;c<256;c++){int r=17*(((c&16)>>1)+(c&4)+(c&3)),gg=17*(((c&64)>>3)+((c&32)>>3)+(c&3)),b=17*(((c&128)>>4)+((c&8)>>1)+(c&3));palette[c]=0xff000000u|(b<<16)|(gg<<8)|r;}
  base=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,320,256);SDL_SetTextureScaleMode(base,SDL_SCALEMODE_NEAREST);
@@ -108,21 +111,46 @@ static void draw_fx(float dt){float power=intensity();int level=quality==2?2:1;t
  SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;
  if(g.fx){for(int i=0;i<NP;i++){Spark*p=sparks+i;if(p->life<=0)continue;float fade=1-p->age/p->life;light(p->x,p->y,p->size*(1+fade*1.4f),p->r,p->g,p->b,fade*.65f);if(quality==2&&p->age<.08f)light(p->x,p->y,p->size*.38f,1,1,1,fade);}
  for(int i=0;i<64;i++){Wave*w=waves+i;if(!w->life)continue;float t=w->age/w->life,r=w->radius*t,fade=(1-t)*(1-t);light(w->x,w->y,10*(1-t)+2,1,.55f,.12f,fade*.8f);int n=quality==2?96:40;for(int j=0;j<n;j++){float a=j*2*PI/n;light(w->x+cosf(a)*r,w->y+sinf(a)*r,.6f+2*(1-t),.25f,.65f,1,fade*.65f);}}
- for(int i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int t=i<MAXS?o->type:7;streak(o->x/256.0f,o->y/256.0f,o->vx,o->vy,i<MAXS&&t==7?14:5,i>=MAXS);if(t==6|| (i<MAXS&&t==7)){light(o->x/256.0f,o->y/256.0f,4,.35f,1,.12f,1);continue;}light(o->x/256.0f,o->y/256.0f,3.5f,t==2||t==4?1:.2f,t==7?.15f:.7f,t==2?.1f:1,.8f);}}
+ for(int i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int t=i<MAXS?o->type:7;streak(o->x/256.0f,o->y/256.0f,o->vx,o->vy,i<MAXS&&t==7?14:5,i>=MAXS);if(t==6|| (i<MAXS&&t==7)){light(o->x/256.0f,o->y/256.0f,4,.35f,1,.12f,1);continue;}if(i>=MAXS&&o->type==1){light(o->x/256.0f,o->y/256.0f,5,1,.5f,.05f,1);light(o->x/256.0f,o->y/256.0f,1.5f,1,1,.8f,1);continue;}light(o->x/256.0f,o->y/256.0f,3.5f,t==2||t==4?1:.2f,t==7?.15f:.7f,t==2?.1f:1,.8f);}}
  if(g.beam)for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++)for(int y=26;y<(player_y>>8)-12;y+=6)light((g.px>>8)+lane*28,y,7,.12f,.5f,1,.26f);
  if(ex.bombAge){flush(halo);float r=bombRenderRadius,fade=fminf(1,(61-ex.bombAge)/10.0f),cx=(float)ex.bombX,cy=(float)ex.bombY;quad((cx-r)*3,(cy-r*.8f)*3,r*6,r*4.8f,(SDL_FColor){.08f,.35f,1,.11f*fade},0,0,1,1);for(int j=0;j<256;j++){float a=j*2*PI/256;light(cx+cosf(a)*r,cy+sinf(a)*r*.8f,5.5f,.1f,.5f,1,.8f*fade);light(cx+cosf(a)*r*.96f,cy+sinf(a)*r*.768f,2,.55f,.9f,1,.4f*fade);}}
  }flush(halo);
  if(ex.bombAge){SDL_FPoint points[257];SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_ADD);float fade=fminf(1,(61-ex.bombAge)/10.0f);for(int line=-1;line<=1;line++){float r=bombRenderRadius+line*2;for(int j=0;j<=256;j++){float a=j*2*PI/256;points[j]=(SDL_FPoint){(ex.bombX+cosf(a)*r)*3,(ex.bombY+sinf(a)*r*.8f)*3};}SDL_SetRenderDrawColor(renderer,line?60:235,line?160:255,255,(Uint8)((line?140:255)*fade));SDL_RenderLines(renderer,points,257);}SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);}
  SDL_SetRenderClipRect(renderer,0);
 }
-static void scene_plate(int phase,int alpha){phase=clamp(phase,0,9);int index=phase>=6?phase-4:0;SDL_Texture*t=scenes[index];if(!t)return;float time=ex.landScroll/65536.0f;
- SDL_FRect source={106+sinf(time*.18f)*65,32+cosf(time*.13f)*24,1324,960},destination={0,72,960,696};
- SDL_SetTextureAlphaMod(t,(Uint8)clamp(alpha,0,255));SDL_SetTextureColorMod(t,phase==1?190:phase==4?245:255,phase==1?170:phase==4?180:255,phase==4?190:255);SDL_RenderTexture(renderer,t,&source,&destination);
- if(phase>=6&&cloudTexture){SDL_SetTextureAlphaMod(cloudTexture,(Uint8)(alpha*(phase==9?.18f:.28f)));SDL_SetTextureColorMod(cloudTexture,255,phase==7?218:255,phase==7?185:255);for(int layer=0;layer<2;layer++){SDL_FRect clouds={-160+sinf(time*(layer?.45f:.21f)+layer*2)*130,38+cosf(time*.24f+layer)*45,1280,820};SDL_RenderTexture(renderer,cloudTexture,0,&clouds);}}
+static float wrap_positive(float x,float period){return x-floorf(x/period)*period;}
+/* Mirrored repeats meet at identical edge pixels, avoiding jumps when a layer wraps. */
+static void scrolling_layer(SDL_Texture*t,float speed,float scale,int alpha,int clouds){
+ float w=1114*scale,h=742*scale,a=sideBlend*PI*.5f,dx=-sinf(a)*backgroundClock*speed,dy=cosf(a)*backgroundClock*speed;
+ float x=wrap_positive(dx,w)-w,y=72+wrap_positive(dy,h)-h;
+ SDL_SetTextureAlphaMod(t,(Uint8)clamp(alpha,0,255));
+ int col0=-1-(int)floorf(dx/w),row0=-1-(int)floorf(dy/h);
+ for(int row=0;row<3;row++)for(int col=0;col<3;col++){
+  SDL_FRect dest={x+col*w,y+row*h,w,h};if(dest.x>960||dest.y>768||dest.x+w<0||dest.y+h<72)continue;
+  int flip=(((col+col0)&1)?SDL_FLIP_HORIZONTAL:0)|(((row+row0)&1)?SDL_FLIP_VERTICAL:0);
+  SDL_RenderTextureRotated(renderer,t,0,&dest,0,0,(SDL_FlipMode)flip);
+ }
+ (void)clouds;
+}
+static void scene_plate(int phase,int alpha){phase=clamp(phase,0,9);int index=phase>=6?phase-4:0;SDL_Texture*t=scenes[index];if(!t)return;
+ SDL_SetTextureColorMod(t,phase==1?190:phase==4?245:255,phase==1?170:phase==4?180:255,phase==4?190:255);
+ scrolling_layer(t,phase>=6?13:3,1.2f,alpha,0);
+ if(phase>=6&&cloudTexture){SDL_SetTextureColorMod(cloudTexture,255,phase==7?218:255,phase==7?185:255);scrolling_layer(cloudTexture,32,1.35f,alpha*.19f,1);scrolling_layer(cloudTexture,69,.85f,alpha*.30f,1);}
+}
+static void draw_star_layers(int alpha){
+ float a=sideBlend*PI*.5f,dx=-sinf(a),dy=cosf(a);nquad=0;visibleStars=0;
+ for(int layer=0;layer<3;layer++)for(int i=0;i<80;i++){
+  unsigned hash=(unsigned)(i+layer*97+1)*2654435761u;float speed=12+layer*29,size=.8f+layer*.65f;
+  float x=wrap_positive((hash%10007)*.096f+dx*backgroundClock*speed-(g.px/256.0f-160)*layer*.08f,960);
+  float y=72+wrap_positive(((hash>>12)%10007)*.0695f+dy*backgroundClock*speed,696);
+  float bright=(.45f+layer*.2f)*alpha/255.0f;quad(x-size*3,y-size*3,size*6,size*6,(SDL_FColor){.65f,.83f,1,bright*.8f},0,0,1,1);
+  quad(x-size*.5f,y-size*.5f,size,size,(SDL_FColor){.9f,.96f,1,bright},0,0,1,1);visibleStars++;
+ }flush(halo);
 }
 static void draw_modern_world(void){SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);int phase=ex.phase<0?0:ex.phase;if(ex.entryY){scene_plate(ex.oldPhase,255);scene_plate(phase,(ex.entryY-24)*255/232);}else scene_plate(phase,255);
-
- SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);SDL_SetRenderDrawColor(renderer,1,6,16,45);SDL_FRect shade={0,72,960,696};SDL_RenderFillRect(renderer,&shade);SDL_SetRenderClipRect(renderer,0);
+ SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);SDL_SetRenderDrawColor(renderer,1,6,16,45);SDL_FRect shade={0,72,960,696};SDL_RenderFillRect(renderer,&shade);
+ int sky=phase<=5?255:0;if(ex.entryY){int blend=clamp((ex.entryY-24)*255/232,0,255);sky=(ex.oldPhase<=5?255-blend:0)+(phase<=5?blend:0);}visibleStars=0;if(sky)draw_star_layers(sky);
+ SDL_SetRenderClipRect(renderer,0);
 }
 static void draw_modern_terrain(void){SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);
  if(ex.phase==5||(ex.oldPhase==5&&ex.entryY)){SDL_SetTextureColorMod(scenes[1],255,255,255);nquad=0;
@@ -135,11 +163,11 @@ SDL_SetRenderClipRect(renderer,0);}
 static Game previous,saved;static Expansion previousEx,savedEx;static int previousY;
 static int lerpi(int a,int b,float t){return (int)(a+(b-a)*t);}
 static void interp_objects(Obj*a,Obj*b,int n,float t){for(int i=0;i<n;i++)if(a[i].on&&b[i].on&&a[i].type==b[i].type){a[i].x=lerpi(b[i].x,a[i].x,t);a[i].y=lerpi(b[i].y,a[i].y,t);int turn=(a[i].heading-b[i].heading+8640)%5760-2880;a[i].heading=(b[i].heading+(int)(turn*t)+5760)%5760;}}
-static void render_frame(float alpha,float dt){saved=g;savedEx=ex;int sy=player_y;g.px=lerpi(previous.px,g.px,alpha);player_y=lerpi(previousY,player_y,alpha);interp_objects(g.enemies,previous.enemies,MAXE,alpha);interp_objects(g.shots,previous.shots,MAXS,alpha);interp_objects(g.bullets,previous.bullets,MAXB,alpha);interp_objects(g.drops,previous.drops,8,alpha);
+static void render_frame(float alpha,float dt){if(!g.paused&&g.mode==1)backgroundClock+=dt*fminf(8,fmaxf(.45f,ex.scrollSpeed/192.0f));sideBlend+=(side_mode()-sideBlend)*fminf(1,dt*4);if(fabsf(sideBlend-side_mode())<.0005f)sideBlend=side_mode();saved=g;savedEx=ex;int sy=player_y;g.px=lerpi(previous.px,g.px,alpha);player_y=lerpi(previousY,player_y,alpha);interp_objects(g.enemies,previous.enemies,MAXE,alpha);interp_objects(g.shots,previous.shots,MAXS,alpha);interp_objects(g.bullets,previous.bullets,MAXB,alpha);interp_objects(g.drops,previous.drops,8,alpha);
  int delta=(ex.backgroundY-previousEx.backgroundY)&131071;if(delta>65535)delta-=131072;ex.backgroundY=(previousEx.backgroundY+(int)(delta*alpha))&131071;for(int i=0;i<NSTARS;i++){int d=g.stars[i].y-previous.stars[i].y;if(d<0)d+=232*Q;g.stars[i].y=(previous.stars[i].y+(int)(d*alpha))%(232*Q);}
  bombRenderRadius=ex.bombAge?((previousEx.bombAge?previousEx.bombRadius:0)+(ex.bombRadius-(previousEx.bombAge?previousEx.bombRadius:0))*alpha):0;ndraw=0;game_render(fb);for(int i=0;i<81920;i++)rgba[i]=fb[i]?palette[fb[i]]:0;SDL_UpdateTexture(base,0,rgba,320*4);SDL_SetRenderTarget(renderer,combatTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,0);SDL_RenderClear(renderer);draw_modern_terrain();SDL_FRect area={0,0,960,768};SDL_RenderTexture(renderer,base,0,&area);
- SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;for(int i=0;i<ndraw;i++){Draw*d=draws+i;Sprite*s=sprites+d->n;float scale=1;quad((d->x-s->w*.5f*scale)*3,(d->y-s->h*.5f*scale)*3,(s->w*3*scale)*(d->n>=28&&d->n<32?(1+.09f*sinf(g.tick*.7f+d->x)):1),s->h*3*scale,(SDL_FColor){1,1,1,1},s->u,s->v,s->uw,s->vh);if(d->angle!=0){float angle=d->angle*PI/180,c=cosf(angle),ss=sinf(angle),cx=d->x*3,cy=d->y*3;for(int v=(nquad-1)*4;v<nquad*4;v++){float xx=vertices[v].position.x-cx,yy=vertices[v].position.y-cy;vertices[v].position.x=cx+xx*c-yy*ss;vertices[v].position.y=cy+xx*ss+yy*c;}}}flush(atlas);SDL_SetRenderClipRect(renderer,0);SDL_SetRenderTarget(renderer,fxTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,255);SDL_RenderClear(renderer);draw_fx(dt);SDL_SetRenderTarget(renderer,combatTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_FRect fxArea={0,0,960,800};SDL_RenderTexture(renderer,fxTarget,0,&fxArea);
- sideBlend+=(side_mode()-sideBlend)*fminf(1,dt*4);if(fabsf(sideBlend-side_mode())<.0005f)sideBlend=side_mode();
+ SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);nquad=0;for(int i=0;i<ndraw;i++){Draw*d=draws+i;Sprite*s=sprites+d->n;float scale=1;quad((d->x-s->w*.5f*scale)*3,(d->y-s->h*.5f*scale)*3,(s->w*3*scale)*(d->n>=28&&d->n<32?(1+.09f*sinf(g.tick*.7f+d->x)):1),s->h*3*scale,(SDL_FColor){1,1,1,1},s->u,s->v,s->uw,s->vh);if(d->angle!=0){float angle=d->angle*PI/180,c=cosf(angle),ss=sinf(angle),cx=d->x*3,cy=d->y*3;for(int v=(nquad-1)*4;v<nquad*4;v++){float xx=vertices[v].position.x-cx,yy=vertices[v].position.y-cy;vertices[v].position.x=cx+xx*c-yy*ss;vertices[v].position.y=cy+xx*ss+yy*c;}}unwarp_quad(d->x*3,d->y*3);}flush(atlas);SDL_SetRenderClipRect(renderer,0);SDL_SetRenderTarget(renderer,fxTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_SetRenderDrawColor(renderer,0,0,0,255);SDL_RenderClear(renderer);draw_fx(dt);SDL_SetRenderTarget(renderer,combatTarget);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);SDL_FRect fxArea={0,0,960,800};SDL_RenderTexture(renderer,fxTarget,0,&fxArea);
+
  SDL_SetRenderTarget(renderer,0);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);SDL_SetRenderDrawColor(renderer,3,5,14,255);SDL_RenderClear(renderer);draw_modern_world();float tw,th;SDL_GetTextureSize(combatTarget,&tw,&th);SDL_FRect source={0,th*72/800,tw,th*696/800};float w=960-264*sideBlend,h=696+264*sideBlend;SDL_FRect destination={480-w/2,420-h/2,w,h};SDL_Rect worldClip={0,72,960,696};SDL_SetRenderClipRect(renderer,&worldClip);SDL_RenderTextureRotated(renderer,combatTarget,&source,&destination,sideBlend*90,0,SDL_FLIP_NONE);SDL_SetRenderClipRect(renderer,0);
  g=saved;ex=savedEx;player_y=sy;
 }
@@ -182,7 +210,7 @@ EMSCRIPTEN_KEEPALIVE void web_command(int c){webCmd=c;}
 EMSCRIPTEN_KEEPALIVE void web_held(int mask){webHeld=mask;}
 EMSCRIPTEN_KEEPALIVE void web_pointer(float x,float y){mx=x;my=y;mouseControl=1;}
 EMSCRIPTEN_KEEPALIVE void web_mute(void){muted=!muted;if(astream)SDL_SetAudioStreamGain(astream,muted?0:1);}
-EMSCRIPTEN_KEEPALIVE int web_stat(int n){switch(n){case 0:return g.tick;case 1:return g.mode;case 2:return g.weapon;case 3:return ex.bombs;case 4:return ex.bombAge;case 5:return aliveParticles;case 6:return g.paused;case 7:return SDL_GetAtomicInt(&audioFrames);case 8:return audioNonzero;case 9:return SDL_GetAtomicInt(&audioErrors);case 10:return g.wave;case 11:return peakParticles;case 12:return (int)(audioPeak*1000000);case 13:return frames;case 14:return g.playerVX;case 15:return ex.phase;case 16:return ex.travel;case 17:return ex.bossSpawned;case 18:return muted;case 19:return g.score;case 20:return g.lives;case 21:return g.barrier;case 22:return g.energy;case 23:{int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}case 24:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].variant+1;return 0;case 25:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].hp*100/g.enemies[i].base;return 0;case 26:return ex.optionsOn?ex.options:0;case 27:return (int)recentFPS;case 28:return side_mode();case 29:return g.px;case 30:return player_y;}return -1;}
+EMSCRIPTEN_KEEPALIVE int web_stat(int n){switch(n){case 0:return g.tick;case 1:return g.mode;case 2:return g.weapon;case 3:return ex.bombs;case 4:return ex.bombAge;case 5:return aliveParticles;case 6:return g.paused;case 7:return SDL_GetAtomicInt(&audioFrames);case 8:return audioNonzero;case 9:return SDL_GetAtomicInt(&audioErrors);case 10:return g.wave;case 11:return peakParticles;case 12:return (int)(audioPeak*1000000);case 13:return frames;case 14:return g.playerVX;case 15:return ex.phase;case 16:return ex.travel;case 17:return ex.bossSpawned;case 18:return muted;case 19:return g.score;case 20:return g.lives;case 21:return g.barrier;case 22:return g.energy;case 23:{int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}case 24:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].variant+1;return 0;case 25:for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4)return g.enemies[i].hp*100/g.enemies[i].base;return 0;case 26:return ex.optionsOn?ex.options:0;case 27:return (int)recentFPS;case 28:return side_mode();case 29:return g.px;case 30:return player_y;case 31:return visibleStars;case 32:return (int)(backgroundClock*1000);}return -1;}
 static void browser_frame(void){
 double frameStart=ms_now(),delta=(frameStart-before)/1000;before=frameStart;if(delta>.1)delta=.1;
  while(SDL_PollEvent(&event)){SDL_ConvertEventToRenderCoordinates(renderer,&event);if(event.type==SDL_EVENT_QUIT)cmd='p';if(event.type==SDL_EVENT_WINDOW_FOCUS_LOST&&!demo){focus=0;if(astream){SDL_ClearAudioStream(astream);SDL_PauseAudioStreamDevice(astream);}}if(event.type==SDL_EVENT_WINDOW_FOCUS_GAINED){focus=1;acc=0;if(astream)SDL_ResumeAudioStreamDevice(astream);}if(event.type==SDL_EVENT_MOUSE_MOTION){mx=event.motion.x/3;my=event.motion.y/3;if(ticks>5)mouseControl=1;}if(event.type==SDL_EVENT_MOUSE_BUTTON_DOWN&&event.button.button==SDL_BUTTON_LEFT){mouseFire=1;cmd=32;}if(event.type==SDL_EVENT_MOUSE_BUTTON_UP&&event.button.button==SDL_BUTTON_LEFT)mouseFire=0;

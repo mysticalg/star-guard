@@ -43,7 +43,11 @@ static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){o->x=x*Q;o->
 void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=255;g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
 static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-19*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
-static void bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;}}
+static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;}return o;}
+static void armored_bullet(int x,int y,int vx,int vy){Obj*o=bullet(x,y,vx,vy);if(o)o->type=1;}
+static void armored_aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;armored_bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
+/* Relative swept segments catch fast shots crossing between fixed simulation ticks. */
+static int projectile_crosses(const Obj*s,const Obj*b){float dx=(b->x-s->x)/(float)Q,dy=(b->y-s->y)/(float)Q,vx=(b->vx-s->vx)/(float)Q,vy=(b->vy-s->vy)/(float)Q;if(fabsf(dx)>fabsf(vx)+5||fabsf(dy)>fabsf(vy)+5)return 0;float vv=vx*vx+vy*vy,t=vv>0?fmaxf(0,fminf(1,(dx*vx+dy*vy)/vv)):0;dx-=vx*t;dy-=vy*t;return dx*dx+dy*dy<=25;}
 static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
 static void killed(Obj*);
 #include "bugs.h"
@@ -89,7 +93,9 @@ void game_step(int mask,int ch){int i,j,alive=0;
   for(j=0;j<MAXS;j++){Obj *s=g.shots+j;if(s->on&&!((s->type==6||s->type==7)&&s->base>0)&&absn((s->x>>8)-x)<(o->type==4?33:o->type>=14?15:o->type>=10?10:14)&&absn((s->y>>8)-y)<(o->type==4?26:o->type>=10?10:15)){int pt[2];if(s->type==6||s->type==7)ricochet(s,o,i);else s->on=0;if(!enemy_guarded(o))o->hp-=s->type==4?3:1;surface_point(x,y,o->type==4?30:12,o->type==4?23:12,s->x>>8,s->y>>8,pt);hit_sparks(pt[0],pt[1],0,1,1);}}
   if(o->hp<=0){killed(o);continue;}if(absn(y-(player_y>>8))<24&&absn(x-(g.px>>8))<22){int pt[2];surface_point(g.px>>8,player_y>>8,11,13,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);if(o->type!=4){o->on=0;burst(x,y,0);}}
  }
- for(i=0;i<MAXB;i++){Obj *o=g.bullets+i;if(!o->on)continue;trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,2);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,1))continue;if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<11*Q&&absn(o->y-player_y)<14*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,10,13,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
+ for(i=0;i<MAXB;i++){Obj *o=g.bullets+i;if(!o->on)continue;trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,2);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,1))continue;
+ if(!o->type){int intercepted=g.beam&&beam_hits(o->x>>8,6)&&o->y<player_y-12*Q;for(j=0;j<MAXS&&!intercepted;j++){Obj*s=g.shots+j;if(s->on&&projectile_crosses(s,o)){intercepted=1;if(s->type==6||s->type==7){if(--s->hp<=0)s->on=0;}else s->on=0;}}if(intercepted){o->on=0;hit_sparks(o->x>>8,o->y>>8,0,0,3);continue;}}
+ if(o->x<0||o->x>320*Q||o->y<24*Q||o->y>258*Q)o->on=0;else if(absn(o->x-g.px)<11*Q&&absn(o->y-player_y)<14*Q){int pt[2];o->on=0;surface_point(g.px>>8,player_y>>8,10,13,o->x>>8,o->y>>8,pt);hurt_at(pt[0],pt[1],o->vx>0?1:-1,o->vy>0?1:-1);}}
  for(i=0;i<8;i++){Obj *o=g.drops+i;if(!o->on)continue;o->y+=o->vy;o->age++;if(o->y>267*Q)o->on=0;else if(absn(o->x-g.px)<20*Q&&absn(o->y-player_y)<20*Q){o->on=0;if(o->type<2||o->type==3){int w=o->type==3?3:o->type+1;g.unlocked|=1<<w;g.weapon=w;}if(o->type==5&&ex.bombs<5)ex.bombs++;if(o->type==6){ex.options=2;ex.optionsOn=1;}if(o->type==2){g.shield=220;g.barrier=100;}if(o->type==4){if(g.lives<5)g.lives++;g.barrier=100;}g.score+=50;sound(1,1,80,0x4600);}}
  for(i=0;i<24;i++)if(g.effects[i].on&&++g.effects[i].age>34)g.effects[i].on=0;
  for(i=0;i<MAXP;i++){Particle *p=g.particles+i;if(!p->on)continue;p->x+=p->vx;p->y+=p->vy;if(p->life>14&&p->tint==1){p->vx-=p->vx>>5;p->vy-=p->vy>>5;p->vy+=10;}if(--p->life<=0)p->on=0;}

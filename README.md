@@ -55,3 +55,7 @@ JPEG/PNG textures are decoded with stb_image, from the official nothings/stb rep
 ## Alternating flight modes
 
 Odd-numbered sectors use vertical flight; even-numbered sectors use horizontal side flight. Side stages use a separately generated side-profile interceptor and fire right into enemies arriving from the right. The combat camera rotates smoothly during handover, while landscape backgrounds and HUD remain upright. Collision, shots, lasers, ricochets, bombs, cave walls and particles share one combat transform, preserving their alignment. Keyboard, mouse, touch and gamepad movement is mapped through the same inverse transform, including during the turn.
+
+Backgrounds scroll continuously in the flight direction: three depths of stars over space, a slower scenery plate and two faster transparent cloud layers over landscapes. Sprite and glow geometry compensates for the side-view camera so ships keep their proportions.
+
+Player projectiles and beams intercept ordinary hostile bullets. Ricochet shots and split lasers spend one hit per interception. The heavy Shield Bulwark and Brood Carrier fire amber armored rounds that must be dodged; nova bombs still clear them. Swept collision checks prevent fast crossing shots from slipping through.
