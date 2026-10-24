@@ -52,7 +52,8 @@ static int weapon_delay(int base){return clamp(base-(power_level(g.weapon)>=2)-(
 static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2?25:s->type==1?50:s->type==2?75:s->type==4?300:s->type==7?60:100;return base*(100+20*(level-1))/100;}
 static void damage_enemy(Obj*o,int damage){if(o->type==4){if(o->age<=120||o->morph>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}}
 static int boss_weakness(int variant){static const int weapon[17]={5,3,6,0,4,6,1,7,2,3,0,4,2,4,5,7,1};return weapon[clamp(variant,0,16)];}
-static void weapon_damage_enemy(Obj*o,int damage,int weapon){if(o->type==4&&weapon==boss_weakness(o->variant))damage=damage*175/100;damage_enemy(o,damage);}
+static int boss_hull_weakness(int variant){return (boss_weakness(variant)+3)%9;}
+static void weapon_damage_enemy(Obj*o,int damage,int weapon){if(o->type==4){int shield=o->shieldCharge>0,weakness=shield?boss_weakness(o->variant):boss_hull_weakness(o->variant);if(weapon==weakness)damage=damage*(shield?300:250)/100;}damage_enemy(o,damage);}
 static int sn(int a){return sine[a&255];}
 static int divn(int a,int b){return b?a/b:0;}
 static int remn(int a,int b){return b?a%b:0;}
@@ -98,12 +99,13 @@ static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.sc
 #include "expansion_step.h"
 #include "bosses.h"
 static int emp_near(int x,int y,int radius){int dx=(x-g.px)/Q,dy=(y-player_y)/Q;return dx*dx+dy*dy<radius*radius;}
-static void emp_arc(int x,int y,int xx,int yy){if(ex.empCount>=12)return;ex.empArcs[ex.empCount++]=(Obj){.x=x,.y=y,.vx=xx,.vy=yy};}
-static void emp_storm(void){int rank=power_level(8),radius=75+rank*10,damage=55+rank*15,hits=0;ex.empCount=0;ex.empTicks=10;int xx=g.px,yy=player_y;
- for(int i=0;i<MAXE&&hits<4+rank;i++){Obj*o=g.enemies+i;if(!o->on||o->y<24*Q||o->y>256*Q||!emp_near(o->x,o->y,radius))continue;emp_arc(xx,yy,o->x,o->y);xx=o->x;yy=o->y;hits++;if(!enemy_guarded(o)||o->type==4){weapon_damage_enemy(o,damage,8);pc_hit_sound(enemy_material(o),8,o->x/Q);if(o->hp<=0)killed(o);}}
+static void emp_arc(int x,int y,int xx,int yy){if(ex.empCount>=24)return;ex.empArcs[ex.empCount++]=(Obj){.x=x,.y=y,.vx=xx,.vy=yy};}
+static void emp_storm(void){int rank=power_level(8),radius=110+rank*15,damage=55+rank*15,hits=0;ex.empCount=0;ex.empTicks=10;
+ int visited[MAXE]={0},nodeX[15]={g.px},nodeY[15]={player_y},nodes=1,hop=65+rank*10;
+ for(int jump=0;jump<6+rank*2;jump++){int target=-1,parent=0,best=2147483647;for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(!o->on||visited[i]||o->y<24*Q||o->y>256*Q||o->x<0||o->x>320*Q)continue;for(int n=0;n<nodes;n++){int dx=(o->x-nodeX[n])/Q,dy=(o->y-nodeY[n])/Q,d=dx*dx+dy*dy,range=n?hop:radius;if(d<range*range&&d<best){best=d;target=i;parent=n;}}}if(target<0)break;Obj*o=g.enemies+target;visited[target]=1;emp_arc(nodeX[parent],nodeY[parent],o->x,o->y);nodeX[nodes]=o->x;nodeY[nodes++]=o->y;hits++;if(!enemy_guarded(o)||o->type==4){int falloff=clamp(100-jump*5,45,100);weapon_damage_enemy(o,damage*falloff/100,8);pc_hit_sound(enemy_material(o),8,o->x/Q);if(o->hp<=0)killed(o);}}
  for(int i=0,n=0;i<MAXB&&n<8+rank*3;i++){Obj*o=g.bullets+i;if(!o->on||o->type==1||!emp_near(o->x,o->y,radius))continue;if(ex.empCount<10)emp_arc(g.px,player_y,o->x,o->y);if(o->type>=3){o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->hp<=0){o->on=0;g.score+=100;}}else o->on=0;pc_impact(o->x/Q,o->y/Q,3);n++;}
  for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;if(!o->on||o->type==2||o->type==3||!emp_near(o->x,o->y,radius))continue;emp_arc(g.px,player_y,o->x,o->y);if(--o->hp<=0){o->on=0;g.score+=25;pc_crush_sound(hazard_material(o),o->base,o->x/Q);pc_burst(o->x/Q,o->y/Q,0);}}
- for(int n=0;n<3&&ex.empCount<12;n++){int a=rnd()&255,r=radius*(55+rnd()%45)/100;emp_arc(g.px,player_y,clamp(g.px+sn(a)*r/4,5*Q,315*Q),clamp(player_y+sn(a+64)*r/4,26*Q,252*Q));}pc_emp_sound(0,g.px/Q);}
+ for(int n=0;n<3&&ex.empCount<24;n++){int a=rnd()&255,r=radius*(55+rnd()%45)/100;emp_arc(g.px,player_y,clamp(g.px+sn(a)*r/4,5*Q,315*Q),clamp(player_y+sn(a+64)*r/4,26*Q,252*Q));}pc_emp_sound(0,g.px/Q);}
 static void hostile_emp(Obj*o){o->on=0;ex.empPulse=22;ex.empX=o->x;ex.empY=o->y;pc_emp_sound(1,o->x/Q);pc_charge_burst(o->x/Q,o->y/Q);if(!ex.empGrace&&emp_near(o->x,o->y,110)){ex.empDisable=125;ex.empGrace=225;g.beam=0;ex.empTicks=0;}}
 void game_step(int mask,int ch){int i,j,alive=0,fired=0;
  if(ch==27||ch=='q')g.paused=!g.paused;if(ch=='r'){game_reset();g.mode=1;}if(ch=='f')g.fx=!g.fx;

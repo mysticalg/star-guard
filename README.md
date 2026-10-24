@@ -160,9 +160,9 @@ Planet sections automatically climb and descend through smooth altitude phrases.
 
 Weapon and impact SFX pass through a fixed-buffer stereo reverb with damped reflections and diffusion. Caverns smoothly increase wet level and feedback for longer tails. Continuous player and boss lasers additionally use a six-stage 0.10 Hz phaser with 82 percent resonant feedback; dry attacks remain in the mix. Music and voice stay on their separate browser buses.
 
-Each boss has one displayed counter-weapon that deals 75 percent extra shield and hull damage. The first boss is weak to Pulse, the second to Triple Rainbow; later counters rotate across all eight weapons, without consecutive repeats. Nova/support damage and protected boss phases keep their existing rules. Boss warnings smoothly decelerate scenery to a moderate battle pace across every biome, including caverns.
+Each boss displays separate shield and hull counter-weapons, dealing 3× shield damage and 2.5× hull damage. The first boss shield is weak to Pulse and its hull to Rainbow Beam; the second shield is weak to Triple Rainbow and its hull to EMP Storm. Later counters vary across the nine weapons. Nova/support damage and protected boss phases keep their existing rules. Boss warnings smoothly decelerate scenery to a moderate battle pace across every biome, including caverns.
 
-Bouncing-laser launch and rebound sounds bypass the phaser and use a fractional-delay flanger instead: independent 0.14–0.23 Hz sweeps over 0.5–5 ms, with 72 percent damped feedback and the existing room reverb. All delay storage is bounded and preallocated per voice.
+Bouncing-laser launch and rebound sounds bypass the phaser and use a fractional-delay flanger instead: independent 0.14–0.23 Hz sweeps over 0.5–5 ms, with 38 percent damped feedback and the existing room reverb. All delay storage is bounded and preallocated per voice.
 
 Enemy and wall ricochets produce a flanged metallic ping, with quieter echoes at 70 and 140 milliseconds. At most two new reflection pings start per simulation tick to keep dense volleys clear.
 
@@ -179,3 +179,13 @@ The slow flanger LFO uses 64-sample control blocks with per-sample delay interpo
 Player lasers and ricochet pings now use narrow-band filtered noise instead of sine/FM beeps. Single/triple intervals are preserved as two/three tuned noise bands, with independent per-voice filters and flangers on ricochets; material pitch and short reflection echoes remain.
 
 EMP Storm is weapon 9, available by key, wheel, gamepad and unique weapon pickup. Each 9-energy pulse chains through nearby targets, clears ordinary rounds and damages shootable devices. Upgrades increase range, damage and target count. Bombers and selected bosses deploy cyan EMP charges: shoot them within 2.2 seconds or evade their 110-unit pulse. A hit disables firing for 2.5 seconds, preserving movement/shields/nova; a 4.5-second immunity window prevents stun locking.
+
+Bouncing laser launch and reflection levels are reduced relative to the other weapons. Flanger feedback is 38%, with a 65/35 dry/wet mix and stronger high-frequency damping. Each reflection steps through a small note variation around its material/enemy pitch, with a soft tonal ping over the filtered noise and quieter short echoes.
+
+Boss shields and hulls now have distinct weapon weaknesses: matching shield damage is 3× and matching hull damage is 2.5×. The HUD lists both weapons and highlights the active layer; invulnerable entrance, morph and superweapon phases remain protected.
+
+EMP Storm range increased from 85–115 to 125–170 logical units across its four upgrades. Its sound combines a saturated electrical buzz, 50/100 Hz transformer modulation, tuned arcing noise and random crackles, feeding the existing room reverb.
+
+EMP Storm now chains/branches through 8–14 unique enemies per pulse. The first link reaches 125–170 units; subsequent links can jump 75–105 units from any struck enemy, extending beyond the initial radius. Damage tapers 5% per jump to a 45% floor; no target is hit twice per pulse. Visual arcs remain bounded to 24.
+
+On planet missions the player casts a silhouette onto the composited cloud layers. Altitude controls size, offset, opacity and soft edge passes: low flight gives a compact, darker shadow, high flight a larger, softer, displaced one. Cloud alpha is preserved so the shadow cannot darken clear gaps. The existing scratch render target is reused.
