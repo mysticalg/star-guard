@@ -4,7 +4,7 @@ const music=document.querySelector("#music"),musicVolume=document.querySelector(
 
 let ready=false,started=false,touchActive=false;
 
-var Module={canvas,locateFile(path){return path+"?v=8";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
+var Module={canvas,locateFile(path){return path+"?v=11";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
 
 startButton.onclick=()=>{if(!ready||started)return;started=true;HighScores.beginRun(+document.querySelector('#sector').value+1);music.play().catch(()=>{});document.querySelector('#cover').hidden=true;Module.callMain([document.querySelector("#sector").value,document.querySelector("#resolution").value]);document.querySelector("#hud").hidden=false;document.querySelector('#sound').disabled=false;canvas.focus();};
 
@@ -53,7 +53,7 @@ function syncLevelMusic(level){if(level<0)return;if(musicLevel===null){musicLeve
 
 const sectorNames=['DEEP SPACE','ION NEBULA','ASTEROID BELT','HYPERLANE','SIEGE ARENA','ROCKY CAVERN','VERDANT SKIES','DUNE SEA','FROST RIDGE','MAGMA COAST'];
 
-const weaponNames=['PULSE','SPREAD','RAPID','BEAM','HEATSEEKER','MULTILASER','RICOCHET','SPLIT LASER'];
+const weaponNames=['PULSE','SPREAD','RAPID','RAINBOW BEAM','HEATSEEKER','TRIPLE RAINBOW','RICOCHET','BOUNCING LASER'];
 
 const bossNames=['STAR DREADNOUGHT','ION ORACLE','IRON HARVESTER','RIFT LANCER','SIEGE CITADEL','CAVERN WARDEN','SKY MANTA','DUNE SCORPION','FROST CROWN','MAGMA HYDRA'];
 
@@ -63,3 +63,8 @@ setInterval(()=>{if(!started||typeof Module._web_stat!=='function')return;const 
 
 if(innerWidth<650)document.querySelector("#resolution").value="1920";
 
+
+// Accumulate high-resolution wheel input; preserve queued steps between simulation ticks.
+let weaponWheel=0,weaponWheelTarget=null,lastWeaponWheel=0;
+canvas.addEventListener('wheel',event=>{if(!started)return;event.preventDefault();weaponWheel+=event.deltaY/(event.deltaMode===1?3:event.deltaMode===2?1:100);const steps=Math.trunc(weaponWheel);if(!steps)return;weaponWheel-=steps;const now=performance.now(),current=weaponWheelTarget!==null&&now-lastWeaponWheel<120?weaponWheelTarget:Module._web_stat(2);weaponWheelTarget=(current+steps%8+8)%8;lastWeaponWheel=now;Module._web_command(49+weaponWheelTarget);canvas.focus({preventScroll:true});},{passive:false});
+canvas.addEventListener('keydown',event=>{if(/^[1-8]$/.test(event.key))weaponWheelTarget=null;});

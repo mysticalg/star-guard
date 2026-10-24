@@ -62,7 +62,7 @@ Player projectiles and beams intercept ordinary hostile bullets. Ricochet shots 
 
 Sector completion is gated by surviving enemies and hazards. After the encounter clears, a two-second warning precedes a smooth boss entrance from outside the playfield. Bosses cannot attack or take damage during entry. Surviving hostile rounds finish travelling before the cleared sector advances. Bug squadrons finish their sorties and leave; cavern enemies enter from outside the viewport.
 
-The player hull renders at half width and height in both flight modes, with a matching smaller collision area and closer muzzle/exhaust effects. Fast dense foreground clouds pass at 220/480 logical pixels per second at cruise speed; space uses two additive blue/violet gas layers at 100/360, behind the moving stars. These reuse the resident cloud texture without extra downloads.
+The player hull renders at half width and height in both flight modes, with a matching smaller collision area and closer muzzle/exhaust effects. Fast dense foreground clouds pass at 880/1920 logical pixels per second (a further fourfold boost) at cruise speed; space uses two additive blue/violet gas layers at 100/360, behind the moving stars. These reuse the resident cloud texture without extra downloads.
 
 Bosses bank up to twelve degrees with their actual lateral movement, easing back toward level while keeping their collision centres aligned.
 
@@ -73,3 +73,7 @@ Right-click over the canvas triggers the nova bomb (B and the touch button still
 The game remains on GitHub Pages. `score-service/` is a separate Netlify Functions/Postgres backend for the world top-20 table at `https://star-guard-scores-mysticalg.netlify.app/api/scores`. Runs register at launch, and game-over scores are saved after the player submits a public pilot name. Gameplay does not depend on the score service. The browser remembers only the pilot name and an unsent result for retry; the table itself lives online.
 
 The API validates names and score ranges, registers run start times, limits requests and accepts one entry per run. This is a casual arcade table, not a server-authoritative anti-cheat system. SQL parameters are bound and names render as text. Schema changes use the timestamped migrations under `score-service/netlify/database/migrations/`; connection strings and Netlify state are excluded from Git. Run API tests with `npm test` from `score-service/`.
+
+Weapon 4 is a thin translucent rainbow beam: two energy every six simulation ticks, sustained while held. Weapon 6 fires three rainbow beams for three energy per pulse. Weapon 8 fires narrow cyan bouncing laser bolts with five-hit persistence and much lighter trails.
+
+Scroll the mouse wheel over the canvas to change weapon (down: next, up: previous), wrapping through all eight. High-resolution wheel deltas accumulate into steps; wheel input outside the canvas scrolls the page normally.
