@@ -5,7 +5,7 @@ static void ground_group(int type,int formation){for(int n=0;n<4;n++){Obj*o=slot
 static void specialist_step(Obj*o){int t=o->age,x=o->x,y=o->y;
  switch(o->type){
  case 26:if(t<65||t>260){o->y+=t>260?1100:420;}else{int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;int speed=900;o->vx=clamp(o->vx+clamp(dx*speed/d-o->vx,-40,40),-900,900);o->vy=clamp(o->vy+clamp(dy*speed/d-o->vy,-40,40),-900,900);o->x+=o->vx;o->y+=o->vy;}break;
- case 25:o->x=o->base*Q+sn(t*2+o->phase)*5;if(t<100)o->y+=360;else if(t<155)o->y+=40;else o->y-=800;if(t==105||t==145){Obj*b=bullet(o->x,o->y,0,30);if(b)b->type=2;pc_impact(o->x/Q,o->y/Q,1);}break;
+ case 25:o->x=o->base*Q+sn(t*2+o->phase)*5;if(t<100)o->y+=360;else if(t<155)o->y+=40;else o->y-=800;if(t==105||t==145){Obj*b=bullet(o->x,o->y,0,30);if(b){b->type=t==145?6:2;if(b->type==6)b->hp=3;}pc_impact(o->x/Q,o->y/Q,1);}break;
  case 23:case 24:o->x=(o->type==23?276:273)*Q;o->y+=o->type==23?400:300;if(y>30*Q&&y<235*Q&&t%90==70){aim(x-7*Q,y,490);if(o->type==23){aim(x-7*Q,y-5*Q,560);}}break;
  case 14:o->x=o->base*Q+sn(t*3+o->phase)*7;o->y+=t<170?180:520;if(t%75==40&&y>28*Q)for(int a=-1;a<=1;a++)bullet(x,y,a*340,460);break;
  case 15:o->x=o->base*Q+sn(t+o->phase)*3;o->y+=100;if(t%140==90&&y>30*Q)for(int a=-2;a<=2;a++)armored_bullet(x,y,a*170,390);break;

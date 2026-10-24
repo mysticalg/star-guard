@@ -162,7 +162,7 @@ Weapon and impact SFX pass through a fixed-buffer stereo reverb with damped refl
 
 Each boss has one displayed counter-weapon that deals 75 percent extra shield and hull damage. The first boss is weak to Pulse, the second to Triple Rainbow; later counters rotate across all eight weapons, without consecutive repeats. Nova/support damage and protected boss phases keep their existing rules. Boss warnings smoothly decelerate scenery to a moderate battle pace across every biome, including caverns.
 
-Bouncing-laser launch and rebound sounds bypass the phaser and use a fractional-delay flanger instead: a 0.18 Hz sweep over 0.5–5 ms, with 72 percent damped feedback and the existing room reverb. All delay storage is bounded and preallocated per voice.
+Bouncing-laser launch and rebound sounds bypass the phaser and use a fractional-delay flanger instead: independent 0.14–0.23 Hz sweeps over 0.5–5 ms, with 72 percent damped feedback and the existing room reverb. All delay storage is bounded and preallocated per voice.
 
 Enemy and wall ricochets produce a flanged metallic ping, with quieter echoes at 70 and 140 milliseconds. At most two new reflection pings start per simulation tick to keep dense volleys clear.
 
@@ -171,3 +171,11 @@ Ricochet pitch follows metal, shield, stone, ice/crystal, organic/heat or energy
 Single laser audio layers root + minor seventh; triple rainbow laser layers root + perfect fifth + minor seventh. Independently wrapped oscillators preserve tuning through phase wraps, normalized before the shared phaser and room reverb.
 
 Solid sprites cast directional opaque silhouette shadows onto other solid sprites. Receiver alpha is preserved with multiplicative compositing; transparent space, pickups and additive weapon/exhaust effects remain clear. Broad-phase overlap checks keep isolated sprites on the original batch path.
+
+Each bouncing-laser launch and reflection ping has its own flanger delay buffer, feedback and independent LFO phase/rate (0.14–0.23 Hz). Material-tuned pings and their short echoes sweep independently; other sound effects and music are unaffected.
+
+The slow flanger LFO uses 64-sample control blocks with per-sample delay interpolation, reducing LFO sine evaluations by about 64 times. Background tiles are selected in inverse-zoom viewport coordinates and culled using their transformed dimensions so altitude changes cannot expose empty scenery.
+
+Player lasers and ricochet pings now use narrow-band filtered noise instead of sine/FM beeps. Single/triple intervals are preserved as two/three tuned noise bands, with independent per-voice filters and flangers on ricochets; material pitch and short reflection echoes remain.
+
+EMP Storm is weapon 9, available by key, wheel, gamepad and unique weapon pickup. Each 9-energy pulse chains through nearby targets, clears ordinary rounds and damages shootable devices. Upgrades increase range, damage and target count. Bombers and selected bosses deploy cyan EMP charges: shoot them within 2.2 seconds or evade their 110-unit pulse. A hit disables firing for 2.5 seconds, preserving movement/shields/nova; a 4.5-second immunity window prevents stun locking.

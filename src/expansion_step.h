@@ -2,7 +2,7 @@ static int option_x(int n){int offset=n==4?0:(n&1?1:-1)*(11+(n/2)*11);return cla
 static int option_y(int n){return clamp((ex.followY[(ex.followHead-1-(n+1)*8)&63]>>8)+10+(n/2)*5,34,247);}
 static int satellite_x(void){return (g.px>>8)+(sn(g.tick*3)*19>>10);}
 static int satellite_y(void){return (player_y>>8)+(sn(g.tick*3+64)*16>>10);}
-static void option_fire(void){if(!ex.optionsOn)return;for(int n=0;n<ex.options;n++){Obj*o=slot(g.shots,MAXS);if(o){o->x=option_x(n)*Q;o->y=(option_y(n)-7)*Q;o->vx=(n&1?65:-65)+g.playerVX;o->vy=g.weapon==4?-1300:-2200;o->type=g.weapon==4?4:0;o->phase=-2;o->power=power_level(g.weapon);}}}
+static void option_fire(void){if(!ex.optionsOn||ex.empDisable)return;for(int n=0;n<ex.options;n++){Obj*o=slot(g.shots,MAXS);if(o){o->x=option_x(n)*Q;o->y=(option_y(n)-7)*Q;o->vx=(n&1?65:-65)+g.playerVX;o->vy=g.weapon==4?-1300:-2200;o->type=g.weapon==4?4:0;o->phase=-2;o->power=power_level(g.weapon);}}}
 static int beam_hits(int x,int radius){int d=absn(x-(g.px>>8));return d<radius||(ex.multi&&(absn(d-28)<radius));}
 static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&o->y>12*Q){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
 static void hazard(int,int,int);
@@ -59,7 +59,7 @@ static void expansion_step(int mask,int ch){int i,j,phase=mission_phase(g.wave),
  if(ex.pickupTicks)ex.pickupTicks--;
  if(!ex.travel&&!ex.bossSpawned&&!ex.rearSpawned&&g.clock>=260){ex.rearSpawned=1;ex.rearWarning=60;}
  if(ex.rearWarning&&--ex.rearWarning==0)rear_group();
- satellite_step();if(ex.dropperCool)ex.dropperCool--;if(ex.dropper&&(mask&4)&&!ex.dropperCool){dropper_fire();ex.dropperCool=60;}
+ satellite_step();if(ex.dropperCool)ex.dropperCool--;if(ex.dropper&&!ex.empDisable&&(mask&4)&&!ex.dropperCool){dropper_fire();ex.dropperCool=60;}
  if(ex.bombFlash)ex.bombFlash--;
  for(i=0;i<384;i++)if(ex.trails[i].life)ex.trails[i].life--;
  for(i=0;i<12;i++)if(ex.impacts[i].on&&++ex.impacts[i].age>9)ex.impacts[i].on=0;

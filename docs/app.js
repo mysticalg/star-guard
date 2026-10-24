@@ -4,7 +4,7 @@ const music=document.querySelector("#music"),musicVolume=document.querySelector(
 
 let ready=false,started=false,touchActive=false;
 
-var Module={canvas,locateFile(path){return path+"?v=21";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
+var Module={canvas,locateFile(path){return path+"?v=22";},noInitialRun:true,print:console.log,printErr:console.error,setStatus(text){if(!ready&&text)statusText.textContent=text;},onRuntimeInitialized(){ready=true;statusText.textContent='Ready for launch.';startButton.disabled=false;startButton.textContent='LAUNCH GAME  >';},onAbort(){statusText.textContent='The game could not start. Please reload, or try a browser with WebGL enabled.';startButton.textContent='Reload page';startButton.disabled=false;startButton.onclick=()=>location.reload();}};
 
 startButton.onclick=()=>{if(!ready||started)return;started=true;HighScores.beginRun(+document.querySelector('#sector').value+1);music.play().catch(()=>{});document.querySelector('#cover').hidden=true;Module.callMain([document.querySelector("#sector").value,document.querySelector("#resolution").value]);document.querySelector("#hud").hidden=false;document.querySelector('#sound').disabled=false;canvas.focus();ShipVoice.start();};
 
@@ -14,7 +14,7 @@ document.querySelector('#sound').onclick=e=>{if(!started)return;Module._web_mute
 
 document.querySelectorAll('[data-command]').forEach(b=>b.onclick=()=>{if(started){Module._web_command(+b.dataset.command);canvas.focus();}});
 
-document.querySelector('#weapon').onclick=()=>{if(started){Module._web_command(49+(Module._web_stat(2)+1)%8);canvas.focus();}};
+document.querySelector('#weapon').onclick=()=>{if(started){Module._web_command(49+(Module._web_stat(2)+1)%9);canvas.focus();}};
 
 function touchMove(e){if(!started||e.pointerType==='mouse')return;e.preventDefault();let r=canvas.getBoundingClientRect();Module._web_pointer((e.clientX-r.left)/r.width*320,(e.clientY-r.top)/r.height*(800/3));}
 
@@ -54,7 +54,7 @@ function syncLevelMusic(level){if(level<0)return;if(musicLevel===null){musicLeve
 const sectorNames=["DEEP SPACE", "ION NEBULA", "ASTEROID BELT", "HYPERLANE", "ASTEROID SURFACE", "ROCKY CAVERN", "VERDANT SKIES", "DUNE SEA", "FROST RIDGE", "FIRE STORM", "EARTH ORBIT", "GROUND ASSAULT", "ICE ASTEROIDS", "METAL ASTEROIDS", "HEAVY RADIATION", "DIAMOND ASTEROIDS", "URANIUM ASTEROIDS"];
 
 function missionTime(ticks){const seconds=Math.floor(Math.max(0,ticks)/50);return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');}
-const weaponNames=['PULSE','SPREAD','RAPID','RAINBOW BEAM','HEATSEEKER','TRIPLE RAINBOW','RICOCHET','BOUNCING LASER'];
+const weaponNames=['PULSE','SPREAD','RAPID','RAINBOW BEAM','HEATSEEKER','TRIPLE RAINBOW','RICOCHET','BOUNCING LASER','EMP STORM'];
 
 const bossNames=['STAR DREADNOUGHT','ION ORACLE','IRON HARVESTER','RIFT LANCER','ASTEROID CITADEL','CAVERN WARDEN','SKY MANTA','DUNE SCORPION','FROST CROWN','MAGMA HYDRA','ORBITAL SENTINEL','GROUND LEVIATHAN','GLACIAL COLOSSUS','FERRO TITAN','ISOTOPE OVERMIND','DIAMOND SERAPH','URANIUM MONARCH'];
 
@@ -67,7 +67,7 @@ if(innerWidth<650)document.querySelector("#resolution").value="1920";
 
 // Accumulate high-resolution wheel input; preserve queued steps between simulation ticks.
 let weaponWheel=0,weaponWheelTarget=null,lastWeaponWheel=0;
-canvas.addEventListener('wheel',event=>{if(!started)return;event.preventDefault();weaponWheel+=event.deltaY/(event.deltaMode===1?3:event.deltaMode===2?1:100);const steps=Math.trunc(weaponWheel);if(!steps)return;weaponWheel-=steps;const now=performance.now(),current=weaponWheelTarget!==null&&now-lastWeaponWheel<120?weaponWheelTarget:Module._web_stat(2);weaponWheelTarget=(current+steps%8+8)%8;lastWeaponWheel=now;Module._web_command(49+weaponWheelTarget);canvas.focus({preventScroll:true});},{passive:false});
+canvas.addEventListener('wheel',event=>{if(!started)return;event.preventDefault();weaponWheel+=event.deltaY/(event.deltaMode===1?3:event.deltaMode===2?1:100);const steps=Math.trunc(weaponWheel);if(!steps)return;weaponWheel-=steps;const now=performance.now(),current=weaponWheelTarget!==null&&now-lastWeaponWheel<120?weaponWheelTarget:Module._web_stat(2);weaponWheelTarget=(current+steps%9+9)%9;lastWeaponWheel=now;Module._web_command(49+weaponWheelTarget);canvas.focus({preventScroll:true});},{passive:false});
 canvas.addEventListener('keydown',event=>{if(/^[1-8]$/.test(event.key))weaponWheelTarget=null;});
 
 document.querySelector('#voice-toggle').onclick=e=>{const on=ShipVoice.toggle();e.target.textContent=on?'Ship voice on':'Ship voice off';e.target.setAttribute('aria-pressed',String(on));};
@@ -87,3 +87,5 @@ document.querySelector('#use-continue').onclick=()=>{Module._web_command(13);can
 setInterval(()=>{if(!started)return;const stat=Module._web_stat;continuePanel.hidden=stat(1)!==3||!!stat(6);document.querySelector('#continue-number').textContent=Math.ceil(stat(75)/50);document.querySelector('#continue-remaining').textContent=stat(74)+' CONTINUES REMAINING';},80);
 
 setInterval(()=>{if(!started)return;const weakness=Module._web_stat(82);document.querySelector('#boss-weakness').textContent=weakness?'WEAKNESS: '+weaponNames[weakness-1]+' ['+weakness+'] / +75% DAMAGE':'';},100);
+
+setInterval(()=>{if(!started)return;const disabled=Module._web_stat(83),charge=Module._web_stat(85);const timer=document.querySelector('#mission-timer');if(disabled)timer.textContent+=' / EMP: WEAPONS OFFLINE '+(disabled/50).toFixed(1)+'s';else if(charge)timer.textContent+=' / HOSTILE EMP: '+(charge/50).toFixed(1)+'s — DESTROY CHARGE';timer.style.color=disabled?'#ff9fe8':charge?'#80efff':'';},100);
