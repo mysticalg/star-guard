@@ -34,3 +34,13 @@ super: forceField_004.ogg
 victory-blast: lowFrequency_explosion_001.ogg
 Victory Fanfare Short by cynicmusic (CC0), https://opengameart.org/content/victory-fanfare-short
 Trimmed/level matched. Retrieved 24 October 2026.
+
+Enemy explosion size layers (replacing earlier Kenney explosion tiers):
+25 CC0 bang / firework SFX by rubberduck, https://opengameart.org/content/25-cc0-bang-firework-sfx (CC0).
+Small: bang_01/03/05. Medium: bang_06/08 and fw_03. Large: cannon_01/03/05.
+Boss: cannon_04 + fw_05 + Rocket Engine by theMinesAreShakin (CC0), https://opengameart.org/content/rocket-engine
+Edited, filtered, level matched; boss layers slowed and echoed into a 5.5-second rumble.
+
+Ballistic gunfire replaces the previous sci-fi gun sample:
+Gunshot Sounds by Tabasco (CC0), https://opengameart.org/content/gunshot-sounds
+Original recordings: SKS rifle (standard, two takes), CZ-52 (rapid), shotgun (spread), Mosin Nagant (heavy and ricochet). Isolated single shots, denoised, filtered, level-matched and faded.

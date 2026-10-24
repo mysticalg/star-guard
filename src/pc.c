@@ -96,8 +96,10 @@ static void enqueue(Command c){if(headless)return;
  return; /* Browser SFX use decoded samples only, including while loading. */
 #endif
 int w=SDL_GetAtomicInt(&commandWrite),next=(w+1)&255;if(next==SDL_GetAtomicInt(&commandRead)){SDL_AddAtomicInt(&audioDrops,1);return;}commands[w]=c;SDL_SetAtomicInt(&commandWrite,next);}
-void sound(int ch,int sample,int volume,int pitch){int kind=sample==2?2:ch==5?18:pitch>=0x4600?17:(g.weapon==3||g.weapon==5)?3:1;enqueue((Command){.op=0,.ch=ch,.kind=kind,.vol=volume,.pitch=pitch,.pan=((sample==2?lastExplosionX:g.px/256.0f)-160)/220});}
+void sound(int ch,int sample,int volume,int pitch){int kind=sample==2?2:ch==5?18:pitch>=0x4600?17:(g.weapon==3||g.weapon==5)?3:1;enqueue((Command){.op=0,.ch=ch,.kind=kind,.type=kind==1?g.weapon:0,.vol=volume,.pitch=pitch,.pan=((sample==2?lastExplosionX:g.px/256.0f)-160)/220});}
 /* Material-specific transients share the existing bounded voice/command pools. */
+static int enemy_explosion_size(const Obj*o){if(o->type==4)return 3;if(o->type==26||(o->type>=10&&o->type<=13))return 0;if(o->type>=14||o->type==9)return 2;return 1;}
+void pc_enemy_explosion(Obj*o){int size=enemy_explosion_size(o);enqueue((Command){.op=0,.ch=2,.kind=21,.type=size,.vol=size==3?110:size==2?85:65,.pitch=0x3800,.pan=(o->x/Q-160)/220.0f});}
 void pc_hit_sound(int material,int projectile,int x){static int last[6]={-100,-100,-100,-100,-100,-100},lastTick=-1,count;material=clamp(material,0,5);if(g.tick<last[material])last[material]=-100;if(lastTick!=g.tick){lastTick=g.tick;count=0;}if(g.tick-last[material]<2||count>=2)return;last[material]=g.tick;count++;static const int pitch[6]={0x3600,0x4200,0x2300,0x4b00,0x2800,0x4800};int shift=projectile==4?-1100:projectile==7?900:projectile==6?600:projectile==2?400:projectile*90;enqueue((Command){.op=0,.ch=12+material,.kind=5+material,.vol=material==2?40:32,.pitch=pitch[material]+shift+((g.tick%5)-2)*45,.pan=(x-160)/200.0f});}
 void pc_reflection_sound(int material,int targetType,int x){static int tick=-1,count;static unsigned bounceNote;if(tick!=g.tick){tick=g.tick;count=0;}if(count++>=2)return;static const int notes[6]={0,2,-1,3,1,-2};int variation=notes[bounceNote++%6]*341;static const int pitch[6]={0x4900,0x5200,0x3600,0x5b00,0x3f00,0x5600};enqueue((Command){.op=0,.ch=10,.kind=14,.vol=38,.pitch=pitch[clamp(material,0,5)]+variation+((targetType%5)-2)*192,.pan=(x-160)/220.0f});}
 void pc_crush_sound(int material,int radius,int x){static int tick=-1,count;if(tick!=g.tick){tick=g.tick;count=0;}if(count++>=2)return;static const int pitch[6]={0x2800,0x3000,0x1900,0x3600,0x2100,0x2700};enqueue((Command){.op=0,.ch=18,.kind=15,.type=material,.vol=clamp(50+radius*2,60,100),.pitch=pitch[clamp(material,0,5)]-radius*12,.duration=radius,.pan=(x-160)/220.0f});}
@@ -105,6 +107,7 @@ void pc_laser_sound(int mode,int x){if(mode==4){pc_reflection_sound(0,0,x);retur
 static int rearBoostSerial,rearBoostX;
 void pc_rear_boost(int x){rearBoostSerial++;rearBoostX=x;}
 void pc_emp_sound(int hostile,int x){enqueue((Command){.op=0,.ch=19,.kind=16,.vol=hostile?85:65,.pitch=hostile?0x2500:0x4000,.pan=(x-160)/220.0f});}
+void pc_emp_chain(int x){static int tick=-100;if(g.tick<tick)tick=-100;if(g.tick-tick<4)return;tick=g.tick;enqueue((Command){.op=0,.ch=19,.kind=22,.vol=45,.pitch=0x4000,.pan=(x-160)/220.0f});}
 void pc_transition(void){enqueue((Command){.op=0,.ch=9,.kind=4,.vol=85,.pitch=0x2200,.pan=0});}
 void sound_slide(int ch,int type,int target,int duration){enqueue((Command){.op=1,.ch=ch,.type=type,.target=target,.duration=duration});}
 void sound_mod(int ch,int volume,int pitch){enqueue((Command){.op=2,.ch=ch,.vol=volume,.pitch=pitch});}

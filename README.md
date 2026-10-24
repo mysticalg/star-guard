@@ -200,3 +200,11 @@ Enemies and transforming bosses now cast altitude-dependent, correctly rotated c
 ## Sample-based browser audio
 
 Browser effects now use decoded audio samples only (Kenney/OpenGameArt CC0; Tesla recording by Why_O under CC BY 4.0): gunfire, lasers, material impacts, shields, explosions, bombs, electric buzz, warning and pickup cues, engines, warp and a victory fanfare. Procedural C voices are bypassed in WebAssembly. Pitch shifts, sampled fifth/seventh laser harmonies, per-reflection flangers and short cavern reflections process the samples. Twenty-four bounded one-shot events and category cooldowns prevent dense hits from flooding the mixer. Original source links and licences are in docs/audio/sfx/SOURCES.txt.
+
+Enemy deaths and collision detonations use four explosion size tiers: tiny drones/bugs, standard ships, heavy specialists and bosses. Each regular tier cycles three distinct recorded bang/firework/cannon samples by rubberduck (CC0). Boss detonations add a 5.5-second sampled low-frequency/rocket-engine rumble and reserve a voice even when combat audio is saturated.
+
+Ballistic weapons use isolated real CC0 firearm recordings by Tabasco: alternating SKS shots for standard rounds, CZ-52 for rapid fire, shotgun for spread, and Mosin Nagant for heavy/ricochet shots. Energy weapons keep their separate sci-fi samples.
+
+Progression tuning: regular drops now arrive every 8 kills (previously 16); 5 of each 16 drops are weapon-power pickups. Upgrade requirements remain incremental at 2, 3 and 4 charges (previously 2, 3 and 5).
+
+Tesla playback is reduced from .72 to .42 gain, with quieter 130 ms chain accents, random per-discharge pitch shifts and a subtle 15% wet four-stage allpass phaser. Tesla voices are capped at four during dense feedback chains.
