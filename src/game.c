@@ -54,14 +54,23 @@ static int power_needed(int weapon){static const int need[4]={2,3,4,0};return ne
 static int charge_weapon(int weapon){int need=power_needed(weapon);if(!need)return 0;if(++g.weaponCharge[weapon]>=need){g.weaponCharge[weapon]-=need;g.weaponLevel[weapon]++;return 1;}return 0;}
 static int ship_level(void){int upgrades=0;for(int i=0;i<9;i++)upgrades+=g.weaponLevel[i]-1;return clamp(1+upgrades/3,1,8);}
 static int enemy_bonus(void){return clamp((g.wave-1)/5,0,3);}
+/* Mission number, not scenery id: opening missions retain their readable pace. */
+static int mission_pressure(void){return clamp(g.wave-3,0,14);}
+static int formation_interval(void){return 170-3*mission_pressure();}
+static int enemy_fire_interval(void){return 128-3*mission_pressure();}
+static int attack_interval(int base){return clamp(base*(100-2*mission_pressure())/100,8,base);}
+static int weapon_delay_for(int w,int base){return clamp(base-(power_level(w)>=2)-(power_level(w)>=4),2,30);}
 static int weapon_delay(int base){return clamp(base-(power_level(g.weapon)>=2)-(power_level(g.weapon)>=4),2,30);}
 static int weapon_recharge_period(int w){static const int period[9]={6,9,6,12,15,15,12,18,18};return period[clamp(w,0,8)];}
 static int weapon_cost(int w){static const int cost[9]={3,5,2,3,8,5,4,8,12};return cost[clamp(w,0,8)];}
 static void weapon_batteries_reset(void){for(int w=0;w<9;w++){g.weaponEnergy[w]=100;g.weaponHeat[w]=g.weaponFireCool[w]=g.weaponDrainRemainder[w]=0;}}
 static void weapon_batteries_step(void){for(int w=0;w<9;w++){if(g.weaponHeat[w])g.weaponHeat[w]--;if(g.weaponFireCool[w])g.weaponFireCool[w]--;if(g.weaponEnergy[w]<100&&g.tick%weapon_recharge_period(w)==0)g.weaponEnergy[w]++;}g.cool=g.weaponFireCool[g.weapon];}
-/* Carry tenths per bank so every firing/drain path costs exactly 10% less over time. */
-static int weapon_drain(int w,int base){if(g.weaponHeat[w])return 0;int scaled=base*9+g.weaponDrainRemainder[w],cost=scaled/10;if(g.weaponEnergy[w]<cost){g.weaponEnergy[w]=0;g.weaponHeat[w]=300;g.beam=0;return 0;}g.weaponEnergy[w]-=cost;g.weaponDrainRemainder[w]=scaled%10;if(!g.weaponEnergy[w])g.weaponHeat[w]=300;return 1;}
-static int weapon_spend(int w){return weapon_drain(w,weapon_cost(w));}
+/* Per-bank fractional accounting preserves precise costs across weapon switches. */
+static int weapon_drain_fraction(int w,int numerator,int denominator){if(g.weaponHeat[w])return 0;int scaled=numerator+g.weaponDrainRemainder[w],cost=scaled/denominator;if(g.weaponEnergy[w]<cost){g.weaponEnergy[w]=0;g.weaponHeat[w]=300;g.beam=0;return 0;}g.weaponEnergy[w]-=cost;g.weaponDrainRemainder[w]=scaled%denominator;if(!g.weaponEnergy[w])g.weaponHeat[w]=300;return 1;}
+static int weapon_drain(int w,int base){return weapon_drain_fraction(w,base*9,10);}
+/* Include passive recharge in the 25s / 12s / 10s sustained-fire targets.
+   Cost follows the upgraded firing period so ranks improve DPS, not starvation. */
+static int weapon_spend(int w){if(w<3){static const int base[3]={4,6,3},numerator[3]={37,5,11},denominator[3]={150,18,30};return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*numerator[w],denominator[w]);}return weapon_drain(w,weapon_cost(w));}
 static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2?25:s->type==1?70:s->type==2?75:s->type==4?300:s->type==7?60:100;int damage=base*(100+20*(level-1))/100;return s->variant==102?damage*65/100:damage;}
 static void phoenix_charge(int amount){if(!ex.phoenixTicks)ex.phoenixMeter=clamp(ex.phoenixMeter+amount,0,PHOENIX_CHARGE_MAX);}
 static void damage_enemy(Obj*o,int damage){if(o->type==4){if(o->age<=120||o->morph>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){phoenix_charge(clamp(damage,0,o->shieldCharge)/50);o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}phoenix_charge(clamp(damage,0,o->hp*100-o->wound)/50);o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}}
@@ -91,12 +100,13 @@ static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){if(type==12&
 void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.seed=0x5173;g.continues=3;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=511;g.acquiredWeapons=1;for(i=0;i<9;i++)g.weaponLevel[i]=1;weapon_batteries_reset();g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
 static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-10*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->power=power_level(g.weapon);o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;}}
-static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){o->x=x;o->y=y;o->vx=vx;o->vy=vy;o->type=0;o->variant=absn(vx)>absn(vy)?2:0;}return o;}
+static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){int speed=100+mission_pressure();o->x=x;o->y=y;o->vx=vx*speed/100;o->vy=vy*speed/100;o->type=0;o->variant=absn(vx)>absn(vy)?2:0;}return o;}
 static void armored_bullet(int x,int y,int vx,int vy){Obj*o=bullet(x,y,vx,vy);if(o)o->type=1;}
 static void armored_aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;armored_bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));}
 /* Relative swept segments catch fast shots crossing between fixed simulation ticks. */
 static int projectile_crosses(const Obj*s,const Obj*b){float dx=(b->x-s->x)/(float)Q,dy=(b->y-s->y)/(float)Q,vx=(b->vx-s->vx)/(float)Q,vy=(b->vy-s->vy)/(float)Q;if(fabsf(dx)>fabsf(vx)+5||fabsf(dy)>fabsf(vy)+5)return 0;float vv=vx*vx+vy*vy,t=vv>0?fmaxf(0,fminf(1,(dx*vx+dy*vy)/vv)):0;dx-=vx*t;dy-=vy*t;return dx*dx+dy*dy<=25;}
 static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;Obj*o=bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));if(o)o->variant=1;}
+static void enemy_volley(Obj*o,int speed){aim(o->x,o->y,speed);int pressure=mission_pressure(),volley=(o->age+o->phase)/enemy_fire_interval();if(pressure>=8&&volley%(pressure>=12?3:4)==0){int dx=g.px-o->x,dy=player_y-o->y,d=absn(dx)+absn(dy);if(!d)d=1;int vx=dx*speed/d,vy=dy*speed/d;bullet(o->x,o->y,vx-120,vy);bullet(o->x,o->y,vx+120,vy);}}
 static int combo_value(int kills){return kills<2?0:125*kills*(kills-1);}
 static void aoe_combo(int kills,int previous){int bonus=combo_value(kills)-combo_value(previous);if(bonus<=0)return;g.score+=bonus;ex.comboKills=kills;ex.comboBonus=combo_value(kills);ex.comboTicks=125;if(ex.victory)ex.clearScore=g.score-ex.stageScore;}
 static void killed(Obj*);
@@ -107,7 +117,7 @@ static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(o->type==
 #include "bugs.h"
 static void specialist_group(int,int);
 static void ground_group(int,int);
-static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=26,.hp=1,.x=(12+(n%8)*42)*Q,.y=(-20-(n/8)*24)*Q,.phase=n*19,.vy=420};}return;}if(type==25){specialist_group(type,groupno);return;}if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+((g.wave-1)>>2);if(n>8)n=8;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=(type==6?6:type==7?3:type==3?4:1)+enemy_bonus();o->phase=i*27+groupno*41;int pattern=groupno%5;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:28+i*38;o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
+static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=26,.hp=1,.x=(12+(n%8)*42)*Q,.y=(-20-(n/8)*24)*Q,.phase=n*19,.vy=420};}return;}if(type==25){specialist_group(type,groupno);return;}if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+((g.wave-1)>>2)+mission_pressure()/7;if(n>10)n=10;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=(type==6?6:type==7?3:type==3?4:1)+enemy_bonus();o->phase=i*27+groupno*41;int pattern=groupno%5;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:28+i*(n>8?264/(n-1):38);o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
 static void boss(void){Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=ex.phase<0?0:ex.phase;o->hp=300+g.wave*32;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
 static void hit_sparks(int x,int y,int nx,int ny,int tint){pc_impact(x,y,tint);int i;Obj*f=slot(ex.impacts,12);if(f){f->x=x;f->y=y;f->type=tint;}ex.contactX=x;ex.contactY=y;ex.contactTick=g.tick;for(i=0;i<10;i++){int a=rnd()&255;particle(x*Q,y*Q,nx*180+(sn(a)>>1),ny*180+(sn(a+64)>>1),8+(rnd()&7),tint);}}
 static void fan_fire(int type){int level=power_level(type),pairs=type==1?level+1:type==7?level:type==2?(level==4?2:level>1?1:0):level-1;
@@ -166,7 +176,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
   if(!ex.bossWarning){ex.bossWarning=100;sound(5,1,90,0x2800);sound_slide(5,1,0x4800,90);}
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
  }
- if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<SECTOR_WAVES&&!cavern_turn_pending()&&!ex.cavernTurn&&enemy_count()<=20&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*170){group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
+ if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<SECTOR_WAVES&&!cavern_turn_pending()&&!ex.cavernTurn&&enemy_count()<=20&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*formation_interval()){group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
  for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;o->age++;if(o->base>0)o->base--;if(o->type==9){o->vy=clamp(o->vy-45,-2100,-900);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,1);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||o->age>=120||o->x<3*Q||o->x>317*Q||o->y<23*Q||o->y>254*Q)detonate_torpedo(o);continue;}if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)||(ex.phase==11&&o->x>=288*Q)||o->age>=28||o->x<3*Q||o->x>317*Q||o->y>252*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(cave_projectile(o,0)){if(o->type==4)detonate_heatseeker(o);continue;}if(o->type==6||o->type==7){if(o->x<3*Q||o->x>317*Q){o->x=clamp(o->x,3*Q,317*Q);o->vx=-o->vx;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->y<26*Q||o->y>252*Q){o->y=clamp(o->y,26*Q,252*Q);o->vy=-o->vy;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->age>150)o->on=0;}else if(o->y<20*Q||o->x<0||o->x>320*Q)o->on=0;}
  for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;int oldx=o->x,oldy=o->y;if(ex.empStop>0){}else if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
   if(o->type==4){stage_boss_step(o);
@@ -174,7 +184,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
    if(o->type==1){o->x=o->base*Q+sn(o->age+o->phase)*9;if(o->age>100)o->y+=180;}
    if(o->type==2)o->x=160*Q+sn(o->age*2+o->phase)*33;
    if(o->type==3)o->x=o->base*Q+sn((o->age>>1)+o->phase)*3;
-   if(o->y>24*Q&&((o->age+o->phase)&127)==0)aim(o->x,o->y,450+(g.wave<<3));
+   if(o->y>24*Q&&remn(o->age+o->phase,enemy_fire_interval())==0)enemy_volley(o,450+(g.wave<<3));
   }
   }
   if((ex.phase==2||ex.phase==15)&&o->type!=4){int yy=o->y/Q,l=tunnel_left(yy),r=tunnel_right(yy),il,ir;if(tunnel_island(yy,&il,&ir)){if(o->phase&1)l=ir;else r=il;}o->x=clamp(o->x,(l+8)*Q,(r-8)*Q);}

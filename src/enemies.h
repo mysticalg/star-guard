@@ -1,7 +1,7 @@
 /* Eight specialist enemies. Their own age clock drives readable tells and attacks. */
 static int enemy_guarded(const Obj*o){return (o->type==4&&(o->age<=120||o->morph>0||o->shieldCharge>0||(o->attack>60&&o->attack<=85)))||(o->type==15&&o->age%140<85)||(o->type==18&&o->age%130>=85&&o->age%130<105);}
-static void specialist_group(int type,int formation){int n=type>=23?4:type==19?3:type==15?4:6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=(type==19?8:type==15?6:3)+enemy_bonus(),.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
-static void ground_group(int type,int formation){for(int n=0;n<4;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=type,.hp=(type==23?5:4)+enemy_bonus(),.x=(type==23?276:273)*Q,.y=(-32-n*66-formation*8)*Q,.base=293,.phase=n*17};}}
+static void specialist_group(int type,int formation){int n=(type>=23?4:type==19?3:type==15?4:6)+mission_pressure()/6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=(type==19?8:type==15?6:3)+enemy_bonus(),.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
+static void ground_group(int type,int formation){for(int n=0;n<4+mission_pressure()/7;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=type,.hp=(type==23?5:4)+enemy_bonus(),.x=(type==23?276:273)*Q,.y=(-32-n*66-formation*8)*Q,.base=293,.phase=n*17};}}
 static void specialist_step(Obj*o){int t=o->age,x=o->x,y=o->y;
  switch(o->type){
  case 26:if(t<65||t>260){o->y+=t>260?1100:420;}else{int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;int speed=900;o->vx=clamp(o->vx+clamp(dx*speed/d-o->vx,-40,40),-900,900);o->vy=clamp(o->vy+clamp(dy*speed/d-o->vy,-40,40),-900,900);o->x+=o->vx;o->y+=o->vy;}break;
