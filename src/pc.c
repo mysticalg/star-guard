@@ -447,8 +447,8 @@ if(showcase){g.wave=1;g.clock=100;g.groups=SECTOR_WAVES;g.px=160*Q;player_y=220*
 int main(int argc,char**argv){SDL_SetMainReady();SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT,"#canvas");vsync=1;cap=0;
 int renderWidth=argc>2?clamp(atoi(argv[2]),1920,3840):2880,renderHeight=renderWidth*5/6;
 if(!SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_GAMEPAD))fatal(SDL_GetError());
- window=SDL_CreateWindow("Star Guard",renderWidth,renderHeight,0);if(!window)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);renderer=SDL_CreateRenderer(window,0);if(!renderer)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);SDL_SetRenderVSync(renderer,1);init_graphics();
+ window=SDL_CreateWindow("Star Guard",renderWidth,renderHeight,0);if(!window)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);renderer=SDL_CreateRenderer(window,0);if(!renderer)fatal(SDL_GetError());SDL_SetWindowSize(window,renderWidth,renderHeight);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_LETTERBOX);/* rAF owns browser pacing; early SDL VSync can enable a simulated 60 Hz wait. */SDL_SetRenderVSync(renderer,0);init_graphics();
  SDL_AudioSpec spec={SDL_AUDIO_F32,2,48000};astream=SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,&spec,audio_callback,0);if(astream)SDL_ResumeAudioStreamDevice(astream);
 game_reset();g.mode=1;if(argc>1)g.wave=clamp(atoi(argv[1]),0,SECTOR_COUNT-1)+1;sideBlend=side_mode();previous=g;previousEx=ex;previousY=player_y;before=start=ms_now();
 int count=0;SDL_JoystickID*ids=SDL_GetGamepads(&count);if(count)pad=SDL_OpenGamepad(ids[0]);SDL_free(ids);
-emscripten_set_main_loop(browser_frame,0,1);return 0;}
+/* Consume SDL's deferred swap setting before rAF becomes the sole scheduler. */SDL_PumpEvents();emscripten_set_main_loop(browser_frame,0,1);return 0;}

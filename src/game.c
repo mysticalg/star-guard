@@ -17,6 +17,8 @@ static int mission_index(int phase){for(int i=0;i<SECTOR_COUNT;i++)if(missionRou
 #define BOSS_SHIELD_MAX 2400
 #define BOSS_SHIELD_RECHARGE 300
 #define MAXP 160
+#define MAX_NOVA_BOMBS 5
+/* Deterministic 11 drops per 80 kills: 10% more than the former 1-in-8 cadence. */
 #define NSTARS 144
 typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
@@ -67,6 +69,7 @@ static void weapon_damage_enemy(Obj*o,int damage,int weapon){if(o->type==4){int 
 static int sn(int a){return sine[a&255];}
 static int divn(int a,int b){return b?a/b:0;}
 static int remn(int a,int b){return b?a%b:0;}
+static int regular_drop_count(int kills){return kills/80*11+(kills%80)*11/80;}
 static Obj *slot(Obj *a,int n){int i;for(i=0;i<n;i++)if(!a[i].on){a[i]=(Obj){.on=1};return a+i;}return 0;}
 static void particle(int x,int y,int vx,int vy,int life,int tint){int i;if(!g.fx)return;for(i=0;i<MAXP;i++){int n=ex.nextParticle++;Particle*p;if(ex.nextParticle==MAXP)ex.nextParticle=0;p=g.particles+n;if(!p->on){p->on=1;p->x=x;p->y=y;p->vx=vx;p->vy=vy;p->life=life;p->tint=tint;return;}}}
 extern void pc_hit_sound(int,int,int);
@@ -117,7 +120,7 @@ static int next_weapon_drop(void){for(int n=0;n<9;n++){int w=ex.weaponDrop++%9;i
 static void salvage_drop(int x,int y){Obj*d=slot(g.drops,8);if(!d)return;int rarity=rnd()%100;*d=(Obj){.on=1,.type=11,.variant=rarity<10?2:rarity<40?1:0,.x=x*Q,.y=y*Q,.vy=220};}
 static void unique_weapon_drop(int x,int y){int w=next_weapon_drop();if(w<0){salvage_drop(x,y);return;}Obj*d=slot(g.drops,8);if(d)*d=(Obj){.on=1,.type=10,.variant=w,.x=x*Q,.y=y*Q,.vy=220};}
 static void ship_fire(void){if(g.weapon==8)return;int level=ship_level();if(level<2)return;if(level==2&&(g.shipFireCount++&1))return;int pairs=1+(level-2)/2;for(int row=0;row<pairs;row++)for(int side=-1;side<=1;side+=2){Obj*o=slot(g.shots,MAXS);if(o)*o=(Obj){.on=1,.type=g.weapon==3||g.weapon==5?0:g.weapon,.x=g.px+side*(4+row*3)*Q,.y=player_y-(7-row)*Q,.vx=g.playerVX+side*row*70,.vy=g.weapon==4?-1300:-2400,.hp=g.weapon==6?4:g.weapon==7?5:0,.phase=-3,.variant=101,.power=power_level(g.weapon)};}}
-static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.score+=o->type==4?1500:100+o->type*50;g.kills++;phoenix_charge(o->type==4?200:30);if((g.kills-ex.stageKills)%24==0&&ex.shieldDrops<4)drop(x,y,2);pc_enemy_explosion(o);ex.soundTick=g.tick;burst(x,y,o->type==4);if(o->type==4){g.barrier=100;g.shield=400;ex.victory=1;ex.victoryX=x;ex.victoryY=y;ex.clearBonus=1000+g.lives*250;g.score+=ex.clearBonus;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;drop(x,y,(g.wave&1)?7:4);}else if(remn(g.kills,8)==0){static const int loot[16]={10,7,6,11,7,8,10,7,9,12,7,6,2,7,5,4};int item=loot[remn(divn(g.kills,8)-1,16)];if(item==10)unique_weapon_drop(x,y);else if(item==11)salvage_drop(x,y);else drop(x,y,item);}carrier_release(&destroyed);}
+static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.score+=o->type==4?1500:100+o->type*50;g.kills++;phoenix_charge(o->type==4?200:30);if((g.kills-ex.stageKills)%24==0&&ex.shieldDrops<4)drop(x,y,2);pc_enemy_explosion(o);ex.soundTick=g.tick;burst(x,y,o->type==4);if(o->type==4){g.barrier=100;g.shield=400;ex.victory=1;ex.victoryX=x;ex.victoryY=y;ex.clearBonus=1000+g.lives*250;g.score+=ex.clearBonus;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;drop(x,y,(g.wave&1)?7:4);}else if(regular_drop_count(g.kills)>regular_drop_count(g.kills-1)){static const int loot[16]={10,7,6,11,7,8,10,7,9,12,7,6,2,7,5,4};int item=loot[remn(regular_drop_count(g.kills)-1,16)];if(item==10)unique_weapon_drop(x,y);else if(item==11)salvage_drop(x,y);else drop(x,y,item);}carrier_release(&destroyed);}
 #include "expansion_step.h"
 #include "bosses.h"
 static int emp_near(int x,int y,int radius){int dx=(x-g.px)/Q,dy=(y-player_y)/Q;return dx*dx+dy*dy<radius*radius;}
@@ -144,7 +147,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  if(!g.paused){for(i=0;i<NSTARS;i++){Star*s=g.stars+i;s->y+=((s->z==0?64:s->z==1?160:384)*ex.scrollSpeed)>>8;if(s->y>=232*Q)s->y-=232*Q;}}
  if(g.mode==0){g.tick++;if((mask&4)||(ch>='1'&&ch<='9')){g.mode=1;g.tick=0;if(ch>='1'&&ch<='5')g.wave=ch-'0';if(ch=='6'){g.wave=3;g.clock=300;g.groups=3;}if(ch=='7')g.weapon=6;if(ch=='8')g.weapon=7;if(ch=='9')g.weapon=8;}return;}if(g.mode==2){g.tick++;return;}
  if(ch=='p')g.paused=!g.paused;if(g.paused)return;
- if(g.mode==3){g.tick++;if(!(mask&4))g.continueReady=1;if(ch=='n')g.continueTicks=0;if(ch==13||ch=='c'||(g.continueReady&&(mask&4))){g.continues--;ex.empDisable=ex.empGrace=0;g.continueTicks=0;g.mode=1;g.lives=3;g.barrier=g.energy=100;weapon_batteries_reset();g.shield=150;g.px=160*Q;player_y=220*Q;if(ex.phase==5)g.px=tunnel_lane(220,0)*Q;pc_charge_burst(g.px/Q,220);return;}if(g.continueTicks>0)g.continueTicks--;if(!g.continueTicks)g.mode=2;return;}
+ if(g.mode==3){g.tick++;if(!(mask&4))g.continueReady=1;if(ch=='n')g.continueTicks=0;if(ch==13||ch=='c'||(g.continueReady&&(mask&4))){g.continues--;ex.bombs=MAX_NOVA_BOMBS;ex.empDisable=ex.empGrace=0;g.continueTicks=0;g.mode=1;g.lives=3;g.barrier=g.energy=100;weapon_batteries_reset();g.shield=150;g.px=160*Q;player_y=220*Q;if(ex.phase==5)g.px=tunnel_lane(220,0)*Q;pc_charge_burst(g.px/Q,220);return;}if(g.continueTicks>0)g.continueTicks--;if(!g.continueTicks)g.mode=2;return;}
  if(ch>='1'&&ch<='9'&&(g.unlocked&(1<<(ch-'1')))){if(g.weapon!=ch-'1')g.beam=0;g.weapon=ch-'1';}
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;pc_hit_sound(1,0,g.px/Q);}
  g.tick++;g.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;int beamTargetAim=clamp(g.playerVX*256/(flight_side_mode()?940:1024),-256,256);ex.beamAim+=(beamTargetAim-ex.beamAim)/3;if(absn(beamTargetAim-ex.beamAim)<3)ex.beamAim=beamTargetAim;expansion_step(mask,ch);
@@ -193,7 +196,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  for(i=0;i<8;i++){Obj *o=g.drops+i;if(!o->on)continue;o->y+=o->vy;o->age++;if(o->y>267*Q)o->on=0;else if(absn(o->x-g.px)<20*Q&&absn(o->y-player_y)<20*Q){o->on=0;ex.pickupKind=o->type;ex.pickupTicks=100;if(o->type==0||o->type==1||o->type==3||o->type==10){int w=o->type==10?o->variant:o->type==3?3:o->type+1;w=clamp(w,0,8);if(g.acquiredWeapons&(1<<w)){g.lastLootValue=250;g.score+=250;g.salvagePicked++;ex.pickupKind=11;}else{g.acquiredWeapons|=1<<w;g.beam=0;g.weapon=w;charge_weapon(w);ex.pickupKind=10;for(int d=0;d<8;d++)if(g.drops[d].on&&g.drops[d].type==10&&g.drops[d].variant==w){g.drops[d].type=11;g.drops[d].variant=0;}}ex.pickupTicks=100;}
  if(o->type==11){static const int value[3]={250,750,1500};g.lastLootValue=value[clamp(o->variant,0,2)];g.score+=g.lastLootValue;g.salvagePicked++;}
  if(o->type==7){int upgraded=charge_weapon(g.weapon);if(power_level(g.weapon)==4&&!upgraded){g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]+20,0,100);g.score+=100;}ex.pickupKind=upgraded?7:12;ex.pickupTicks=100;}
- if(o->type==5&&ex.bombs<5)ex.bombs++;
+ if(o->type==5)ex.bombs=clamp(ex.bombs+1,0,MAX_NOVA_BOMBS);
  if(o->type==6){ex.options=clamp(ex.options+1,0,5);ex.optionsOn=1;ex.pickupKind=6;ex.pickupTicks=100;}
  if(o->type==8){ex.satellite=1;ex.pickupKind=8;ex.pickupTicks=100;}
  if(o->type==12){ex.chaff=clamp(ex.chaff+1,0,2);ex.pickupKind=13;}
