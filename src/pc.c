@@ -389,7 +389,7 @@ static void selftest(void){
  headless=1;int seen[27]={0},weapons=0,checks=0,phaseSeen[17]={0};double begin=ms_now();
  #define CHECK(x) do{if(!(x)){fprintf(stderr,"FAIL line %d: %s\n",__LINE__,#x);exit(4);}checks++;}while(0)
  game_reset();CHECK(g.unlocked==511&&ex.bombs==3&&ex.options==0);game_step(4,0);CHECK(g.mode==1);
- for(int w=0;w<9;w++){game_reset();g.mode=1;g.shield=100000;ex.optionsOn=0;g.weapon=w;g.cool=0;g.energy=100;game_step(4,0);if(w==8)CHECK(ex.empTicks>0&&ex.empCount>0&&g.weaponEnergy[w]==88);else if(w==3||w==5)CHECK(g.beam>0&&g.weaponEnergy[w]<100);else{int n=0;for(int i=0;i<MAXS;i++)n+=g.shots[i].on;CHECK(n==(w==1?5:w==7?3:1));}weapons|=1<<w;}
+ for(int w=0;w<9;w++){game_reset();g.mode=1;g.shield=100000;ex.optionsOn=0;g.weapon=w;g.cool=0;g.energy=100;game_step(4,0);if(w==8)CHECK(ex.empTicks>0&&ex.empCount>0&&g.weaponEnergy[w]==90);else if(w==3||w==5)CHECK(g.beam>0&&g.weaponEnergy[w]<100);else{int n=0;for(int i=0;i<MAXS;i++)n+=g.shots[i].on;CHECK(n==(w==1?5:w==7?3:1));}weapons|=1<<w;}
  game_reset();g.mode=1;g.shield=0;bullet(g.px,player_y,0,0);game_step(0,0);CHECK(g.barrier==65&&g.shield>0);g.shield=0;g.barrier=0;bullet(g.px,player_y,0,0);game_step(0,0);CHECK(g.lives==2);
  for(int i=0;i<7;i++){drop(g.px>>8,player_y>>8,i);game_step(0,0);}CHECK(g.lives==3&&g.barrier==100&&g.shield>0);
  int t=g.tick;game_step(0,'p');CHECK(g.tick==t&&g.paused);game_step(0,'p');CHECK(!g.paused);g.energy=100;game_step(0,'d');CHECK(g.active>0&&g.energy==65);

@@ -496,3 +496,5 @@ High-score restart registration now uses the current mission number, rather than
 The browser follows every requestAnimationFrame callback, with no fixed 60, 120, or 200 FPS cap. SDL's deferred startup swap setting is consumed before the animation loop starts, and simulated presentation waits remain disabled. Simulation stays fixed at 50 Hz with interpolation. Regular loot cadence increases from 10 to 11 drops per 80 kills (+10%), preserving the item cycle and separate boss/shield rewards. Nova pickups cap at five; continuing restores five nova bombs, while a fresh game still starts with three.
 
 Supply regression checks: compile tests/supplies.c with Emscripten and --use-port=sdl3 -sENVIRONMENT=node, then run the generated JavaScript with Node. The checks cover stock boundaries, continue restoration, actual kill/drop cadence and item order.
+
+Weapon firing and Tesla critical-feedback battery drain are now 10% lower, using separate fractional accounting for each battery. Fire cadence, damage, passive recharge, and six-second overheat cooldown are unchanged. This gives roughly 11% more firing time before recharge effects, subject to whole-shot boundaries.

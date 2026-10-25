@@ -31,6 +31,33 @@ int main(void) {
     }
     VERIFY(actualDrops==110);
     VERIFY(regular_drop_count(800)==110);
-    printf("PASS %d checks: initial bombs 3, pickup cap 5, continue refill 5, 110 drops in 800 kills, unchanged 16-item cycle\n",checks);
+    static const int sustained[9]={37,22,56,37,14,22,28,14,9};
+    for(int w=0;w<9;w++) {
+        game_reset();int consumed=0;
+        for(int shot=0;shot<100;shot++) {
+            g.weaponEnergy[w]=100;
+            VERIFY(weapon_spend(w));
+            consumed+=100-g.weaponEnergy[w];
+            VERIFY(g.weaponEnergy[w]>=0&&g.weaponEnergy[w]<100);
+            VERIFY(g.weaponDrainRemainder[w]>=0&&g.weaponDrainRemainder[w]<10);
+        }
+        VERIFY(consumed==weapon_cost(w)*90);
+        VERIFY(g.weaponDrainRemainder[w]==0);
+        weapon_batteries_reset();int shots=0;
+        while(weapon_spend(w)){shots++;if(g.weaponHeat[w])break;}
+        VERIFY(shots==sustained[w]);
+        VERIFY(g.weaponEnergy[w]==0&&g.weaponHeat[w]==300);
+        VERIFY(!weapon_spend(w));
+    }
+    game_reset();int feedbackCost=0;
+    for(int pulse=0;pulse<100;pulse++) {
+        g.weaponEnergy[8]=100;
+        VERIFY(weapon_drain(8,3));feedbackCost+=100-g.weaponEnergy[8];
+    }
+    VERIFY(feedbackCost==270);
+    VERIFY(g.weaponDrainRemainder[8]==0);
+    g.weaponDrainRemainder[4]=9;weapon_batteries_reset();
+    for(int w=0;w<9;w++)VERIFY(g.weaponDrainRemainder[w]==0&&g.weaponEnergy[w]==100);
+    printf("PASS %d checks: bomb stock/continue, loot cadence/order, exact 10%% lower drain for all banks and Tesla feedback, sustained firing and overheat/reset\n",checks);
     return 0;
 }
