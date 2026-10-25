@@ -1,5 +1,7 @@
 typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
+ int refit,refitNext,collectedFamily,collectedVariant,collectedTicks;u32 combatSeed;int buffTicks[5],critSerial,critHead;CritNotice critNotices[8];
+ int repairCool,repairSerial,repairFlash,leeches,leechGrace,leechDrain,leechSerial,purgeSerial,baseDamage,section,oldKind,missionHandover,missionTicks,campaignWon,miniDone,encounterTier,fatigue[9],podContact[5];Environment env;Giant giant;
  int empDisable,empGrace,empTicks,empCount,empPulse,empX,empY,empCritical,empNetwork,empFeedbackAge,empCriticalCount;Obj empArcs[96];
  int cavernSide,cavernLeg,cavernTurn;
  int shieldDrops,invincibleTicks,empBombs,empStop;
@@ -14,4 +16,4 @@ typedef struct {
  int bombAge,bombX,bombY,bombRadius,landScroll,bossWarning,clearTicks,satellite,satelliteCool,dropper,dropperCool,weaponDrop,pickupKind,pickupTicks,rearWarning,rearSpawned,bombSerial;
 } Expansion;
 Expansion ex;
-static void expansion_reset(void){int i;u8*p=(u8*)&ex;for(i=0;i<(int)sizeof(ex);i++)p[i]=0;ex.phase=-1;ex.scrollSpeed=128;ex.enemySpeed=256;ex.bombs=3;ex.chaff=2;ex.empBombs=1;ex.weaponDrop=1;ex.options=0;ex.optionsOn=1;ex.optionCool=1;for(i=0;i<64;i++){ex.followX[i]=160*Q;ex.followY[i]=230*Q;}}
+static void expansion_reset(void){int i;u8*p=(u8*)&ex;for(i=0;i<(int)sizeof(ex);i++)p[i]=0;ex.phase=-1;ex.env.kind=-1;ex.scrollSpeed=128;ex.enemySpeed=256;ex.bombs=3;ex.chaff=2;ex.empBombs=1;ex.weaponDrop=1;ex.options=0;ex.optionsOn=1;ex.optionCool=1;for(i=0;i<64;i++){ex.followX[i]=160*Q;ex.followY[i]=230*Q;}}

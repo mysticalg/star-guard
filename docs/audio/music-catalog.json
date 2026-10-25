@@ -1,0 +1,494 @@
+[
+  {
+    "title": "Drones Fall Like Metal Rain - variant 02",
+    "path": "audio/storm-coast-drones-fall-like-metal-rain.mp3",
+    "source": "32 - Drones Fall Like Metal Rain - variant 02.wav",
+    "context": "Storm Coast",
+    "sha256": "ce646e1ed91fc9f48b9f93c3457e460243c7884f4aa46aa6be8216d50c361913"
+  },
+  {
+    "title": "Work Pods Beneath the Glass - variant 02",
+    "path": "audio/hive-descent-work-pods-beneath-the-glass.mp3",
+    "source": "11 - Work Pods Beneath the Glass - variant 02.wav",
+    "context": "Hive Descent",
+    "sha256": "9166441d7b245ae1d090f34d01ff263b6df08a2823111c62e2adbb353771c008"
+  },
+  {
+    "title": "Rave in the Ruined Metro - variant 01",
+    "path": "audio/shattered-belt-rave-in-the-ruined-metro.mp3",
+    "source": "28 - Rave in the Ruined Metro - variant 01.wav",
+    "context": "Shattered Belt",
+    "sha256": "e551575987a5a31b096ad01e33cc87dccbeeeb399d84dd32cbd1698368ba16aa"
+  },
+  {
+    "title": "Forbidden Piano After Midnight - variant 01",
+    "path": "audio/frozen-passage-forbidden-piano-after-midnight.mp3",
+    "source": "23 - Forbidden Piano After Midnight - variant 01.wav",
+    "context": "Frozen Passage",
+    "sha256": "1da0d3a3042c48cf262fddcd86011e3c5c40d3013223085f98b4d103f10f4ee2"
+  },
+  {
+    "title": "Unlicensed Heartbeat - variant 01",
+    "path": "audio/living-nebula-unlicensed-heartbeat.mp3",
+    "source": "26 - Unlicensed Heartbeat - variant 01.wav",
+    "context": "Living Nebula",
+    "sha256": "5aada1558a5a78028c4aa74938ac5af2c045d216436e27f68ccd953af7871c11"
+  },
+  {
+    "title": "Firewalls Around the Heart - variant 02",
+    "path": "audio/reactor-run-firewalls-around-the-heart.mp3",
+    "source": "34 - Firewalls Around the Heart - variant 02.wav",
+    "context": "Reactor Run",
+    "sha256": "99f92dd7e88b77947402f24d4eb249095adcf91a5049d1d00411a2919f12bbc4"
+  },
+  {
+    "title": "Welcome to the Perfect System - variant 02",
+    "path": "audio/context-intro-menu.mp3",
+    "source": "01 - Welcome to the Perfect System - variant 02.wav",
+    "context": "intro-menu",
+    "source_sha256": "5e296e3cb0bcb09ae40e8968e9299f11173a9e52bb89dce4de562ac8dbd9ba1c",
+    "sha256": "e708547db7f614d1eb015d05b02b6242fe63f50d988f7875a042dce6fbc27d44",
+    "probe": {
+      "file": "context-intro-menu.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "199.240000",
+        "size": "3189239"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Citizen Zero - variant 02",
+    "path": "audio/context-ship-selection.mp3",
+    "source": "10 - Citizen Zero - variant 02.wav",
+    "context": "ship-selection",
+    "source_sha256": "0d089c1136e65e29c32c508714cfaac2f8c2f19641b23b003bbafd0e14eea98f",
+    "sha256": "ea8340a86bbd911debc2350c78858b9d69cc245271583c5eede6a4354c140145",
+    "probe": {
+      "file": "context-ship-selection.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "199.920000",
+        "size": "3200106"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "A Signal Beneath the Static - variant 02",
+    "path": "audio/context-route-map.mp3",
+    "source": "21 - A Signal Beneath the Static - variant 02.wav",
+    "context": "route-map",
+    "source_sha256": "8dd0844ab633dad599b9aaa679f9423ffa60f5c80f47c7cdd8a4034338e102c5",
+    "sha256": "d269cc03d90327e9e718b18257ecd964189b5c71ab448a974f6af52be277280d",
+    "probe": {
+      "file": "context-route-map.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "204.640000",
+        "size": "3275339"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Morning Sirens in Sector Seven - variant 02",
+    "path": "audio/context-mission-intro.mp3",
+    "source": "02 - Morning Sirens in Sector Seven - variant 02.wav",
+    "context": "mission-intro",
+    "source_sha256": "fde6334d658a2e857933e369bc67dd87b10c72cada6877828aa8081eab370670",
+    "sha256": "b816d48400e98f3a777b783fd57313bb5b7deb08e45abb36e2863ac07a457af3",
+    "probe": {
+      "file": "context-mission-intro.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "209.920000",
+        "size": "3359766"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Police Drones Sing Lullabies - variant 02",
+    "path": "audio/context-miniboss.mp3",
+    "source": "15 - Police Drones Sing Lullabies - variant 02.wav",
+    "context": "miniboss",
+    "source_sha256": "c084cb1f053b0e689ce6628a1ce7f6824e9942bb1fcabb53495c26d74a13be74",
+    "sha256": "1d0e6a378a07b31204c0d2424565aab0e9147618d7b522c2bdb08482bf5adec0",
+    "probe": {
+      "file": "context-miniboss.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "183.600000",
+        "size": "2938882"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "March of the Nameless Citizens - variant 02",
+    "path": "audio/context-giant-a.mp3",
+    "source": "35 - March of the Nameless Citizens - variant 02.wav",
+    "context": "giant-a",
+    "source_sha256": "5c8a1858829a1191b11bb83b4f9b61612bd11838896b939ba897a85d69b984ea",
+    "sha256": "8747f45f0b40e38628417d3f1857889096b99127df75a847186c30cebffa31b5",
+    "probe": {
+      "file": "context-giant-a.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "198.840000",
+        "size": "3182552"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "The Sky Turns Red at Noon - variant 02",
+    "path": "audio/context-giant-b.mp3",
+    "source": "36 - The Sky Turns Red at Noon - variant 02.wav",
+    "context": "giant-b",
+    "source_sha256": "3735a27fac9bcb9f2f2c521a0b597108e06cc4382ce277fed9af22e99fef7bc3",
+    "sha256": "a805bdde855d7625da1164873f0b5348b93e243fca319f6cb3c230a8dd52c0a9",
+    "probe": {
+      "file": "context-giant-b.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "93.400000",
+        "size": "1495669"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Delete the Kings of Tomorrow - variant 02",
+    "path": "audio/context-giant-c.mp3",
+    "source": "39 - Delete the Kings of Tomorrow - variant 02.wav",
+    "context": "giant-c",
+    "source_sha256": "51071c8b73a45a69f9f1c3478205802bd616061ff6e656f510d11a4870b53892",
+    "sha256": "deccb97aa8eb2fb72a3c3e53bff62d8457286537dd3f2c19a4137a78dcb2db84",
+    "probe": {
+      "file": "context-giant-c.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "123.560249",
+        "size": "1978411"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Grey Markets of the Soul - variant 02",
+    "path": "audio/context-cavern-a.mp3",
+    "source": "14 - Grey Markets of the Soul - variant 02.wav",
+    "context": "cavern-a",
+    "source_sha256": "cb6e3295478634cdaf47a2d67a8c5a0ee7c7b3c256761051d2c4bc3f1ac956e1",
+    "sha256": "5550cc8a3f212012c645d4a7685b9d4e30c971814a0d92c63776bc9121e72255",
+    "probe": {
+      "file": "context-cavern-a.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "179.680000",
+        "size": "2876188"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "The Basement Full of Radios - variant 01",
+    "path": "audio/context-cavern-b.mp3",
+    "source": "22 - The Basement Full of Radios - variant 01.wav",
+    "context": "cavern-b",
+    "source_sha256": "4ad658f7949df750cdee215b04bc5728101c3638c891c3eec54771aded0d5010",
+    "sha256": "2ded27056d921c98ff7e3642a31796cf4e60cc357fc51ff3be34fcaef8613188",
+    "probe": {
+      "file": "context-cavern-b.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "188.280000",
+        "size": "3013696"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Memory Taxes - variant 01",
+    "path": "audio/context-cavern-c.mp3",
+    "source": "20 - Memory Taxes - variant 01.wav",
+    "context": "cavern-c",
+    "source_sha256": "239078fdf501a5446858e5775c83f1bbd122372b72bd8fc16b8cb78cef5bec33",
+    "sha256": "2b2f05823d47f349ee0237ed9f5d707cab323599df23d7e5514ed6d9be37923f",
+    "probe": {
+      "file": "context-cavern-c.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "184.040000",
+        "size": "2945987"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Synthetic Dreams for Rent - variant 01",
+    "path": "audio/context-biome-a.mp3",
+    "source": "12 - Synthetic Dreams for Rent - variant 01.wav",
+    "context": "biome-a",
+    "source_sha256": "44539333c9c34549927cd3ad4ee55115f000e1c9336f3d19a1c77f79a4affd4a",
+    "sha256": "13d202c7426bd7decdde973159d1b58516b971ec70e966b72a91727e002ec6f8",
+    "probe": {
+      "file": "context-biome-a.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "147.640000",
+        "size": "2363352"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Neon Curfew - variant 01",
+    "path": "audio/context-biome-b.mp3",
+    "source": "08 - Neon Curfew - variant 01.wav",
+    "context": "biome-b",
+    "source_sha256": "bbd245f00d0227e1f32e9b7c7c16ccfbe8b1feca53d2fddb7c814059ddccabe4",
+    "sha256": "d3898398649c3b16d1cb555fe3fffdd462eafc33054ff7d09f30a8e42f66bacc",
+    "probe": {
+      "file": "context-biome-b.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "208.600000",
+        "size": "3338869"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "No Birds in the Airspace - variant 01",
+    "path": "audio/context-biome-c.mp3",
+    "source": "06 - No Birds in the Airspace - variant 01.wav",
+    "context": "biome-c",
+    "source_sha256": "2c47921c1d73d1777d9df9deb12a95586b710fd319bbbb3c6611a25a9da89400",
+    "sha256": "12c76a3b43d4d733f58b6c0a115396030ccc57eb2397c2c3b402b8df2e2636db",
+    "probe": {
+      "file": "context-biome-c.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "224.680249",
+        "size": "3596331"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "We Remember the Sun - variant 01",
+    "path": "audio/context-biome-d.mp3",
+    "source": "25 - We Remember the Sun - variant 01.wav",
+    "context": "biome-d",
+    "source_sha256": "ac7fd59511e945a9d670953932cfa3e81b1e39210e39c3b6a63fd0e353b63c21",
+    "sha256": "fecfa972d91e4d2bf00f3be69783872e1923b1ccbaff3b07513c39ed1f2a84d0",
+    "probe": {
+      "file": "context-biome-d.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "191.840000",
+        "size": "3070539"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Blackout Kisses - variant 02",
+    "path": "audio/context-biome-e.mp3",
+    "source": "29 - Blackout Kisses - variant 02.wav",
+    "context": "biome-e",
+    "source_sha256": "e5ebe5f91b400b5cde6ea06a7c2a9edf717cf9a185455396ccaa9c952b857480",
+    "sha256": "77ea83c0aca6db6a64c555fe94ef44fa5bf517650f172d17e73406e68353d0f9",
+    "probe": {
+      "file": "context-biome-e.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "212.840000",
+        "size": "3406578"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Hope Is a Contraband Frequency - variant 02",
+    "path": "audio/context-biome-f.mp3",
+    "source": "30 - Hope Is a Contraband Frequency - variant 02.wav",
+    "context": "biome-f",
+    "source_sha256": "a8a89331674fb14b9166a05a70c95a8a178fc645c91c40e0b3ffb0fbd4204829",
+    "sha256": "9e5983cec65e4e81e5877a5eb17970a61cf69f960e52060ac10d11ea84f90cf8",
+    "probe": {
+      "file": "context-biome-f.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "214.640000",
+        "size": "3435417"
+      }
+    },
+    "full_decode": "passed"
+  },
+  {
+    "title": "Dawn Without Permission - variant 01 / 6s victory edit",
+    "path": "audio/context-victory-sting.mp3",
+    "source": "50 - Dawn Without Permission - variant 01.wav",
+    "context": "victory-sting",
+    "source_sha256": "2d18f846d661d3b248b5b99939b32f19e1b1d83767bba93d6fd2f9f60b9537af",
+    "sha256": "23504738459ade4b37a92533bc600306301c1418465e37403c4bbf474da66c06",
+    "probe": {
+      "file": "context-victory-sting.mp3",
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "mp3",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "format": {
+        "duration": "6.000000",
+        "size": "97177"
+      }
+    },
+    "full_decode": "passed"
+  }
+]

@@ -18,17 +18,17 @@ window.SoundSamples=(()=>{
   function event(kind,volume,pitch,pan,triple){
     requested++;if(!context){unavailable++;return 0;}
     const materials=['metal','shield','rock','glass','organic','energy'];
-    let name=kind===25?'chaff-deploy':kind===23?'torpedo-launch':kind===24?'torpedo-blast':kind===21?['explosion-small','explosion-medium','explosion-large','explosion-boss'][Math.max(0,Math.min(3,triple))]:kind===2?(volume>100?'bomb':'explosion'):kind>=5&&kind<=10?materials[kind-5]:kind===15?materials[Math.max(0,Math.min(5,triple))]:kind===3?'laser':kind===11||kind===14?'bounce':kind===12?'super':kind===13?'victory-blast':kind===16||kind===22?'tesla':kind===1?(triple===1?'gun-spread':triple===2?'gun-rapid':triple===4?'gun-heavy':triple===6?'gun-ricochet':(shotSerial++%2?'gun-alt':'gun')):kind===4?'warp':kind===17?'pickup':kind===18?'warning':kind===20?'victory':null;
+    let name=kind===26?'pickup':kind===25?'chaff-deploy':kind===23?'torpedo-launch':kind===24?'torpedo-blast':kind===21?['explosion-small','explosion-medium','explosion-large','explosion-boss'][Math.max(0,Math.min(3,triple))]:kind===2?(volume>100?'bomb':'explosion'):kind>=5&&kind<=10?materials[kind-5]:kind===15?materials[Math.max(0,Math.min(5,triple))]:kind===3?'laser':kind===11||kind===14?'bounce':kind===12?'super':kind===13?'victory-blast':kind===16||kind===22?'tesla':kind===1?(triple===1?'gun-spread':triple===2?'gun-rapid':triple===4?'gun-heavy':triple===6?'gun-ricochet':(shotSerial++%2?'gun-alt':'gun')):kind===4?'warp':kind===17?'pickup':kind===18?'warning':kind===20?'victory':null;
     if(kind===21&&triple<3){const variant=explosionSerial[triple]++%3;if(variant)name+='-alt'+variant;}
     let materialBase='';if(((kind>=5&&kind<=10)||kind===15)&&['metal','rock','glass'].includes(name)){materialBase=name;const variant=(materialSerial[name]||0)%3;materialSerial[name]=(materialSerial[name]||0)+1;if(variant)name+='-alt'+variant;}
     if(!name)return 1;if(!buffers[name]){unavailable++;return 0;}
-    const eventKey=kind===22?'tesla-chain':kind===21?'explosion-tier-'+triple:materialBase||name;
-    const now=context.currentTime,gap=name==='torpedo-launch'?.2:name==='torpedo-blast'?.2:name==='explosion-boss'?1:name.startsWith('explosion-large')?.09:name.startsWith('explosion-medium')?.065:name.startsWith('explosion-small')?.045:kind===22?.08:name==='tesla'?.24:name==='laser'?.085:name==='bounce'?.075:name==='bomb'?.12:name.startsWith('gun')?.035:name==='warp'?1:name==='victory'?3:.045;
+    const eventKey=kind===26?'critical-hit':kind===22?'tesla-chain':kind===21?'explosion-tier-'+triple:materialBase||name;
+    const now=context.currentTime,gap=kind===26?0:name==='torpedo-launch'?.2:name==='torpedo-blast'?.2:name==='explosion-boss'?1:name.startsWith('explosion-large')?.09:name.startsWith('explosion-medium')?.065:name.startsWith('explosion-small')?.045:kind===22?.08:name==='tesla'?.24:name==='laser'?.085:name==='bounce'?.075:name==='bomb'?.12:name.startsWith('gun')?.035:name==='warp'?1:name==='victory'?3:.045;
     // Audio playback can finish before the main thread delivers onended.
     // Admission follows the audio clock, never delayed cleanup timers.
     for(const playing of active)if(playing.endsAt<=now){active.delete(playing);tails.add(playing);retired++;}
     for(const playing of tails)if(playing.endsAt+.16<=now)playing.dispose();
-    if(name==='explosion-boss'&&active.size>=24){const old=active.values().next().value;old.stop();active.delete(old);}
+    if((name==='explosion-boss'||kind===26)&&active.size>=24){const old=active.values().next().value;old.stop();active.delete(old);}
     if(name==='tesla'&&Array.from(active,s=>s.sampleName).filter(n=>n==='tesla'||n==='tesla-chain').length>=4){dropped++;budgetDropped++;return 1;}
     if(now-(lastPlay[eventKey]??-10)<gap){dropped++;return 1;}
     if(active.size>=24){dropped++;budgetDropped++;return 1;}
@@ -56,7 +56,7 @@ window.SoundSamples=(()=>{
     if(cavern){const delay=context.createDelay(.2),wet=context.createGain();delay.delayTime.value=.095;wet.gain.value=.18;gain.connect(delay);delay.connect(wet);wet.connect(stereo);nodes.push(delay,wet);}
     source.endsAt=now+(kind===22?.13:source.buffer.duration/source.playbackRate.value);
     for(const oscillator of oscillators)oscillator.stop(source.endsAt+.16);
-    active.add(source);plays[kind===22?eventKey:name]=(plays[kind===22?eventKey:name]||0)+1;
+    active.add(source);plays[kind===22||kind===26?eventKey:name]=(plays[kind===22||kind===26?eventKey:name]||0)+1;
     source.dispose=()=>{if(source.cleaned)return;source.cleaned=true;active.delete(source);tails.delete(source);for(const n of nodes)n.disconnect();};
     source.onended=()=>{ended++;active.delete(source);if(!source.cleaned){tails.add(source);setTimeout(source.dispose,160);}};if(kind===22)source.start(now,0,.13);else source.start();
     return 1;

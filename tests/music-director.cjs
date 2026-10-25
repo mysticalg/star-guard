@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),{resolve,create}=require('../docs/music-director.js');
+let plays=[];const d=create((index,loop)=>plays.push({index,loop}));
+d.update({started:false,menu:'intro'});assert.equal(plays.length,0);d.unlock();assert.equal(plays[0].index,6);
+d.update({started:false,menu:'ship'});assert.equal(plays.at(-1).index,7);d.update({started:false,menu:'map'});assert.equal(plays.at(-1).index,8);
+const s={started:true,mission:1,section:0,kind:0,side:0};d.update(s);assert.equal(plays.at(-1).index,0);const count=plays.length;for(let i=0;i<1000;i++)d.update(s);assert.equal(plays.length,count);
+d.manual(4);d.update(s);assert.equal(plays.at(-1).index,4);assert.equal(plays.length,count+1);
+d.update({...s,intro:40});assert.equal(plays.at(-1).index,9);d.update({...s,mini:10,giant:1,intro:40});assert.equal(plays.at(-1).index,11);d.update({...s,mini:10,intro:40});assert.equal(plays.at(-1).index,10);
+d.update({...s,victory:1,tier:1,giant:1});assert.equal(plays.at(-1).index,23);assert.equal(plays.at(-1).loop,false);const once=plays.length;for(let i=0;i<400;i++)d.update({...s,victory:i+1,tier:1});assert.equal(plays.length,once);
+d.update({...s,section:1,kind:3,side:1});const root=plays.at(-1).index;d.update({...s,section:2,kind:4,side:0});assert.notEqual(plays.at(-1).index,root);const before=plays.at(-1).index;d.update({...s,section:2,kind:4,side:1});assert.notEqual(plays.at(-1).index,before);
+for(let m=1;m<=6;m++)assert.equal(resolve({...s,mission:m}).index,m-1);
+assert.equal(resolve({...s,won:1,giant:1}).index,23);console.log('PASS music priorities, all six base tracks, reachable menus, biome/orientation changes, manual hold, idle stability and one-shot victory');
