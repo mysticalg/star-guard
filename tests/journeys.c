@@ -20,7 +20,7 @@ int main(void){headless=1;int seen[17]={0},sections=0;for(int m=0;m<6;m++){V(jou
  while(!ex.campaignWon&&ticks++<120000){if(ex.refit)journey_commit_refit();g.shield=100000;g.px=160*Q;player_y=230*Q;visited[g.wave-1][ex.section]=1;
   for(int i=0;i<MAXE;i++)if(g.enemies[i].on){if(g.enemies[i].type==4){V(g.enemies[i].variant==journeyMinis[g.wave-1][ex.section]);minis++;killed(g.enemies+i);}else g.enemies[i].on=0;}
   memset(g.bullets,0,sizeof(g.bullets));memset(ex.obstacles,0,sizeof(ex.obstacles));if(journey_kind()==ENV_WALL)for(int c=0;c<192;c++)if(absn(wall_x(c)-160)<24)ex.env.wall[c].hp=0;
-  if(ex.giant.active){giants++;finish_giant();}game_step(0,0);
+  if(ex.giant.active){giants++;finish_giant();}if(journey_kind()==ENV_BASE&&!ex.bombing.complete){for(int i=0;i<8;i++)ex.bombing.targets[i].hp=0;ex.bombing.targetsDestroyed=8;ex.bombing.cleared=1;ex.bombing.stage=3;ex.bombing.timer=74;}game_step(0,0);
  }
  V(ex.campaignWon&&minis==17&&giants==6);for(int m=0;m<6;m++)for(int s=0;s<journeyCounts[m];s++)V(visited[m][s]);printf("Full campaign: %d ticks, %d minibosses, %d giants\n",ticks,minis,giants);
  printf("PASS %d journey/giant/ship/environment checks\n",checks);return 0;

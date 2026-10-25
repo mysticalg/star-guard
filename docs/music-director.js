@@ -1,7 +1,7 @@
 /* Stable game-state keys prevent polling, camera blending, and pause from restarting songs. */
 (function(root){
  function resolve(s){
-  if(!s.started)return {key:'menu:'+s.menu,index:s.menu==='ship'?7:s.menu==='map'?8:6,loop:true};
+  if(!s.started)return {key:'menu:'+s.menu,index:['ship','shop','workshop','pilot'].includes(s.menu)?7:s.menu==='map'?8:6,loop:true};
   if(s.refit)return {key:"menu:refit",index:7,loop:true};
   const m=Math.max(1,Math.min(6,s.mission)),n=s.section||0,side=s.side?1:0;
   if(s.won)return {key:'win:campaign',index:23,loop:false};

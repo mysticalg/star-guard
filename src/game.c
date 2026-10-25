@@ -22,16 +22,17 @@ typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wo
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
- int variantEquip[9],inventoryBits[9];int chassis,continues,continueTicks,continueReady;
+ int pilotLevel,armourGear,equippedMask,skin,gearQuality[9];int variantEquip[9],inventoryBits[9];int chassis,continues,continueTicks,continueReady;
  int tick,missionTicks,mode,quit,paused,wave,clock,groups,score,kills,lives,px,weapon,unlocked,energy,barrier,shield,cool,beam,active,shake,fx,bossPhase,playerVX,lastPlayerX;
  int acquiredWeapons,shipFireCount,salvagePicked,lastLootValue;int weaponLevel[9],weaponCharge[9],weaponEnergy[9],weaponHeat[9],weaponFireCool[9],weaponDrainRemainder[9];u32 seed; Obj enemies[MAXE],shots[MAXS],bullets[MAXB],drops[8],effects[24]; Particle particles[MAXP]; Star stars[NSTARS];
 } Game;
 Game g;static int selectedShip,starterVariants[9];
+static int pilotConfigured,configuredLevel=1,configuredArmour,configuredMask=511,configuredQualityPack,configuredInventoryPack,configuredVariantPack,configuredSkin;
 extern int pc_modern;
 int player_y;
 #include "expansion_state.h"
 static int cavern_phase(int phase){return phase==5||phase==2||phase==15||(phase==ex.phase&&journey_kind()==ENV_WRECK)||(ex.travel&&phase==ex.oldPhase&&ex.oldKind==ENV_WRECK);}
-static int flight_side_mode(void){if(ex.giant.active)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
+static int flight_side_mode(void){if(ex.giant.active||journey_kind()==ENV_BASE)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
 static int cavern_turn_pending(void){return (ex.phase==2||ex.phase==15)&&ex.cavernLeg<2&&g.groups>=4*(ex.cavernLeg+1);}
 extern void pc_sprite(int,float,float);
 extern void pc_equipment_sprite(int,float,float,float);
@@ -53,9 +54,9 @@ static int power_level(int weapon){return clamp(g.weaponLevel[clamp(weapon,0,8)]
 static int power_needed(int weapon){static const int need[4]={2,3,4,0};return need[power_level(weapon)-1];}
 static int charge_weapon(int weapon){int need=power_needed(weapon);if(!need)return 0;if(++g.weaponCharge[weapon]>=need){g.weaponCharge[weapon]-=need;g.weaponLevel[weapon]++;return 1;}return 0;}
 static int ship_level(void){int upgrades=0;for(int i=0;i<9;i++)upgrades+=g.weaponLevel[i]-1;return clamp(1+upgrades/3,1,8);}
-static int enemy_bonus(void){return clamp(journey_depth()/5,0,3);}
+static int enemy_bonus(void){return clamp(journey_depth()/5,0,3)+(g.pilotLevel>=6);}
 /* Mission number, not scenery id: opening missions retain their readable pace. */
-static int mission_pressure(void){return clamp(journey_depth()-2,0,14);}
+static int mission_pressure(void){return clamp(journey_depth()-2,0,14)+clamp((g.pilotLevel-1)/3,0,3);}
 static int formation_interval(void){return 170-3*mission_pressure();}
 static int enemy_fire_interval(void){return 128-3*mission_pressure();}
 static int attack_interval(int base){return clamp(base*(100-2*mission_pressure())/100,8,base);}
@@ -70,7 +71,7 @@ static int weapon_drain_fraction(int w,int numerator,int denominator){if(g.weapo
 static int weapon_drain(int w,int base){if(!g.chassis)return weapon_drain_fraction(w,base*9,10);return weapon_drain_fraction(w,base*9*(g.chassis==1?90:110),1000);}
 /* Include passive recharge in the 25s / 12s / 10s sustained-fire targets.
    Cost follows the upgraded firing period so ranks improve DPS, not starvation. */
-static int weapon_spend(int w){if(w<3){static const int base[3]={4,6,3},ticks[3]={1250,600,500};int target=ticks[w]*ship_endurance()/100,regen=weapon_recharge_period(w);return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*(100*regen+target),target*regen);}return weapon_drain(w,weapon_cost(w));}
+static int weapon_spend(int w){if(!(g.equippedMask&(1<<w)))return 0;if(w<3){static const int base[3]={4,6,3},ticks[3]={1250,600,500};int target=ticks[w]*ship_endurance()/100,regen=weapon_recharge_period(w);return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*(100*regen+target),target*regen);}return weapon_drain(w,weapon_cost(w));}
 static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2?25:s->type==1?70:s->type==2?75:s->type==4?300:s->type==7?60:100;int damage=base*(100+20*(level-1))/100;return s->variant==102?damage*65/100:damage;}
 static void phoenix_charge(int amount){if(!ex.phoenixTicks)ex.phoenixMeter=clamp(ex.phoenixMeter+amount,0,PHOENIX_CHARGE_MAX);}
 static void damage_enemy(Obj*o,int damage){if(o->type==4){if(o->age<=120||o->morph>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){phoenix_charge(clamp(damage,0,o->shieldCharge)/50);o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}phoenix_charge(clamp(damage,0,o->hp*100-o->wound)/50);o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}}
@@ -98,7 +99,7 @@ extern void pc_heatseeker_blast(int,int,int);
 extern void pc_burst(int,int,int),pc_impact(int,int,int),pc_bomb_start(int,int),pc_transition(void),pc_charge_burst(int,int);
 static void burst(int x,int y,int big){pc_burst(x,y,big);int i,n=big?48:22;Obj*e=slot(g.effects,12);if(e){e->x=x;e->y=y;e->type=big;e->phase=rnd()&255;}for(i=0;i<n;i++){int a=rnd()&255,s=(big?700:400)+(rnd()&(big?1023:511));particle(x*Q,y*Q,(sn(a)*s)>>10,(sn(a+64)*s)>>10,18+(rnd()&23),i&3?1:0);}g.shake=big?7:3;if(ex.soundTick!=g.tick){ex.soundTick=g.tick;sound(2,2,big?118:84,big?0x2800:0x3400);sound_slide(2,1,0x1100,big?30:14);sound_slide(2,0,0,big?42:22);}}
 static void drop(int x,int y,int type){Obj *o=slot(g.drops,8);if(o){if(type==12&&ex.chaff>=2)type=7;if(type==2){if(ex.shieldDrops>=4)type=7;else ex.shieldDrops++;}o->x=x*Q;o->y=y*Q;o->type=type;o->vy=220;}}
-void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.chassis=selectedShip;for(int w=0;w<9;w++){g.variantEquip[w]=clamp(starterVariants[w],0,2);g.inventoryBits[w]=1|(1<<g.variantEquip[w]);}g.seed=0x5173;g.continues=3;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=511;g.acquiredWeapons=511;for(i=0;i<9;i++)g.weaponLevel[i]=1;weapon_batteries_reset();g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
+void game_reset(void){int i;u8 *p=(u8*)&g;for(i=0;i<(int)sizeof(g);i++)p[i]=0;g.chassis=selectedShip;g.pilotLevel=configuredLevel;g.armourGear=configuredArmour;g.equippedMask=configuredMask|1;g.skin=configuredSkin;for(int w=0;w<9;w++){g.variantEquip[w]=pilotConfigured?clamp((configuredVariantPack>>(w*2))&3,0,2):clamp(starterVariants[w],0,2);g.inventoryBits[w]=pilotConfigured?(configuredInventoryPack>>(w*3))&7:1|(1<<g.variantEquip[w]);g.gearQuality[w]=clamp((configuredQualityPack>>(w*2))&3,0,3);}g.seed=0x5173;g.continues=3;g.wave=1;g.lives=3;g.px=160*Q;player_y=230*Q;g.energy=100;g.barrier=100;g.shield=100;g.unlocked=g.equippedMask;g.acquiredWeapons=511;for(i=0;i<9;i++)g.weaponLevel[i]=1;weapon_batteries_reset();g.lastPlayerX=g.px;expansion_reset();g.fx=1;/* Each depth owns a jittered 8 by 6 grid, rather than unbounded random clusters. */
 for(i=0;i<NSTARS;i++){int cell=remn(i,48),z=divn(i,48);g.stars[i].x=remn(cell,8)*40+5+remn(rnd(),30);g.stars[i].y=(divn(cell,8)*38+4+remn(rnd(),29))*Q;g.stars[i].z=z;}}
 static void shot(int x,int vx,int type){Obj *o=slot(g.shots,MAXS);if(o){o->x=x;o->y=player_y-10*Q;o->vx=vx+g.playerVX;o->vy=type==4?-1300:type==7?-3200:-2400;o->type=type;o->power=power_level(g.weapon);o->hp=type==6?4:type==7?5:0;o->base=0;o->phase=-1;o->vx=o->vx*variant_speed_scale(g.weapon)/100;o->vy=o->vy*variant_speed_scale(g.weapon)/100;}}
 static Obj* bullet(int x,int y,int vx,int vy){Obj *o=slot(g.bullets,MAXB);if(o){int speed=100+mission_pressure();o->x=x;o->y=y;o->vx=vx*speed/100;o->vy=vy*speed/100;o->type=0;o->variant=absn(vx)>absn(vy)?2:0;}return o;}
@@ -120,7 +121,7 @@ static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(o->type==
 static void specialist_group(int,int);
 static void ground_group(int,int);
 static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=26,.hp=1,.x=(12+(n%8)*42)*Q,.y=(-20-(n/8)*24)*Q,.phase=n*19,.vy=420};}return;}if(type==25){specialist_group(type,groupno);return;}if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+(journey_depth()>>2)+mission_pressure()/7;if(n>10)n=10;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=(type==6?6:type==7?3:type==3?4:1)+enemy_bonus();o->phase=i*27+groupno*41;int pattern=groupno%5;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:28+i*(n>8?264/(n-1):38);o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
-static void boss(void){if(ex.miniDone||journeyMinis[journey_number()][ex.section]<0){giant_start();return;}ex.encounterTier=1;Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=journeyMinis[journey_number()][ex.section];o->hp=70+journey_depth()*8;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
+static void boss(void){if(ex.miniDone||journeyMinis[journey_number()][ex.section]<0){giant_start();return;}ex.encounterTier=1;Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=journeyMinis[journey_number()][ex.section];o->hp=(70+journey_depth()*8)*(100+3*(g.pilotLevel-1))/100;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
 static void hit_sparks(int x,int y,int nx,int ny,int tint){pc_impact(x,y,tint);int i;Obj*f=slot(ex.impacts,12);if(f){f->x=x;f->y=y;f->type=tint;}ex.contactX=x;ex.contactY=y;ex.contactTick=g.tick;for(i=0;i<10;i++){int a=rnd()&255;particle(x*Q,y*Q,nx*180+(sn(a)>>1),ny*180+(sn(a+64)>>1),8+(rnd()&7),tint);}}
 static void fan_fire(int type){int level=power_level(type),pairs=type==1?level+1:type==7?level:type==2?(level==4?2:level>1?1:0):level-1;
  if(type==4){for(int n=0;n<level;n++){Obj*o=slot(g.shots,MAXS);if(o)*o=(Obj){.on=1,.type=4,.x=g.px+(n*2-level+1)*3*Q,.y=player_y-10*Q,.vx=(n*2-level+1)*300+g.playerVX,.vy=-1300,.power=level,.phase=-1,.variant=n?102:0};}return;}
@@ -133,8 +134,11 @@ static void stage_boss_step(Obj*);
 static int next_weapon_drop(void){for(int n=0;n<9;n++){int w=ex.weaponDrop++%9;if(g.inventoryBits[w]==7)continue;int pending=0;for(int i=0;i<8;i++)pending|=g.drops[i].on&&g.drops[i].type==10&&g.drops[i].variant==w;if(!pending)return w;}return -1;}
 static void salvage_drop(int x,int y){Obj*d=slot(g.drops,8);if(!d)return;int rarity=rnd()%100;*d=(Obj){.on=1,.type=11,.variant=rarity<10?2:rarity<40?1:0,.x=x*Q,.y=y*Q,.vy=220};}
 static void unique_weapon_drop(int x,int y){int w=next_weapon_drop();if(w<0){salvage_drop(x,y);return;}Obj*d=slot(g.drops,8);if(d){int v=0;while(v<3&&(g.inventoryBits[w]&(1<<v)))v++;*d=(Obj){.on=1,.type=10,.variant=w,.heading=clamp(v,0,2),.x=x*Q,.y=y*Q,.vy=220};}}
+static void salvage_add(int x,int y){ex.pendingParts=clamp(ex.pendingParts+1,0,100000);if(!ex.partBundle.on)ex.partBundle=(Obj){.on=1,.x=x*Q,.y=y*Q,.vy=90};}
+static void salvage_flush(void){ex.partsCollected+=ex.pendingParts;ex.pendingParts=0;ex.partBundle.on=0;}
+static void salvage_step(void){if(ex.partPickupTicks)ex.partPickupTicks--;Obj*b=&ex.partBundle;if(!b->on)return;b->age++;if(b->age>15){int dx=g.px-b->x,dy=player_y-b->y,d=absn(dx)+absn(dy);if(d){b->vx=dx*1100/d;b->vy=dy*1100/d;}}b->x+=b->vx;b->y=clamp(b->y+b->vy,26*Q,250*Q);if(absn(b->x-g.px)<16*Q&&absn(b->y-player_y)<16*Q){salvage_flush();ex.partPickupTicks=75;sound(1,1,55,0x4800);}}
 static void ship_fire(void){if(g.weapon==8)return;int level=ship_level();if(level<2)return;if(level==2&&(g.shipFireCount++&1))return;int pairs=1+(level-2)/2;for(int row=0;row<pairs;row++)for(int side=-1;side<=1;side+=2){Obj*o=slot(g.shots,MAXS);if(o)*o=(Obj){.on=1,.type=g.weapon==3||g.weapon==5?0:g.weapon,.x=g.px+side*(4+row*3)*Q,.y=player_y-(7-row)*Q,.vx=g.playerVX+side*row*70,.vy=g.weapon==4?-1300:-2400,.hp=g.weapon==6?4:g.weapon==7?5:0,.phase=-3,.variant=101,.power=power_level(g.weapon)};}}
-static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.score+=o->type==4?1500:100+o->type*50;g.kills++;phoenix_charge(o->type==4?200:30);if((g.kills-ex.stageKills)%24==0&&ex.shieldDrops<4)drop(x,y,2);pc_enemy_explosion(o);ex.soundTick=g.tick;burst(x,y,o->type==4);if(o->type==4){g.barrier=100;g.shield=400;ex.victory=1;ex.victoryX=x;ex.victoryY=y;ex.clearBonus=1000+g.lives*250;g.score+=ex.clearBonus;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;drop(x,y,(g.wave&1)?7:4);}else if(regular_drop_count(g.kills)>regular_drop_count(g.kills-1)){static const int loot[16]={10,7,6,11,7,8,10,7,9,12,7,6,2,7,5,4};int item=loot[remn(regular_drop_count(g.kills)-1,16)];if(item==10)unique_weapon_drop(x,y);else if(item==11)salvage_drop(x,y);else drop(x,y,item);for(int d=0;d<8;d++)if(g.drops[d].on&&g.drops[d].age==0&&g.drops[d].x==x*Q&&g.drops[d].y==y*Q)g.drops[d].buff=1+(regular_drop_count(g.kills)-1)%5;}carrier_release(&destroyed);}
+static void killed(Obj *o){int x=o->x>>8,y=o->y>>8;Obj destroyed=*o;o->on=0;g.score+=o->type==4?1500:100+o->type*50;g.kills++;phoenix_charge(o->type==4?200:30);if((g.kills-ex.stageKills)%24==0&&ex.shieldDrops<4)drop(x,y,2);pc_enemy_explosion(o);ex.soundTick=g.tick;burst(x,y,o->type==4);if(o->type==4){ex.miniRewardMask|=1<<o->variant;g.barrier=100;g.shield=400;ex.victory=1;ex.victoryX=x;ex.victoryY=y;ex.clearBonus=1000+g.lives*250;g.score+=ex.clearBonus;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;drop(x,y,(g.wave&1)?7:4);}else if(regular_drop_count(g.kills)>regular_drop_count(g.kills-1)){static const int loot[16]={10,7,6,11,7,8,10,7,9,12,7,6,2,7,5,4};int item=loot[remn(regular_drop_count(g.kills)-1,16)];if(item==10)unique_weapon_drop(x,y);else if(item==11)salvage_drop(x,y);else drop(x,y,item);for(int d=0;d<8;d++)if(g.drops[d].on&&g.drops[d].age==0&&g.drops[d].x==x*Q&&g.drops[d].y==y*Q)g.drops[d].buff=1+(regular_drop_count(g.kills)-1)%5;}else salvage_add(x,y);carrier_release(&destroyed);}
 #include "expansion_step.h"
 #include "bosses.h"
 #include "journey_environment.h"
@@ -166,7 +170,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  if(g.mode==3){g.tick++;if(!(mask&4))g.continueReady=1;if(ch=='n')g.continueTicks=0;if(ch==13||ch=='c'||(g.continueReady&&(mask&4))){g.continues--;ex.bombs=MAX_NOVA_BOMBS;parasites_new_hull();ex.empDisable=ex.empGrace=0;g.continueTicks=0;g.mode=1;g.lives=3;g.barrier=g.energy=100;weapon_batteries_reset();g.shield=150;g.px=160*Q;player_y=220*Q;if(cavern_phase(ex.phase))g.px=tunnel_lane(220,0)*Q;pc_charge_burst(g.px/Q,220);return;}if(g.continueTicks>0)g.continueTicks--;if(!g.continueTicks)g.mode=2;return;}
  if(ch>='1'&&ch<='9'&&(g.unlocked&(1<<(ch-'1')))){if(g.weapon!=ch-'1')g.beam=0;g.weapon=ch-'1';}
  if(ch=='d'&&g.energy>=35&&!g.active){g.energy-=35;g.active=45;pc_hit_sound(1,0,g.px/Q);}
- g.tick++;combat_buffs_step();g.missionTicks++;ex.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;int beamTargetAim=clamp(g.playerVX*256/(flight_side_mode()?940:1024),-256,256);ex.beamAim+=(beamTargetAim-ex.beamAim)/3;if(absn(beamTargetAim-ex.beamAim)<3)ex.beamAim=beamTargetAim;expansion_step(mask,ch);
+ g.tick++;if(ch=='g'&&journey_kind()==ENV_BASE)ex.bombing.launchRequested=1;combat_buffs_step();g.missionTicks++;ex.missionTicks++;if(!ex.travel&&!ex.intro&&!ex.victory)g.clock++;if(mask&1)g.px-=1536;if(mask&2)g.px+=1536;g.px=clamp(g.px,14*Q,306*Q);g.playerVX=clamp(g.px-g.lastPlayerX,-6*Q,6*Q)*2/3;g.lastPlayerX=g.px;int beamTargetAim=clamp(g.playerVX*256/(flight_side_mode()?940:1024),-256,256);ex.beamAim+=(beamTargetAim-ex.beamAim)/3;if(absn(beamTargetAim-ex.beamAim)<3)ex.beamAim=beamTargetAim;expansion_step(mask,ch);
  if(ex.empDisable)ex.empDisable--;if(ex.empGrace)ex.empGrace--;if(ex.empTicks)ex.empTicks--;if(ex.empPulse)ex.empPulse--;if(g.shield)g.shield--;if(g.active)g.active--;if(g.shake)g.shake--;if(g.beam)g.beam--;
  if(ex.comboTicks)ex.comboTicks--;weapon_batteries_step();if(ex.invincibleTicks)ex.invincibleTicks--;
  emp_feedback_step();
@@ -176,7 +180,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  if(fired)ship_fire();
  if(g.beam&&(g.tick&3)==0)sound_mod(1,85,0x3800+sn(g.tick*21)*2);
  if((g.tick&1)==0){particle(g.px-2*Q,player_y+8*Q,-50,350,10,0);particle(g.px+2*Q,player_y+8*Q,50,350,10,3);}
- if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups>=section_wave_target()&&section_has_boss()&&g.clock>=encounter_deadline()&&!route_occupied()){
+ if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups>=section_wave_target()&&section_has_boss()&&g.clock>=encounter_deadline()&&bombing_ready()&&!route_occupied()){
   if(!ex.bossWarning){ex.bossWarning=100;sound(5,1,90,0x2800);sound_slide(5,1,0x4800,90);}
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
  }
@@ -221,7 +225,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  if(o->type==4){if(g.lives<5)g.lives++;g.barrier=100;}
  if(ex.pickupKind!=11)g.score+=50;sound(1,1,80,0x4600);}}
  for(i=0;i<24;i++)if(g.effects[i].on&&++g.effects[i].age>34)g.effects[i].on=0;
- environment_step(mask);
+ environment_step(mask);salvage_step();
  for(i=0;i<MAXP;i++){Particle *p=g.particles+i;if(!p->on)continue;p->x+=p->vx;p->y+=p->vy;if(p->life>14&&p->tint==1){p->vx-=p->vx>>5;p->vy-=p->vy>>5;p->vy+=10;}if(--p->life<=0)p->on=0;}
  for(i=0;i<MAXE;i++)alive+=g.enemies[i].on;
  if(!ex.travel&&ex.bossSpawned&&!ex.giant.active&&!alive&&!route_occupied()&&!hostile_rounds_remain()){if((!ex.victory||ex.victory>=350)&&++ex.clearTicks>=75){journey_after_encounter();}}else ex.clearTicks=0;
@@ -254,9 +258,10 @@ void game_render(u8 *b){int y,i,x,dx=0,dy=0,busy=0;int scroll=(ex.backgroundY>>8
   if(!pc_modern)for(i=0;i<MAXS+MAXB;i++){Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(o->on){int bx=o->x>>8,by=o->y>>8,k,t=i<MAXS?(o->type==2||o->type==4?1:3):2;int vx=i<MAXS?0:-(o->vx>>8),vy=i<MAXS?1:-(o->vy>>8);if(!vy)vy=1;pixel(b,bx-1,by,t==1?87:t==2?143:235);pixel(b,bx+1,by,t==1?87:t==2?143:235);projectile_bloom(b,bx,by,t,i<MAXS?i<12:i<MAXS+12);if(i<MAXS&&o->type==7){int speed=absn(o->vx)+absn(o->vy);if(speed){int tx=bx-divn(o->vx*12,speed),ty=by-divn(o->vy*12,speed);stroke(b,bx-1,by,tx-1,ty,139);stroke(b,bx+1,by,tx+1,ty,235);stroke(b,bx,by,tx,ty,255);}}pixel(b,bx,by,255);pixel(b,bx,by-1,255);pixel(b,bx+1,by,255);}}
   if(!pc_modern){draw_beams(b);draw_impacts(b);}
   if(!pc_modern)for(i=0;i<12;i++)if(g.effects[i].on)draw_explosion(b,g.effects+i,i<(busy>4?1:4));
-  if(g.mode==1){x=g.px>>8;if(!ex.travel&&(!g.shield||ex.invincibleTicks||ex.phoenixTicks||(g.tick&2)==0))pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-2,(player_y>>8)+8,3,1);projectile_bloom(b,x+2,(player_y>>8)+8,3,1);}if(!pc_modern&&(g.shield||g.active||ex.invincibleTicks||ex.phoenixTicks)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
+  if(g.mode==1){x=g.px>>8;if(!ex.travel&&(!g.shield||ex.invincibleTicks||ex.phoenixTicks||journey_kind()==ENV_BASE&&ex.bombing.active||(g.tick&2)==0))pc_sprite(0,g.px/256.0f+dx,player_y/256.0f+dy);if(g.fx){projectile_bloom(b,x-2,(player_y>>8)+8,3,1);projectile_bloom(b,x+2,(player_y>>8)+8,3,1);}if(!pc_modern&&(g.shield||g.active||ex.invincibleTicks||ex.phoenixTicks)){int sz=(g.tick&8)?44:40;pc_sprite((g.tick&8)?27:26,g.px/256.0f,player_y/256.0f);if(g.active&&g.fx)ring(b,x,player_y>>8,25,3,g.tick*2);}}
  }
  for(int c=0;c<8;c++)if(ex.critNotices[c].life)text(b,clamp(ex.critNotices[c].x-15,0,288),ex.critNotices[c].y-(40-ex.critNotices[c].life)/3,"+ CRIT",235,1);
+ if(ex.partBundle.on){pc_sprite(100,ex.partBundle.x/(float)Q,ex.partBundle.y/(float)Q);text(b,clamp(ex.partBundle.x/Q-9,0,290),ex.partBundle.y/Q-16,"PARTS",151,1);}if(ex.partPickupTicks)text(b,clamp(g.px/Q-18,0,280),player_y/Q-24,"+ PARTS",151,1);
  if(pc_modern)return;
  rowcopy(b,clear_hud,1920);text(b,4,3,"SCORE",219,1);number(b,40,3,g.score,255);text(b,108,3,"WAVE",219,1);number(b,138,3,g.wave,255);text(b,178,3,"LIVES",219,1);number(b,214,3,g.lives,255);text(b,250,3,"GUN",219,1);number(b,274,3,g.weapon+1,255);
  text(b,4,14,"BARRIER",151,1);for(i=0;i<g.barrier;i++)b[17*320+49+i]=151;text(b,164,14,"CHARGE",223,1);for(i=0;i<g.weaponEnergy[g.weapon];i++)b[17*320+207+i]=223;

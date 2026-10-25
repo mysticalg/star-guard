@@ -12,12 +12,13 @@ static void giant_start(void){Giant*b=&ex.giant;*b=(Giant){.active=1,.phase=1,.a
  static const int xy[9][2]={{64,53},{256,53},{64,145},{256,145},{110,44},{210,44},{160,114},{110,156},{210,156}};
  for(int i=0;i<9;i++){int hp=i==6?16000+g.wave*1800:i<2?2600:1800;b->parts[i]=(GiantPart){.hp=i>=7?0:hp,.maxHp=hp,.x=xy[i][0],.y=xy[i][1],.w=i==6?38:28,.h=i==6?38:30,.role=i};}
  if(b->archetype==4){for(int i=0;i<9;i++){b->parts[i].hp=b->parts[i].maxHp=i==6?24000:2200;b->parts[i].w=i==6?40:32;b->parts[i].h=i==6?40:32;}}
+ for(int i=0;i<9;i++){b->parts[i].hp=b->parts[i].hp*(100+3*(g.pilotLevel-1))/100;b->parts[i].maxHp=b->parts[i].maxHp*(100+3*(g.pilotLevel-1))/100;}
  if(b->archetype==5){int reduction=clamp(ex.baseDamage,0,8)*150;b->parts[0].hp-=reduction;b->parts[1].hp-=reduction;}
 }
 static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->parts+n;if(!giant_open(n))return;int old=p->hp;p->hp=clamp(p->hp-damage,0,p->maxHp);phoenix_charge((old-p->hp)/50);if(old&&p->hp==0){b->partsDestroyed++;g.score+=n==6?5000:500;burst(p->x,p->y,1);}
  if(b->archetype!=4&&n==6&&p->hp>0&&b->phase<4&&p->hp*3<p->maxHp*2){b->phase=4;for(int i=7;i<9;i++){b->parts[i].hp=b->parts[i].maxHp=2200;}}
  if(n==6&&p->hp*3<p->maxHp)b->phase=5;
- if(n==6&&!p->hp){b->active=0;b->defeated=1;ex.victory=1;ex.victoryX=160;ex.victoryY=104;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;ex.clearBonus=3000;g.score+=ex.clearBonus;for(int i=0;i<MAXB;i++)g.bullets[i].on=0;}
+ if(n==6&&!p->hp){ex.giantRewardMask|=1<<(g.wave-1);b->active=0;b->defeated=1;ex.victory=1;ex.victoryX=160;ex.victoryY=104;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;ex.clearBonus=3000;g.score+=ex.clearBonus;for(int i=0;i<MAXB;i++)g.bullets[i].on=0;}
 }
 static void giant_hit(int n,int damage){if(giant_open(n))giant_raw_hit(n,player_hit_roll(damage*variant_damage_scale(g.weapon)/100,ex.giant.parts[n].x,ex.giant.parts[n].y));}
 static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;GiantPart*p=ex.giant.parts+n;int rolled=player_hit_roll(damage*variant_damage_scale(8)/100,p->x,p->y);p->dotTicks=150;p->dotDamage=rolled/10;if(!p->dotClock)p->dotClock=50;giant_raw_hit(n,rolled*70/100);}

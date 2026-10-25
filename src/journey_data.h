@@ -15,3 +15,10 @@ typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cel
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage;} GiantPart;
 typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick;float zoom;GiantPart parts[9];} Giant;
 static int mission_phase(int),mission_index(int),journey_kind(void),journey_depth(void),section_final(void),section_has_boss(void),section_wave_target(void),section_duration(void),environment_exclusive(void),custom_environment(void);
+
+static void salvage_flush(void);
+
+typedef struct{int hp,maxHp,x,y,role;} GroundTarget;
+typedef struct{int on,x,y,vx,vy,age;} GroundPayload;
+typedef struct{int active,complete,cleared,pass,stage,timer,payload,cool,launchRequested,hits,targetsDestroyed,startX,startY,pathX,pathY,offset;float angle;GroundTarget targets[8];GroundPayload bombs[12];} Bombing;
+static int bombing_ready(void);
