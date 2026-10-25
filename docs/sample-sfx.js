@@ -2,8 +2,8 @@
 window.SoundSamples=(()=>{
   let context,master,meter,bossNode=null,loading=null,lastRear=null,rearPlays=0,errors=0,phase=1,peak=0;
   const combatNames=["explosion-small","explosion-small-alt1","explosion-small-alt2","explosion-medium","explosion-medium-alt1","explosion-medium-alt2","explosion-large","explosion-large-alt1","explosion-large-alt2","explosion-boss","explosion","bomb","laser","bounce","metal","metal-alt1","metal-alt2","shield","rock","rock-alt1","rock-alt2","glass","glass-alt1","glass-alt2","organic","energy","tesla","gun","gun-alt","gun-rapid","gun-spread","gun-heavy","gun-ricochet","pickup","warning","warp","super","victory-blast","victory","torpedo-launch","torpedo-blast","chaff-deploy"],plays={},lastPlay={},active=new Set();
-  let dropped=0,cavern=false,shotSerial=0;const explosionSerial=[0,0,0],teslaRates=[],materialSerial={};
-  const buffers={},rearSources=new Set(),wave=new Float32Array(256);
+  let dropped=0,budgetDropped=0,unavailable=0,retired=0,requested=0,ended=0,cavern=false,shotSerial=0;const explosionSerial=[0,0,0],teslaRates=[],materialSerial={};
+  const buffers={},tails=new Set(),rearSources=new Set(),wave=new Float32Array(256);
   async function start(){
     if(!context){context=new AudioContext();master=context.createGain();master.gain.value=.7;meter=context.createAnalyser();meter.fftSize=256;master.connect(meter);const limiter=context.createDynamicsCompressor();limiter.threshold.value=-12;limiter.knee.value=8;limiter.ratio.value=8;limiter.attack.value=.003;limiter.release.value=.12;meter.connect(limiter);limiter.connect(context.destination);}
     await context.resume();
@@ -16,17 +16,22 @@ window.SoundSamples=(()=>{
   // Called at the actual C collision/fire event, rather than polling counters.
   // A fixed voice budget and category cooldowns bound large chain reactions.
   function event(kind,volume,pitch,pan,triple){
-    if(!context||!buffers.tesla)return 0;
+    requested++;if(!context){unavailable++;return 0;}
     const materials=['metal','shield','rock','glass','organic','energy'];
     let name=kind===25?'chaff-deploy':kind===23?'torpedo-launch':kind===24?'torpedo-blast':kind===21?['explosion-small','explosion-medium','explosion-large','explosion-boss'][Math.max(0,Math.min(3,triple))]:kind===2?(volume>100?'bomb':'explosion'):kind>=5&&kind<=10?materials[kind-5]:kind===15?materials[Math.max(0,Math.min(5,triple))]:kind===3?'laser':kind===11||kind===14?'bounce':kind===12?'super':kind===13?'victory-blast':kind===16||kind===22?'tesla':kind===1?(triple===1?'gun-spread':triple===2?'gun-rapid':triple===4?'gun-heavy':triple===6?'gun-ricochet':(shotSerial++%2?'gun-alt':'gun')):kind===4?'warp':kind===17?'pickup':kind===18?'warning':kind===20?'victory':null;
     if(kind===21&&triple<3){const variant=explosionSerial[triple]++%3;if(variant)name+='-alt'+variant;}
     let materialBase='';if(((kind>=5&&kind<=10)||kind===15)&&['metal','rock','glass'].includes(name)){materialBase=name;const variant=(materialSerial[name]||0)%3;materialSerial[name]=(materialSerial[name]||0)+1;if(variant)name+='-alt'+variant;}
-    if(!name||!buffers[name])return 1;
+    if(!name)return 1;if(!buffers[name]){unavailable++;return 0;}
     const eventKey=kind===22?'tesla-chain':kind===21?'explosion-tier-'+triple:materialBase||name;
     const now=context.currentTime,gap=name==='torpedo-launch'?.2:name==='torpedo-blast'?.2:name==='explosion-boss'?1:name.startsWith('explosion-large')?.09:name.startsWith('explosion-medium')?.065:name.startsWith('explosion-small')?.045:kind===22?.08:name==='tesla'?.24:name==='laser'?.085:name==='bounce'?.075:name==='bomb'?.12:name.startsWith('gun')?.035:name==='warp'?1:name==='victory'?3:.045;
+    // Audio playback can finish before the main thread delivers onended.
+    // Admission follows the audio clock, never delayed cleanup timers.
+    for(const playing of active)if(playing.endsAt<=now){active.delete(playing);tails.add(playing);retired++;}
+    for(const playing of tails)if(playing.endsAt+.16<=now)playing.dispose();
     if(name==='explosion-boss'&&active.size>=24){const old=active.values().next().value;old.stop();active.delete(old);}
-    if(name==='tesla'&&Array.from(active,s=>s.sampleName).filter(n=>n==='tesla'||n==='tesla-chain').length>=4){dropped++;return 1;}
-    if(now-(lastPlay[eventKey]??-10)<gap||active.size>=24){dropped++;return 1;}
+    if(name==='tesla'&&Array.from(active,s=>s.sampleName).filter(n=>n==='tesla'||n==='tesla-chain').length>=4){dropped++;budgetDropped++;return 1;}
+    if(now-(lastPlay[eventKey]??-10)<gap){dropped++;return 1;}
+    if(active.size>=24){dropped++;budgetDropped++;return 1;}
     lastPlay[eventKey]=now;
     const source=context.createBufferSource(),gain=context.createGain(),filter=context.createBiquadFilter(),stereo=context.createStereoPanner();
     source.buffer=buffers[name];source.sampleName=kind===22?eventKey:name;
@@ -49,8 +54,11 @@ window.SoundSamples=(()=>{
     if(kind===11||kind===14){const delay=context.createDelay(.03),feedback=context.createGain(),wet=context.createGain(),lfo=context.createOscillator(),depth=context.createGain();delay.delayTime.value=.004;feedback.gain.value=.18;wet.gain.value=.24;lfo.frequency.value=.16+(pitch%7)*.015;depth.gain.value=.0015;lfo.connect(depth);depth.connect(delay.delayTime);gain.connect(delay);delay.connect(feedback);feedback.connect(delay);delay.connect(wet);wet.connect(stereo);lfo.start();oscillators.push(lfo);nodes.push(delay,feedback,wet,lfo,depth);}
     // A quiet, short reflection reinforces enclosed cavern acoustics.
     if(cavern){const delay=context.createDelay(.2),wet=context.createGain();delay.delayTime.value=.095;wet.gain.value=.18;gain.connect(delay);delay.connect(wet);wet.connect(stereo);nodes.push(delay,wet);}
+    source.endsAt=now+(kind===22?.13:source.buffer.duration/source.playbackRate.value);
+    for(const oscillator of oscillators)oscillator.stop(source.endsAt+.16);
     active.add(source);plays[kind===22?eventKey:name]=(plays[kind===22?eventKey:name]||0)+1;
-    source.onended=()=>{setTimeout(()=>{for(const o of oscillators)o.stop();for(const n of nodes)n.disconnect();active.delete(source);},160);};if(kind===22)source.start(now,0,.13);else source.start();
+    source.dispose=()=>{if(source.cleaned)return;source.cleaned=true;active.delete(source);tails.delete(source);for(const n of nodes)n.disconnect();};
+    source.onended=()=>{ended++;active.delete(source);if(!source.cleaned){tails.add(source);setTimeout(source.dispose,160);}};if(kind===22)source.start(now,0,.13);else source.start();
     return 1;
   }
   function observe(stat){
@@ -62,5 +70,5 @@ window.SoundSamples=(()=>{
     const serial=stat(90);if(lastRear!==null&&serial>lastRear&&!quiet)for(let n=0;n<Math.min(2,serial-lastRear);n++)rear(stat(91));lastRear=serial;
     meter.getFloatTimeDomainData(wave);for(const v of wave)peak=Math.max(peak,Math.abs(v));
   }
-  return {start,observe,event,get state(){return {teslaRates:[...teslaRates],teslaGain:.42,teslaPhaseWet:.15,sampleOnly:true,ready:Object.keys(buffers).length===combatNames.length+2,bossActive:!!bossNode,phase,rearPlays,plays:{...plays},active:active.size,activeNames:Array.from(active,s=>s.sampleName),dropped,activeRear:rearSources.size,masterGain:master?.gain.value||0,bossGain:bossNode?.g.gain.value||0,peak,errors};}};
+  return {start,observe,event,get state(){return {teslaRates:[...teslaRates],teslaGain:.42,teslaPhaseWet:.15,sampleOnly:true,contextState:context?.state||"not-started",audioClock:context?.currentTime||0,sampleRate:context?.sampleRate||0,requested,unavailable,budgetDropped,retired,ended,cleanupPending:tails.size,ready:Object.keys(buffers).length===combatNames.length+2,bossActive:!!bossNode,phase,rearPlays,plays:{...plays},active:active.size,activeNames:Array.from(active,s=>s.sampleName),dropped,activeRear:rearSources.size,masterGain:master?.gain.value||0,bossGain:bossNode?.g.gain.value||0,peak,errors};}};
 })();

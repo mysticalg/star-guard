@@ -498,3 +498,5 @@ The browser follows every requestAnimationFrame callback, with no fixed 60, 120,
 Supply regression checks: compile tests/supplies.c with Emscripten and --use-port=sdl3 -sENVIRONMENT=node, then run the generated JavaScript with Node. The checks cover stock boundaries, continue restoration, actual kill/drop cadence and item order.
 
 Weapon firing and Tesla critical-feedback battery drain are now 10% lower, using separate fractional accounting for each battery. Fire cadence, damage, passive recharge, and six-second overheat cooldown are unchanged. This gives roughly 11% more firing time before recharge effects, subject to whole-shot boundaries.
+
+Browser sample voices now leave the admission budget according to AudioContext time, including when main-thread completion callbacks are delayed. Effect tails and oscillator stops are bounded independently of those callbacks. The obsolete silent SDL audio device is not opened in the web build. Audio regression checks: node tests/audio-bus.cjs (synthetic cadence tests, not a claim of measured high-refresh hardware playback).
