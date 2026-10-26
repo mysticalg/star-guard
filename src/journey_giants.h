@@ -1,4 +1,6 @@
+#include "giant_pose.h"
 #include "giant_contact.h"
+#include "giant_anchor.h"
 static int giant_opening_ticks(int mission){return (15+5*(mission-1))*50;}
 static int giant_opening_selected(int archetype){return archetype==0||archetype==2||archetype==5;}
 /* Independent collision targets; hull art is not a collision rectangle. HP uses hundredths. */
@@ -18,10 +20,10 @@ static void giant_start(void){Giant*b=&ex.giant;*b=(Giant){.active=1,.phase=1,.a
  if(b->archetype==4){for(int i=0;i<9;i++){b->parts[i].maxHp=i==6?24000:2200;b->parts[i].hp=i==6?b->parts[i].maxHp:0;b->parts[i].w=i==6?40:32;b->parts[i].h=i==6?40:32;}}
  for(int i=0;i<9;i++){b->parts[i].hp=b->parts[i].hp*(100+3*(g.pilotLevel-1))/100;b->parts[i].maxHp=b->parts[i].maxHp*(100+3*(g.pilotLevel-1))/100;}
  if(b->archetype!=4)giant_layout();else{b->scale=1;b->zoom=.78f;}
- for(int i=0;i<9;i++){b->previousPartX[i]=b->parts[i].x;b->previousPartY[i]=b->parts[i].y;}b->previousScale=giant_world_scale();
+ for(int i=0;i<9;i++){b->previousPartX[i]=b->parts[i].x;b->previousPartY[i]=b->parts[i].y;b->previousPartAngle[i]=b->parts[i].angle;b->previousPartW[i]=b->parts[i].w;b->previousPartH[i]=b->parts[i].h;}b->previousScale=giant_world_scale();
  if(b->archetype==5){int reduction=clamp(ex.baseDamage,0,8)*150;b->parts[0].hp-=reduction;b->parts[1].hp-=reduction;}
 }
-static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->parts+n;if(!giant_open(n))return;int old=p->hp;p->hp=clamp(p->hp-damage,0,p->maxHp);if(n==6&&b->form<2){int floor=b->archetype==4?p->maxHp*(2-b->form)/3:p->maxHp*2/3;if(p->hp<floor)p->hp=floor;}if(p->hp<old)p->damageUntil=g.tick+5;phoenix_charge((old-p->hp)/50);if(old&&p->hp==0){b->partsDestroyed++;g.score+=n==6?5000:500;burst_kind(p->x,p->y,1,organic_context()?(b->archetype==1&&n==6?2:1):0);}
+static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->parts+n;if(!giant_open(n))return;int old=p->hp;p->hp=clamp(p->hp-damage,0,p->maxHp);if(n==6&&b->form<2){int floor=b->archetype==4?p->maxHp*(2-b->form)/3:p->maxHp*2/3;if(p->hp<floor)p->hp=floor;}if(p->hp<old){p->damageUntil=g.tick+5;b->woundForm[n]=b->form;if(!p->hp)giant_capture_wound(n);}phoenix_charge((old-p->hp)/50);if(old&&p->hp==0){b->partsDestroyed++;g.score+=n==6?5000:500;burst_kind(p->x,p->y,1,organic_context()?(b->archetype==1&&n==6?2:1):0);}
  if(n==6&&p->hp>0&&b->phase<4&&p->hp*3<=p->maxHp*2)b->phase=4;giant_check_form();
  if(n==6&&p->hp*3<p->maxHp)b->phase=5;
  if(n==6&&!p->hp){ex.giantRewardMask|=1<<(g.wave-1);b->active=0;b->defeated=1;ex.victory=1;ex.victoryX=b->parts[6].x;ex.victoryY=b->parts[6].y;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;ex.clearBonus=3000;g.score+=ex.clearBonus;for(int i=0;i<MAXB;i++)g.bullets[i].on=0;}
@@ -33,11 +35,11 @@ static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;GiantP
 static void giant_fan(int x,int y,int speed,int spread){for(int n=-1;n<=1;n++)bullet(x*Q,y*Q,n*spread,speed);}
 #include "worm_long.h"
 #include "giant_attacks.h"
-static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->previousRootX=b->rootX;b->previousRootY=b->rootY;b->previousRootAngle=b->rootAngle;b->previousScale=giant_world_scale();for(int i=0;i<9;i++){b->previousPartX[i]=b->parts[i].x;b->previousPartY[i]=b->parts[i].y;}b->timer++;if(b->openingTicks)b->openingTicks--;else if(!b->morph&&b->growthTicks)b->growthTicks--;giant_check_form();giant_move_root();int a=b->archetype;
+static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->previousRootX=b->rootX;b->previousRootY=b->rootY;b->previousRootAngle=b->rootAngle;b->previousScale=giant_world_scale();for(int i=0;i<9;i++){b->previousPartX[i]=b->parts[i].x;b->previousPartY[i]=b->parts[i].y;b->previousPartAngle[i]=b->parts[i].angle;b->previousPartW[i]=b->parts[i].w;b->previousPartH[i]=b->parts[i].h;}b->timer++;if(b->openingTicks)b->openingTicks--;else if(!b->morph&&b->growthTicks)b->growthTicks--;giant_check_form();giant_move_root();int a=b->archetype;
  b->zoom=a==4?.78f:(b->form==2?.32f:b->form==1?.44f:.55f);if(a!=4){float target=b->form==2?2.7f:b->form==1?2:1.6f;if(b->morph)b->scale=b->morphScale+(target-b->morphScale)*giant_morph_fraction();else if(b->timer<120){float t=b->timer/120.0f;t=t*t*(3-2*t);b->scale=1+(target-1)*t;}else b->scale=target;giant_layout();}else worm_positions();
  if(b->timer<120){b->attackClock=b->attackKind=0;return;}
  if(a==4&&!b->morph)worm_body_contact();
- if(b->morph){for(int i=0;i<9;i++){GiantPart*p=b->parts+i;if(p->dotTicks){p->dotTicks--;if(--p->dotClock<=0)p->dotClock=50;}}b->morph--;if(!b->morph){if(b->archetype!=4){b->scale=b->form==2?2.7f:2;giant_layout();}b->growthTicks=300;b->growthShieldSerial++;}b->attackKind=0;return;}b->oldForm=b->form;if(b->timer>=120)b->formAge++;
+ pc_giant_damage();if(b->morph){for(int i=0;i<9;i++){GiantPart*p=b->parts+i;if(p->dotTicks){p->dotTicks--;if(--p->dotClock<=0)p->dotClock=50;}}b->morph--;if(!b->morph){if(b->archetype!=4){b->scale=b->form==2?2.7f:2;giant_layout();}b->growthTicks=300;b->growthShieldSerial++;}b->attackKind=0;return;}b->oldForm=b->form;if(b->timer>=120)b->formAge++;
  if(a==1&&b->form==1&&!(b->addMask&1)){b->addMask|=1;for(int n=0;n<2;n++)environment_spawn(24,120+n*80,150,0,0,13,4);}
  if(a==4&&b->form==1&&!(b->addMask&2)){b->addMask|=2;environment_spawn(12,120,80,0,0,13,3);environment_spawn(12,200,80,0,0,13,3);}
  if(b->timer>=120)giant_attacks();
@@ -49,5 +51,5 @@ static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->previ
   for(int n=0;n<ex.options&&n<5;n++)if(!ex.podContact[n]&&absn(option_x(n)-p->x)<p->w/2+6&&absn(option_y(n)-p->y)<p->h/2+6){giant_hit_family(i,25,0);ex.podContact[n]=20;}
 
  }
- if(a!=4){int contact=giant_hull_contact();for(int i=0;i<9&&!contact;i++){GiantPart*p=b->parts+i;if(p->hp)contact=giant_box_sweep((b->previousPartX[i]-ex.damagePrevX/(float)Q),(b->previousPartY[i]-ex.damagePrevY/(float)Q),p->x-g.px/(float)Q,p->y-player_y/(float)Q,p->w*.38f+player_hull_rx(),p->h*.38f+player_hull_ry());}if(contact)hurt_amount(g.px/Q,player_y/Q,0,-1,100,2);}
+ if(a!=4){int contact=giant_hull_contact();for(int i=0;i<9&&!contact;i++){GiantPart*p=b->parts+i;if(p->hp)contact=giant_module_contact(i);}if(contact)hurt_amount(g.px/Q,player_y/Q,0,-1,100,2);}
 }

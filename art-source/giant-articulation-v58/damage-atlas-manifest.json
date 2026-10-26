@@ -1,0 +1,137 @@
+{
+  "source": "exec-fb52df93-8977-4e92-be94-e4ef2c00c88a.png",
+  "asset": "Assets/journeys/giant-damage-v58.png",
+  "sha256": "7567884f143776872fec73feec4b11e617a8cdd59ec3afc5fd0ae169f2478d01",
+  "mode": "RGBA",
+  "size": [
+    1536,
+    1024
+  ],
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "preserved": "Original built-in generated RGBA copied byte-for-byte; alpha and source unchanged.",
+  "cells": [
+    {
+      "cell": 0,
+      "uv": [
+        0.0,
+        0.0,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        100,
+        34,
+        308,
+        489
+      ]
+    },
+    {
+      "cell": 1,
+      "uv": [
+        0.25,
+        0.0,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        109,
+        41,
+        305,
+        490
+      ]
+    },
+    {
+      "cell": 2,
+      "uv": [
+        0.5,
+        0.0,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        106,
+        42,
+        296,
+        489
+      ]
+    },
+    {
+      "cell": 3,
+      "uv": [
+        0.75,
+        0.0,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        102,
+        33,
+        294,
+        492
+      ]
+    },
+    {
+      "cell": 4,
+      "uv": [
+        0.0,
+        0.5,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        93,
+        25,
+        350,
+        485
+      ]
+    },
+    {
+      "cell": 5,
+      "uv": [
+        0.25,
+        0.5,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        71,
+        24,
+        347,
+        489
+      ]
+    },
+    {
+      "cell": 6,
+      "uv": [
+        0.5,
+        0.5,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        59,
+        115,
+        321,
+        432
+      ]
+    },
+    {
+      "cell": 7,
+      "uv": [
+        0.75,
+        0.5,
+        0.25,
+        0.5
+      ],
+      "alpha12Bounds": [
+        30,
+        34,
+        359,
+        486
+      ]
+    }
+  ]
+}
