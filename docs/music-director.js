@@ -18,5 +18,23 @@
   manual(index){if(!unlocked)this.unlock();play(index,true);},
   get state(){return {unlocked,current:current&&{...current},history:history.map(x=>({...x}))};}
  };}
- const api={resolve,create};if(typeof module==='object'&&module.exports)module.exports=api;else root.StarMusic=api;
+ // Media-element envelopes use elapsed browser time, independent of game/render cadence.
+ function createFader(media){
+  const timing={out:80,in:160,victoryOut:40,victoryIn:80,duck:180};
+  let envelope=1,target=media.volume,envRamp=null,targetRamp=null,frame=0;
+  const sample=(r,t)=>r.from+(r.to-r.from)*Math.min(1,Math.max(0,(t-r.start)/r.ms));
+  function tick(t){frame=0;let done=null;
+   if(envRamp){envelope=sample(envRamp,t);if(t>=envRamp.start+envRamp.ms){done=envRamp.done;envRamp=null;}}
+   if(targetRamp){target=sample(targetRamp,t);if(t>=targetRamp.start+targetRamp.ms)targetRamp=null;}
+   media.volume=Math.max(0,Math.min(1,envelope*target));
+   if(done)done();if((envRamp||targetRamp)&&!frame)frame=requestAnimationFrame(tick);
+  }
+  function schedule(){if(!frame)frame=requestAnimationFrame(tick);}
+  return {timing,
+   target(value){value=Math.max(0,Math.min(1,value));if((targetRamp?.to??target)===value)return;const t=performance.now();if(targetRamp)target=sample(targetRamp,t);targetRamp={from:target,to:value,start:t,ms:timing.duck};schedule();},
+   fade(value,ms,done){const t=performance.now();if(envRamp)envelope=sample(envRamp,t);envRamp={from:envelope,to:value,start:t,ms,done};schedule();},
+   get state(){return {envelope,target,envRamp:envRamp&&{...envRamp},timing:{...timing}};}
+  };
+ }
+ const api={resolve,create,createFader};if(typeof module==='object'&&module.exports)module.exports=api;else root.StarMusic=api;
 })(typeof window==='object'?window:globalThis);

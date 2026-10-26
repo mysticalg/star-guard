@@ -5,7 +5,7 @@ const previewArgs=new URLSearchParams(location.search).get('preview')?.split('.'
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');motionPreference.addEventListener('change',()=>globalThis.Module?._web_motion?.(motionPreference.matches?1:0));
 const canvas=document.querySelector('#canvas'),startButton=document.querySelector('#start'),statusText=document.querySelector('#status');
 
-const music=document.querySelector("#music"),musicVolume=document.querySelector("#music-volume");music.volume=.3;musicVolume.oninput=()=>{music.volume=+musicVolume.value/100;};
+const music=document.querySelector("#music"),musicVolume=document.querySelector("#music-volume");music.volume=.3;const musicFader=StarMusic.createFader(music);musicVolume.oninput=()=>{musicFader.target(+musicVolume.value/100);};
 
 let ready=false,assetFailed=false,started=false,touchActive=false;
 
@@ -41,13 +41,14 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 
 // Match game pause/focus state; duck the soundtrack during the thruster sweep.
 
-setInterval(()=>{if(!started){music.volume+=(+musicVolume.value/100-music.volume)*.25;if(document.hidden||!document.hasFocus())music.pause();else if(musicDirector.state.unlocked&&music.paused&&!music.ended)music.play().catch(()=>{});return;}if(typeof Module._web_stat!=="function")return;const off=!!Module._web_stat(18);music.muted=off;document.querySelector('#sound').textContent=off?'Sound off':'Sound on';const paused=!!Module._web_stat(6)||document.hidden||!document.hasFocus();if(paused){if(!music.paused)music.pause();}else if(music.paused&&!music.ended){music.play().catch(()=>{});}const target=+musicVolume.value/100*(ShipVoice.speaking?.3:Module._web_stat(65)?.75:Module._web_stat(16)?.45:1);music.volume+=(target-music.volume)*.25;},120);
+setInterval(()=>{if(!started){musicFader.target(+musicVolume.value/100);if(document.hidden||!document.hasFocus())music.pause();else if(musicDirector.state.unlocked&&music.paused&&!music.ended)music.play().catch(()=>{});return;}if(typeof Module._web_stat!=="function")return;const off=!!Module._web_stat(18);music.muted=off;document.querySelector('#sound').textContent=off?'Sound off':'Sound on';const paused=!!Module._web_stat(6)||document.hidden||!document.hasFocus();if(paused){if(!music.paused)music.pause();}else if(music.paused&&!music.ended){music.play().catch(()=>{});}const target=+musicVolume.value/100*(ShipVoice.speaking?.3:Module._web_stat(65)?.75:Module._web_stat(16)?.45:1);musicFader.target(target);},120);
 
 
 
 const tracks=window.StarMusicCatalog.map(x=>x.path),trackSelect=document.querySelector('#music-track');
-let musicSwitchTimer=null,preflightContext='intro';
-function chooseTrack(index,immediate=false,loop=true){index=Math.max(0,Math.min(tracks.length-1,index));trackSelect.value=String(index);clearTimeout(musicSwitchTimer);music.loop=loop;const next=new URL(tracks[index],location.href).href;if(music.src===next){if(!loop){music.currentTime=0;music.play().catch(()=>{});}return;}const commit=()=>{music.src=tracks[index];music.volume=0;if(!started||!Module._web_stat(6))music.play().catch(()=>{});};if(immediate)commit();else{music.volume=0;musicSwitchTimer=setTimeout(commit,120);}}
+let preflightContext='intro',musicChange=0;
+function chooseTrack(index,immediate=false,loop=true){index=Math.max(0,Math.min(tracks.length-1,index));trackSelect.value=String(index);const change=++musicChange;music.loop=loop;const fadeIn=()=>{if(change===musicChange)musicFader.fade(1,loop?musicFader.timing.in:musicFader.timing.victoryIn);};const next=new URL(tracks[index],location.href).href;if(music.src===next){fadeIn();if(!loop){music.currentTime=0;music.play().catch(()=>{});}return;}const commit=()=>{music.src=tracks[index];if(!started||!Module._web_stat(6))music.play().then(fadeIn,fadeIn);else fadeIn();};musicFader.fade(0,immediate?1:loop?musicFader.timing.out:musicFader.timing.victoryOut,commit);}
+
 const musicDirector=StarMusic.create((index,loop)=>chooseTrack(index,false,loop));
 function readMusicState(){if(!started)return {started:false,menu:preflightContext};const s=Module._web_stat;return {started:true,mission:s(10),section:s(160),kind:s(162),side:s(28),intro:s(64),mini:s(24),giant:s(170),victory:s(65),tier:s(187),won:s(168),refit:s(200)};}
 function syncLevelMusic(){musicDirector.update(readMusicState());}
