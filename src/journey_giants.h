@@ -17,7 +17,7 @@ static void giant_start(void){Giant*b=&ex.giant;*b=(Giant){.active=1,.phase=1,.a
  if(b->archetype!=4)giant_layout();else{b->scale=1;b->zoom=.68f;}
  if(b->archetype==5){int reduction=clamp(ex.baseDamage,0,8)*150;b->parts[0].hp-=reduction;b->parts[1].hp-=reduction;}
 }
-static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->parts+n;if(!giant_open(n))return;int old=p->hp;p->hp=clamp(p->hp-damage,0,p->maxHp);phoenix_charge((old-p->hp)/50);if(old&&p->hp==0){b->partsDestroyed++;g.score+=n==6?5000:500;burst(p->x,p->y,1);}
+static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->parts+n;if(!giant_open(n))return;int old=p->hp;p->hp=clamp(p->hp-damage,0,p->maxHp);if(p->hp<old)p->damageUntil=g.tick+5;phoenix_charge((old-p->hp)/50);if(old&&p->hp==0){b->partsDestroyed++;g.score+=n==6?5000:500;burst(p->x,p->y,1);}
  if(b->archetype!=4&&n==6&&p->hp>0&&b->phase<4&&p->hp*3<p->maxHp*2){b->phase=4;for(int i=7;i<9;i++){b->parts[i].hp=b->parts[i].maxHp=2200;}}
  if(n==6&&p->hp*3<p->maxHp)b->phase=5;
  if(n==6&&!p->hp){ex.giantRewardMask|=1<<(g.wave-1);b->active=0;b->defeated=1;ex.victory=1;ex.victoryX=160;ex.victoryY=104;ex.clearScore=g.score-ex.stageScore;ex.clearKills=g.kills-ex.stageKills;ex.clearSalvage=g.salvagePicked-ex.stageSalvage;ex.clearBonus=3000;g.score+=ex.clearBonus;for(int i=0;i<MAXB;i++)g.bullets[i].on=0;}

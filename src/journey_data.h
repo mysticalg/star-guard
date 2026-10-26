@@ -12,7 +12,7 @@ typedef struct{int hp,maxHp,material,openedAt,regrow;} WallCell;
 typedef struct{int x,y,life;} CritNotice;
 typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound;} EnvironmentHazard;
 typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;WallCell wall[192];EnvironmentHazard hazards[32];} Environment;
-typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage;} GiantPart;
+typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick;float zoom,scale;GiantPart parts[9];} Giant;
 static int mission_phase(int),mission_index(int),journey_kind(void),journey_depth(void),section_final(void),section_has_boss(void),section_wave_target(void),section_duration(void),environment_exclusive(void),custom_environment(void);
 
