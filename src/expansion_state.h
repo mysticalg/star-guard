@@ -2,6 +2,7 @@ typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
  Bombing bombing;
  unsigned strengthSerial;
+ int sectionHandover;
  int cavernWorldQ,cavernWorldReady;
  int floorShotSerial,floorShotX,floorShotY;int lastDamageTick,lastDamageAmount,lastDamageKind,lastDamageSerial,lastDamageFatal,blockedTick,damagePrevX,damagePrevY;int progressTicks,escortClock,escortUsed,escortWarning,escortOwner;int resistTicks,resistFamily,resistX,resistY;
  int miniRewardMask,giantRewardMask,completedMissionMask,pendingParts,partsCollected,partPickupTicks;Obj partBundle;

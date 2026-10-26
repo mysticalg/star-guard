@@ -3,7 +3,7 @@ static unsigned int terrain_hash(int x,int y){unsigned int n=(unsigned)x*3747613
 static int terrainScrollSpeed=153;
 static int wall_origin_y(void){return TERRAIN_ORIGIN+terrain.scrollQ/Q;}
 static int terrain_ready(void){return journey_kind()!=ENV_WALL||wall_origin_y()>player_y/Q+30;}
-static int terrain_initial_material(int x,int y){int yy=y+(sn(x*3)*4+sn(x*7+37)*2)/1024;yy=yy*448/TERRAIN_H;if(g.wave==3&&ex.section==3)return yy<112?3:yy<280?2:yy<364?1:0;if(g.wave==6&&ex.section==1)return yy<98?3:yy<238?2:yy<308?1:0;if(g.wave==6&&ex.section==5)return yy<84?3:yy<196?2:yy<238?3:yy<308?2:yy<378?1:0;return yy<140?3:yy<280?2:yy<364?1:0;}
+static int terrain_initial_material(int x,int y){int yy=y+(sn(x*3)*4+sn(x*7+37)*2)/1024;yy=yy*448/TERRAIN_H;if(g.wave==3&&ex.section==3)return yy<112?3:yy<280?2:yy<364?1:0;if(g.wave==6&&ex.section==1)return yy<98?3:yy<238?2:yy<308?1:0;if(g.wave==6&&ex.section==6)return yy<84?3:yy<196?2:yy<238?3:yy<308?2:yy<378?1:0;return yy<140?3:yy<280?2:yy<364?1:0;}
 /* Penetration stays calibrated for the stock cutter; the denser grain fringes
    take an extra point of real damage without halving low-power drilling depth. */
 static int terrain_cut_resistance(int m){static const int resist[4]={3,4,6,8};return resist[clamp(m,0,3)];}

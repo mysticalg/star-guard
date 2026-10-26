@@ -3,7 +3,7 @@
 #undef main
 static int checks;
 #define V(x) do{if(!(x)){fprintf(stderr,"FAIL %d %s\n",__LINE__,#x);exit(1);}checks++;}while(0)
-static void arena(void){pilotConfigured=0;configuredLevel=1;configuredArmour=0;configuredMask=511;configuredQualityPack=0;selectedShip=0;game_reset();g.mode=1;g.fx=0;g.wave=6;ex.section=2;ex.phase=ex.oldPhase=mission_phase(6);ex.intro=ex.travel=0;g.clock=0;ex.rearSpawned=1;environment_enter();}
+static void arena(void){pilotConfigured=0;configuredLevel=1;configuredArmour=0;configuredMask=511;configuredQualityPack=0;selectedShip=0;game_reset();g.mode=1;g.fx=0;g.wave=6;ex.section=3;ex.phase=ex.oldPhase=mission_phase(6);ex.intro=ex.travel=0;g.clock=0;ex.rearSpawned=1;environment_enter();}
 int main(void){headless=1;arena();Bombing*b=&ex.bombing;V(b->active&&b->payload==6&&environment_exclusive()&&!bombing_ready());GroundTarget*t=b->targets;for(int i=0;i<8;i++)t[i].y=100;int hp=t[2].hp;b->bombs[0]=(GroundPayload){1,t[2].x*Q,130*Q,0,-1000,0};for(int n=0;n<8;n++)bombing_payload_step();V(t[2].hp==hp&&b->hits==1);t[0].hp=t[1].hp=0;b->targetsDestroyed=2;b->bombs[0]=(GroundPayload){1,t[2].x*Q,130*Q,0,-1000,0};for(int n=0;n<8;n++)bombing_payload_step();V(t[2].hp==hp-3);V(b->hits==2);
  arena();b=&ex.bombing;b->payload=0;for(int n=0;n<500;n++)bombing_step();V(b->stage==1);for(int n=0;n<100;n++)bombing_step();V(b->stage==2);float first=b->angle;for(int n=0;n<50;n++)bombing_step();V(b->angle>first+80&&b->angle<first+100&&g.shield==20);for(int n=0;n<50;n++)bombing_step();V(b->stage==3&&b->pass==1&&b->payload==6);for(int n=0;n<75;n++)bombing_step();V(b->stage==0&&b->angle==180);V(absn(g.px/Q-b->pathX)<2&&absn(player_y/Q-220)<2);
  /* Pilot aims within the production +/-45 path envelope; every hit uses actual falling payloads. */

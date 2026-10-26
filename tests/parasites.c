@@ -3,7 +3,7 @@
 #undef main
 static int checks;
 #define V(x) do{if(!(x)){fprintf(stderr,"FAIL %d %s\n",__LINE__,#x);exit(1);}checks++;}while(0)
-static void arena(void){selectedShip=0;game_reset();g.fx=0;g.mode=1;g.wave=5;ex.section=2;ex.phase=ex.oldPhase=mission_phase(5);ex.intro=ex.travel=0;ex.rearSpawned=1;g.groups=6;g.clock=-100000;g.shield=100000;environment_enter();ex.leechGrace=0;}
+static void arena(void){selectedShip=0;game_reset();g.fx=0;g.mode=1;g.wave=5;ex.section=journeyGiantAt[4];ex.phase=ex.oldPhase=mission_phase(5);ex.intro=ex.travel=0;ex.rearSpawned=1;g.groups=6;g.clock=-100000;g.shield=100000;environment_enter();ex.leechGrace=0;}
 int main(void){headless=1;arena();environment_spawn(9,g.px/Q,player_y/Q,0,0,9,2);environmental_hazards();V(ex.leeches==1&&!ex.env.hazards[0].on&&ex.leechSerial==1);V(!parasites_latch());ex.leechGrace=0;V(parasites_latch());ex.leechGrace=0;V(parasites_latch());ex.leechGrace=0;V(!parasites_latch()&&ex.leeches==3);
  int x=parasite_x(0),y=parasite_y(0);g.px+=30*Q;player_y-=20*Q;V(parasite_x(0)==x+30&&parasite_y(0)==y-20);
  for(int i=0;i<99;i++)parasites_step();V(g.weaponEnergy[0]==100);parasites_step();V(g.weaponEnergy[0]==97&&g.barrier==100);

@@ -18,21 +18,26 @@ static int section_has_boss(void){int m=journey_number();return (!ex.miniDone&&j
    Profile follows the authored biome; it never changes organic actor identity. */
 static int weather_profile(void){switch(journey_kind()){case ENV_SKY:case ENV_OCEAN:return WEATHER_STORM;case ENV_SPACE:case ENV_WALL:return WEATHER_ASTEROID;case ENV_ROOT:case ENV_HIVE:case ENV_MOUTH:case ENV_BEAST:case ENV_TEETH:return WEATHER_ACID;case ENV_EM:case ENV_REACTOR:case ENV_WRECK:return WEATHER_ION;case ENV_ASH:case ENV_BASE:case ENV_ESCAPE:return WEATHER_FIRE;case ENV_BLIZZARD:case ENV_ICE:case ENV_CRYSTAL:return WEATHER_ICE;}return WEATHER_NONE;}
 static int weather_front(void){return ex.env.timer%3000<2500;}
-static int weather_exclusive(void){int k=journey_kind();return !ex.bossSpawned&&!ex.giant.active&&ex.env.timer<2500&&(k==ENV_SPACE||k==ENV_SKY&&g.wave==1);}
+static int weather_exclusive(void){int k=journey_kind();return !ex.bossSpawned&&!ex.giant.active&&(k==ENV_SKY&&g.wave==1||ex.env.timer<2500&&k==ENV_SPACE);}
 static int environment_exclusive(void){int k=journey_kind();return weather_exclusive()||k==ENV_WALL||k==ENV_MOUTH||k==ENV_TEETH||k==ENV_ESCAPE||k==ENV_BLIZZARD||k==ENV_ASH||k==ENV_EM||k==ENV_BASE;}
 static int custom_environment(void){int k=journey_kind();return k!=ENV_SKY&&k!=ENV_SPACE&&k!=ENV_ASH&&k!=ENV_FORTRESS;}
-/* 150s active progression per mission, never 150s per scenery section. */
-static int finale_progress_pending(void){int m=journey_number();return ex.section==journeyGiantAt[m]&&(ex.miniDone||journeyMinis[m][ex.section]<0)&&ex.progressTicks<7500;}
-static int section_formation_clock(void){int k=journey_kind();return g.clock-((k==ENV_SPACE||k==ENV_SKY&&g.wave==1)?2500:0);}
-static int section_wave_target(void){if(environment_exclusive())return 0;int k=journey_kind(),combat=section_duration()-((k==ENV_SPACE||k==ENV_SKY&&g.wave==1)?2500:0),target=clamp(combat/(formation_interval()+12)+1,4,32);return finale_progress_pending()&&g.clock>=section_duration()?g.groups+1:target;}
-static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();static const int duration[6][JOURNEY_SECTIONS_MAX]={{2200,1800,1400},{2200,2000,1400},{1800,0,1800,0,1400},{2300,1700,2000},{2400,700,2200,1200},{1800,0,1400,1500,1600,0,1400,1200}};static const int postMini[6]={1500,1400,1200,1400,2000,0};if(ex.miniDone&&ex.section==journeyGiantAt[m]&&postMini[m])return postMini[m];int d=duration[m][clamp(ex.section,0,journeyCounts[m]-1)];if(weather_profile()&&d<2500)d=2500;if(journey_kind()==ENV_SPACE||journey_kind()==ENV_SKY&&g.wave==1)d=d<3000?3000:d;return d;}
+/* Active time belongs to the whole mission; the escape budget remains after the finale. */
+static int mission_active_target(void){return missionActiveSeconds[journey_number()]*50;}
+static int mission_escape_budget(void){int m=journey_number(),ticks=0;for(int s=journeyGiantAt[m]+1;s<journeyCounts[m];s++)ticks+=journeySeconds[m][s]*50;return ticks;}
+static int finale_progress_pending(void){int m=journey_number();return ex.section==journeyGiantAt[m]&&(ex.miniDone||journeyMinis[m][ex.section]<0)&&ex.progressTicks<mission_active_target()-mission_escape_budget();}
+static int section_formation_clock(void){return g.clock-(journey_kind()==ENV_SPACE?2500:0);}
+static int section_wave_target(void){if(environment_exclusive())return 0;int duration=section_duration();if(!duration)return finale_progress_pending()?g.groups+1:0;int combat=duration-(journey_kind()==ENV_SPACE?2500:0),target=clamp(combat/(formation_interval()+12)+1,4,32);return finale_progress_pending()&&g.clock>=duration?g.groups+1:target;}
+static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();if(ex.miniDone&&ex.section==journeyGiantAt[m]&&journeyMinis[m][ex.section]>=0)return 0;return journeySeconds[m][ex.section]*50;}
+static int journey_exit_gate(int timer){int start=section_duration()-500;if(start<400)start=400;return (timer-start)*3/5-40;}
+static int mission_progress_ready(void){return !section_final()||ex.progressTicks>=mission_active_target();}
 static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[clamp(g.chassis,0,2)];}
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}
 static void journey_advance(void){
+ if(!mission_progress_ready())return;
  globules_clear();
  ex.oldKind=journey_kind();ex.missionHandover=0;if(section_final()){ex.completedMissionMask|=1<<(g.wave-1);salvage_flush();}
- if(!section_final())ex.section++;
+ if(!section_final()){ex.section++;ex.sectionHandover=1;}
  else if(g.wave<MISSION_COUNT){ex.refit=1;ex.refitNext=g.wave+1;ex.victory=ex.bossSpawned=ex.clearTicks=0;return;}
  else{ex.campaignWon=1;g.mode=2;g.score+=10000;return;}
  g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;
@@ -47,4 +52,4 @@ static void environment_step(int);
 
 static int giant_add_count(void){int n=0;for(int i=0;i<32;i++)n+=ex.env.hazards[i].on&&ex.env.hazards[i].type>=20&&ex.env.hazards[i].type<=25;return n;}
 
-static void journey_commit_refit(void){if(!ex.refit)return;g.wave=ex.refitNext;ex.section=0;ex.refit=ex.refitNext=0;ex.missionTicks=ex.progressTicks=0;ex.missionHandover=1;g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;}
+static void journey_commit_refit(void){if(!ex.refit)return;g.wave=ex.refitNext;ex.section=0;ex.refit=ex.refitNext=0;ex.missionTicks=ex.progressTicks=0;ex.missionHandover=1;ex.sectionHandover=1;g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;}

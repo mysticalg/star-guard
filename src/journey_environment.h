@@ -53,9 +53,9 @@ static void environment_step(int mask){
  if(!weather_front()&&(kind==ENV_SKY||kind==ENV_OCEAN||kind==ENV_ASH))environment_lightning();
  if(kind==ENV_EM||kind==ENV_REACTOR){int c=ex.env.timer%1500;if(c>=350&&c<500)ex.env.warning=2;if(c>=500&&c<1000){ex.env.empActive=1;ex.env.warning=3;if(g.tick%25==0){g.energy=clamp(g.energy-2,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-2,0,100);}}if(c==500)pc_emp_sound(1,160);}
  if(kind==ENV_OCEAN){int t=ex.env.timer;if(t==500)ex.env.safeX=64+(g.wave*57)%192;if(t>=500&&t<650)ex.env.warning=7;if(t>=650&&t<1000){int y=t-700;if(absn(y-player_y/Q)<18&&absn(g.px/Q-ex.env.safeX)>44)hurt_at(g.px/Q,player_y/Q,0,-1);}}
- if(kind==ENV_TEETH||kind==ENV_ESCAPE){ex.env.warning=kind==ENV_TEETH?8:9;int y=(ex.env.timer-400)*3/5-40;if(absn(y-player_y/Q)<18&&absn(g.px/Q-160)>45){hurt_at(g.px/Q,player_y/Q,0,-1);g.px=160*Q;}if(y>player_y/Q+18&&absn(g.px/Q-160)<45)ex.env.escaped=1;}
+ if(kind==ENV_TEETH||kind==ENV_ESCAPE){ex.env.warning=kind==ENV_TEETH?8:9;int y=journey_exit_gate(ex.env.timer);if(absn(y-player_y/Q)<18&&absn(g.px/Q-160)>45){hurt_at(g.px/Q,player_y/Q,0,-1);g.px=160*Q;}if(y>player_y/Q+18&&absn(g.px/Q-160)<45)ex.env.escaped=1;}
  if(kind==ENV_REACTOR){if(g.tick%100==0){g.energy=clamp(g.energy-1,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-1,0,100);}if(!ex.env.warning&&g.tick%100<30)ex.env.warning=18;}
  }
  environmental_hazards();globules_step();parasites_step();giant_step(mask);weather_step();
- if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&!section_has_boss()&&g.clock>=section_duration()&&terrain_ready()&&g.groups>=section_wave_target()&&!route_occupied()&&!hostile_rounds_remain()&&((kind!=ENV_TEETH&&kind!=ENV_ESCAPE)||ex.env.escaped))journey_advance();
+ if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&!section_has_boss()&&g.clock>=section_duration()&&terrain_ready()&&mission_progress_ready()&&g.groups>=section_wave_target()&&!route_occupied()&&!hostile_rounds_remain()&&((kind!=ENV_TEETH&&kind!=ENV_ESCAPE)||ex.env.escaped))journey_advance();
 }
