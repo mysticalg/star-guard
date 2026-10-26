@@ -32,7 +32,7 @@ static void expansion_render(u8*b){int i;if(g.mode==0)return;if(!pc_modern){draw
  if(g.mode==1){text(b,4,246,"BOMBS",3,1);number(b,40,246,ex.bombs,255);text(b,58,246,"PODS",3,1);number(b,88,246,ex.optionsOn?ex.options:0,255);text(b,104,246,weapon_name(),235,1);if(ex.travel){text(b,70,44,"SECTOR APPROACH",255,2);text(b,92,64,sector_name(ex.travel==1?ex.nextPhase:ex.phase),235,1);}else if(ex.phaseAge<100){text(b,48,44,sector_name(ex.phase),255,2);text(b,92,62,ex.phase==5?"STAY IN THE PASSAGE":ex.phase==2?"DODGE THE ROCKS":ex.phase==3?"FOLLOW THE GAPS":"WEAPONS READY",3,1);}else text(b,204,246,sector_name(ex.phase),3,1);}
 }
 
-static void draw_explosion(u8*b,Obj*o,int detailed){int age=o->age,x=o->x,y=o->y,a,big=o->type,r=4+age*(big?3:2),level=age<12?3:age<24?2:1;
+static void draw_explosion(u8*b,Obj*o,int detailed){if(o->type>=3){int r=3+o->age;for(int a=0;a<256;a+=16)pixel(b,o->x+(sn(a+o->phase)*r>>10),o->y+(sn(a+64+o->phase)*r>>10),o->age<15?151:76);return;}int age=o->age,x=o->x,y=o->y,a,big=o->type,r=4+age*(big?3:2),level=age<12?3:age<24?2:1;
  for(a=0;a<256;a+=8){int xx=x+((sn(a+o->phase)*r)>>11),yy=y+((sn(a+64+o->phase)*r)>>11);pixel(b,xx,yy,level==3?87:level==2?23:4);if(big&&age<8&&(a&31)==0)glow(b,xx+1,yy,3,2);}
  if(big&&age<24)for(a=0;a<256;a+=16){int rr=6+age*2;pixel(b,x+((sn(a)*rr)>>10),y+((sn(a+64)*rr)>>10),age<12?139:8);}
  if(age<12&&detailed){int yy,radius=(big?6:4)+(age>>2);for(yy=-radius;yy<=radius;yy++){int py=y+yy,w=radius-(absn(yy)>>1),xx;if(py<24||py>255)continue;for(xx=-w;xx<=w;xx++){int px=x+xx;if(px>=0&&px<320)b[py*320+px]=age<8&&absn(xx)+absn(yy)<(radius>>1)?255:absn(xx)+absn(yy)<radius?(age<10?87:23):age<8?23:4;}}}

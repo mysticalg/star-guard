@@ -1,0 +1,1 @@
+Built-in transparent image edit of organic-goo-v55: change all green liquid into dark ruby/crimson red alien blood with wet red highlights/burgundy edges; preserve exact four sprites/layout/scale/padding/transparency, no anatomy/wounds/characters/background/fire/glow. Final RGBA is copied unchanged, with source UV rectangles only. Green source remains intact.

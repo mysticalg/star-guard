@@ -31,7 +31,7 @@ static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,c
   if(!shielded&&g.beam&&g.tick%4==0&&y<player_y/Q&&beam_hits(x,y,h->r))environment_weapon_hit(h,120,g.weapon);
   if(h->dotTicks){h->dotTicks--;if(--h->dotClock<=0){h->dotClock=50;if(!shielded){environment_damage(h,h->dotDamage);}}}
   if(ex.bombAge&&bomb_reached(x,y,h->r))h->hp=0;
-  if(h->hp<=0){h->on=0;g.score+=h->type>=6&&h->type<=8?250:30;pc_charge_burst(x,y);if(h->type==7||h->type==8)ex.baseDamage++;if(h->type==12){int count=0;for(int z=0;z<32;z++)count+=ex.env.hazards[z].on&&ex.env.hazards[z].type>=9&&ex.env.hazards[z].type<=11;if(count<12)environment_spawn(9,x,y,0,220,9,1);}continue;}
+  if(h->hp<=0){h->on=0;g.score+=h->type>=6&&h->type<=8?250:30;if(organic_context()&&(h->type==1||h->type==3||h->type>=9))burst_kind(x,y,0,(h->type==9||h->type==10||(h->type>=20&&h->type<=25&&h->type!=24))?2:1);else pc_charge_burst(x,y);if(h->type==7||h->type==8)ex.baseDamage++;if(h->type==12){int count=0;for(int z=0;z<32;z++)count+=ex.env.hazards[z].on&&ex.env.hazards[z].type>=9&&ex.env.hazards[z].type<=11;if(count<12)environment_spawn(9,x,y,0,220,9,1);}continue;}
   if(h->type==13||h->type==14){for(int e=0;e<MAXE;e++){Obj*o=g.enemies+e;if(o->on&&absn(o->x/Q-x)<h->r+10&&absn(o->y/Q-y)<h->r+10&&(!enemy_guarded(o)||o->type==4)){damage_enemy(o,300);if(o->hp<=0)killed(o);h->on=0;break;}}if(absn(g.px/Q-x)<h->r+5&&absn(player_y/Q-y)<h->r+5){storm_hurt(h->type==13?4:6);h->on=0;}continue;}
   if((h->type==9||h->type==10)&&absn(g.px/Q-x)<14&&absn(player_y/Q-y)<14){if(parasites_latch()){h->on=0;}continue;}
   if(absn(g.px/Q-x)<h->r+5&&absn(player_y/Q-y)<h->r+5)hurt_at(g.px/Q,player_y/Q,0,-1);
