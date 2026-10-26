@@ -1,0 +1,4 @@
+#define main star_guard_main
+#include "../src/pc.c"
+#undef main
+int main(void){headless=1;game_reset();g.mode=1;for(int z=0;z<4;z++)for(int b=0;b<=4;b++){journeyZoom=(float[]){.32f,.44f,.55f,.68f}[z];sideBlend=b*.25f;combatProjection=2;g.shield=100;Draw pilot={136,160,230,0,1,1};nquad=0;draw_shape(&pilot,0);for(int k=0;k<nquad;k++){float x=0,y=0;for(int n=0;n<4;n++){SDL_FPoint*p=&vertices[k*4+n].position;camera_point(&p->x,&p->y);flight_screen_point(&p->x,&p->y);x+=p->x/4;y+=p->y/4;}float angle=sideBlend*PI/2,dy=270*journeyZoom*(696+264*sideBlend)/696,expectedX=480-dy*sinf(angle),expectedY=420+dy*cosf(angle);if(fabsf(x-expectedX)>.01f||fabsf(y-expectedY)>.01f){fprintf(stderr,"FAIL projected ship centre %f %f vs %f %f\n",x,y,expectedX,expectedY);return 1;}}}puts("PASS actual pilot vertices at 20 zoom/side-camera combinations, both profile layers and protected alpha");return 0;}
