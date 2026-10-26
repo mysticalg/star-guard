@@ -13,7 +13,10 @@ static const char*journeyNames[6]={"STORM COAST","HIVE DESCENT","SHATTERED BELT"
 static const char*journeySections[6][JOURNEY_SECTIONS_MAX]={{"TEMPEST APPROACH","OCEAN / TIDAL FRONT","FLOODED WRECK"},{"CANOPY APPROACH","ROOT CAVERNS","THE INSECT HIVE"},{"SHATTERED APPROACH","ASTEROID WALL / CUT A PATH","DERELICT MINING SHIP","DENSE BELT / CUT A PATH","CRYSTAL MINES"},{"FROST RIDGE","WHITEOUT","ICE CAVERN"},{"ELECTROMAGNETIC FRONT","THE MAW","INSIDE THE LEVIATHAN","ESCAPE THROUGH THE TEETH"},{"HYPERLANE","DEBRIS BULKHEAD / CUT A PATH","ASH AND FIRE","THE WEAPONS BASE","ASSEMBLY HALLS","CORE DEBRIS / CUT A PATH","COLOSSUS REACTOR","FACILITY ESCAPE"}};
 typedef struct{int x,y,life;} CritNotice;
 typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound,damageUntil;} EnvironmentHazard;
-typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
+enum { WEATHER_NONE,WEATHER_STORM,WEATHER_ASTEROID,WEATHER_ACID,WEATHER_ION,WEATHER_FIRE,WEATHER_ICE };
+typedef struct{int on,type,x,y,oldX,oldY,vx,vy,r,hp,age;} WeatherActor;
+typedef struct{int kind,stage,left,safeX,strikeX,serial,playerHits,enemyHits,bossHits,blasts,recoveryGiven;WeatherActor actors[48];} Weather;
+typedef struct{Weather weather;int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 #define WORM_SEGMENTS 168
 typedef struct{float x,y,angle;int visible;} WormSegment;

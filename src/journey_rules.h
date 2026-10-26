@@ -14,12 +14,18 @@ static int mission_phase(int wave){int m=clamp(wave-1,0,5);return journeyPhases[
 static int mission_index(int phase){for(int m=0;m<6;m++)for(int s=0;s<journeyCounts[m];s++)if(journeyPhases[m][s]==phase)return m;return 0;}
 static int section_final(void){return ex.section==journeyCounts[journey_number()]-1;}
 static int section_has_boss(void){int m=journey_number();return (!ex.miniDone&&journeyMinis[m][ex.section]>=0)||(journeyGiantAt[m]==ex.section&&!ex.giant.defeated);}
-static int environment_exclusive(void){int k=journey_kind();return k==ENV_WALL||k==ENV_MOUTH||k==ENV_TEETH||k==ENV_ESCAPE||k==ENV_BLIZZARD||k==ENV_ASH||k==ENV_EM||k==ENV_BASE;}
+/* Ten-second forecast, thirty-second front, ten-second clear-air recovery.
+   Profile follows the authored biome; it never changes organic actor identity. */
+static int weather_profile(void){switch(journey_kind()){case ENV_SKY:case ENV_OCEAN:return WEATHER_STORM;case ENV_SPACE:case ENV_WALL:return WEATHER_ASTEROID;case ENV_ROOT:case ENV_HIVE:case ENV_MOUTH:case ENV_BEAST:case ENV_TEETH:return WEATHER_ACID;case ENV_EM:case ENV_REACTOR:case ENV_WRECK:return WEATHER_ION;case ENV_ASH:case ENV_BASE:case ENV_ESCAPE:return WEATHER_FIRE;case ENV_BLIZZARD:case ENV_ICE:case ENV_CRYSTAL:return WEATHER_ICE;}return WEATHER_NONE;}
+static int weather_front(void){return ex.env.timer%3000<2500;}
+static int weather_exclusive(void){int k=journey_kind();return !ex.bossSpawned&&!ex.giant.active&&ex.env.timer<2500&&(k==ENV_SPACE||k==ENV_SKY&&g.wave==1);}
+static int environment_exclusive(void){int k=journey_kind();return weather_exclusive()||k==ENV_WALL||k==ENV_MOUTH||k==ENV_TEETH||k==ENV_ESCAPE||k==ENV_BLIZZARD||k==ENV_ASH||k==ENV_EM||k==ENV_BASE;}
 static int custom_environment(void){int k=journey_kind();return k!=ENV_SKY&&k!=ENV_SPACE&&k!=ENV_ASH&&k!=ENV_FORTRESS;}
 /* 150s active progression per mission, never 150s per scenery section. */
 static int finale_progress_pending(void){int m=journey_number();return ex.section==journeyGiantAt[m]&&(ex.miniDone||journeyMinis[m][ex.section]<0)&&ex.progressTicks<7500;}
-static int section_wave_target(void){if(environment_exclusive())return 0;int target=clamp(section_duration()/(formation_interval()+12)+1,4,32);return finale_progress_pending()&&g.clock>=section_duration()?g.groups+1:target;}
-static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();static const int duration[6][JOURNEY_SECTIONS_MAX]={{2200,1800,1400},{2200,2000,1400},{1800,0,1800,0,1400},{2300,1700,2000},{2400,700,2200,1200},{1800,0,1400,1500,1600,0,1400,1200}};static const int postMini[6]={1500,1400,1200,1400,2000,0};if(ex.miniDone&&ex.section==journeyGiantAt[m]&&postMini[m])return postMini[m];return duration[m][clamp(ex.section,0,journeyCounts[m]-1)];}
+static int section_formation_clock(void){int k=journey_kind();return g.clock-((k==ENV_SPACE||k==ENV_SKY&&g.wave==1)?2500:0);}
+static int section_wave_target(void){if(environment_exclusive())return 0;int k=journey_kind(),combat=section_duration()-((k==ENV_SPACE||k==ENV_SKY&&g.wave==1)?2500:0),target=clamp(combat/(formation_interval()+12)+1,4,32);return finale_progress_pending()&&g.clock>=section_duration()?g.groups+1:target;}
+static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();static const int duration[6][JOURNEY_SECTIONS_MAX]={{2200,1800,1400},{2200,2000,1400},{1800,0,1800,0,1400},{2300,1700,2000},{2400,700,2200,1200},{1800,0,1400,1500,1600,0,1400,1200}};static const int postMini[6]={1500,1400,1200,1400,2000,0};if(ex.miniDone&&ex.section==journeyGiantAt[m]&&postMini[m])return postMini[m];int d=duration[m][clamp(ex.section,0,journeyCounts[m]-1)];if(weather_profile()&&d<2500)d=2500;if(journey_kind()==ENV_SPACE||journey_kind()==ENV_SKY&&g.wave==1)d=d<3000?3000:d;return d;}
 static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[clamp(g.chassis,0,2)];}
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}

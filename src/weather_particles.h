@@ -17,6 +17,7 @@ static void rain_drop_at(int i,float seconds,float angle,int reduced,RainDrop*d)
 }
 static void draw_storm_rain(void){
  renderedRain=0;int kind=journey_kind();float strength=kind==ENV_OCEAN?1:kind==ENV_SKY&&ex.phase==10?.55f+.45f*earth_cloud_cover():0;
+ if(ex.env.weather.kind==WEATHER_STORM&&ex.env.weather.stage==2)strength=1.35f;
  if(!strength||!g.fx)return;
  int count=quality==2?720:quality==1?420:220;if(reducedMotion)count/=3;
  float clock=visualTick*.02f,angle=flight_view_angle();rainClockSample=clock;
