@@ -17,12 +17,17 @@ static void storm_core_joint(int x,int seed,int node,int side,float*px,float*py)
 static void draw_storm_core(int x,int seed,float alpha){for(int n=0;n<STORM_BOLT_SEGMENTS;n++){float px[4],py[4];storm_core_joint(x,seed,n,1,px,py);storm_core_joint(x,seed,n+1,1,px+1,py+1);storm_core_joint(x,seed,n+1,-1,px+2,py+2);storm_core_joint(x,seed,n,-1,px+3,py+3);int first=nquad;quad(0,0,1,1,(SDL_FColor){.82f,.94f,1,alpha*.75f},0,0,1,1);if(nquad==first)return;for(int i=0;i<4;i++){vertices[first*4+i].position=(SDL_FPoint){px[i]*3,py[i]*3};vertices[first*4+i].tex_coord=(SDL_FPoint){i<2?0:1,.5f};}}}
 
 static int renderedStormForks;
+/* Cosmetic forks use connected taper meshes: wider roots, exactly pointed tips. */
+static void storm_fork_mesh(const float*x,const float*y,const float*radius,int count,SDL_FColor colour){float nx[4],ny[4];for(int i=0;i<count;i++){int a=i?i-1:0,b=i+1<count?i+1:count-1;float dx=x[b]-x[a],dy=y[b]-y[a],len=fmaxf(.001f,hypotf(dx,dy));nx[i]=-dy/len*radius[i];ny[i]=dx/len*radius[i];}
+ for(int i=0;i<count-1;i++){int first=nquad;quad(0,0,1,1,colour,0,0,1,1);if(nquad==first)return;SDL_FPoint points[4]={{(x[i]+nx[i])*3,(y[i]+ny[i])*3},{(x[i+1]+nx[i+1])*3,(y[i+1]+ny[i+1])*3},{(x[i+1]-nx[i+1])*3,(y[i+1]-ny[i+1])*3},{(x[i]-nx[i])*3,(y[i]-ny[i])*3}};for(int k=0;k<4;k++){vertices[first*4+k].position=points[k];vertices[first*4+k].tex_coord=(SDL_FPoint){k<2?0:1,.5f};}}}
 static void storm_side_fork(float x,float y,float length,float dy,int side,unsigned hash,float alpha,int split){
  float px[4]={x,x+side*length*.32f,x+side*length*.68f,x+side*length},py[4]={y,y+dy*.25f+((int)(hash%13)-6),y+dy*.68f+((int)((hash>>4)%15)-7),y+dy};
- for(int i=0;i<3;i++){storm_ribbon(px[i],py[i],px[i+1],py[i+1],8-i*2,6-i*2,(SDL_FColor){.22f,.45f,1,alpha*.35f});storm_ribbon(px[i],py[i],px[i+1],py[i+1],2.5f-i*.65f,1.85f-i*.65f,(SDL_FColor){.5f,.78f,1,alpha*.95f});}
- renderedStormForks++;
- if(split){float ex=px[2]+side*(12+(hash%17)),ey=py[2]-14-((hash>>5)%16);storm_ribbon(px[2],py[2],ex,ey,1.6f,.3f,(SDL_FColor){.45f,.72f,1,alpha*.85f});renderedStormForks++;}
+ static const float corona[4]={11,8,4,0},core[4]={4,2.8f,1.6f,0};
+ for(int i=0;i<3;i++)storm_ribbon(px[i],py[i],px[i+1],py[i+1],corona[i],corona[i+1],(SDL_FColor){.22f,.45f,1,alpha*.35f});
+ storm_fork_mesh(px,py,core,4,(SDL_FColor){.5f,.78f,1,alpha*.54f});renderedStormForks++;
+ if(split){float tx[2]={px[2],px[2]+side*(12+(int)(hash%17))},ty[2]={py[2],py[2]-14-((hash>>5)%16)},tr[2]={2.5f,0};storm_ribbon(tx[0],ty[0],tx[1],ty[1],6,0,(SDL_FColor){.3f,.55f,1,alpha*.25f});storm_fork_mesh(tx,ty,tr,2,(SDL_FColor){.45f,.72f,1,alpha*.48f});renderedStormForks++;}
 }
+
 static void draw_storm_forks(int x,int seed,float alpha){static const int nodes[9]={1,3,6,2,9,5,10,7,11};int count=quality==2?9:quality==1?7:5;
  for(int j=0;j<count;j++){unsigned hash=(seed+1)*2654435761u+(j+3)*2246822519u;int node=nodes[(j+seed%9)%9],side=(hash&1)?1:-1;float px=storm_bolt_x(x,seed,node),py=storm_bolt_y(node),length=22+((hash>>8)%42),dy=(int)((hash>>16)%63)-25;
  storm_side_fork(px,py,length,dy,side,hash,alpha,j%2==0);

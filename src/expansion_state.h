@@ -1,6 +1,7 @@
 typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
  Bombing bombing;
+ float lightAmbient,lightTarget;int lightReady;
  unsigned strengthSerial;
  int sectionHandover;
  int cavernWorldQ,cavernWorldReady;
