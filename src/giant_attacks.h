@@ -1,0 +1,26 @@
+/* Deterministic tactical plans. Telegraph 60 ticks, attack, then a recovery gap. */
+static int giant_period(void){Giant*b=&ex.giant;static const int periods[6][3]={{300,320,360},{340,380,320},{320,360,400},{320,340,360},{600,620,700},{300,340,380}};return periods[b->archetype][b->form];}
+static void giant_shot(int x,int y,int vx,int vy,int tint){Obj*o=bullet(x*Q,y*Q,vx,vy);if(o)o->variant=tint;}
+static void giant_ring(int x,int y,int count,int speed,int gap){for(int n=0;n<count;n++){int angle=n*256/count;if(absn(((angle-gap+384)&255)-128)<24)continue;giant_shot(x,y,sn(angle)*speed/1024,sn(angle+64)*speed/1024,2);}}
+static float giant_beam_distance(float x,float y,float ax,float ay,float bx,float by){float dx=bx-ax,dy=by-ay,d=dx*dx+dy*dy;if(d<1)return 10000;float u=((x-ax)*dx+(y-ay)*dy)/d;if(u<0||u>1)return 10000;return fabsf((x-ax)*dy-(y-ay)*dx)/sqrtf(d);}
+static void giant_beam_damage(float ax,float ay,float bx,float by,float width){if(giant_beam_distance(g.px/(float)Q,player_y/(float)Q,ax,ay,bx,by)<width)hurt_at(g.px/Q,player_y/Q,0,-1);}
+static void giant_attacks(void){Giant*b=&ex.giant;int a=b->archetype,f=b->form,c=b->formAge%giant_period();b->attackClock=c;b->attackKind=a*3+f+1;int left=play_min_x()+28,right=play_max_x()-28,bottom=play_max_y(),top=play_min_y();
+ if(c==1){b->aimX=clamp(g.px/Q,left,right);b->aimY=clamp(player_y/Q,top+45,bottom-20);b->safeX=160+((b->formAge/giant_period())%3-1)*(right-left)/4;b->attackSide=(b->formAge/giant_period())&1;if(a==4)b->safeX=clamp(b->safeX,tunnel_left(190)+40,tunnel_right(190)-40);}
+ if(c==60){b->attackSerial++;pc_laser_sound(2,b->aimX);}if(c<60||c>=(a==4?480:200))return;
+ if(a==0){if(f==0){if(c>=100){int y=top+(c-100)*(bottom-top)/100;for(int i=0;i<2;i++)if(giant_live(i)&&absn(player_y/Q-y)<12&&absn(g.px/Q-b->parts[i].x)<35)hurt_at(g.px/Q,player_y/Q,0,-1);}if(c%30==0)for(int i=2;i<4;i++)if(giant_live(i))aim(b->parts[i].x*Q,b->parts[i].y*Q,300);if(c==100)for(int i=0;i<2;i++)if(giant_live(i))for(int n=-1;n<=1;n++)giant_shot(b->parts[i].x,b->parts[i].y,n*110,360,0);}
+  else if(f==1){int i=4+b->attackSide;if(giant_live(i)){int y=top+(c-60)*(bottom-top)/120;int x=b->parts[i].x;int width=(right-left)/4;if(absn(player_y/Q-y)<12&&absn(g.px/Q-x)<width)hurt_at(g.px/Q,player_y/Q,0,-1);}if(c==160)for(int i=2;i<4;i++)if(giant_live(i))aim(b->parts[i].x*Q,b->parts[i].y*Q,340);}
+  else{if(c>=80&&c<110){int w=20+(giant_live(7)+giant_live(8))*8;for(int n=-1;n<=1;n++){int x=160+n*(right-left)/3;if(absn(x-b->safeX)<(right-left)/7)continue;if(absn(g.px/Q-x)<w)hurt_at(g.px/Q,player_y/Q,0,-1);}}if(c==140)giant_ring(b->parts[6].x,b->parts[6].y,14,350,64);}}
+ else if(a==1){if(f==0){if(c==60&&b->escortWaves<2){for(int i=0;i<2;i++)if(giant_live(i)){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=0,.x=b->parts[i].x*Q,.y=(b->parts[i].y+20)*Q,.hp=2,.base=b->parts[i].x};}b->escortWaves++;}if(c==140)giant_fan(160,130,300,210);}
+  else if(f==1){if(c%35==0)for(int i=4;i<6;i++)if(giant_live(i))giant_shot(b->parts[i].x,b->parts[i].y,(b->aimX-b->parts[i].x)*2,280,1);}
+  else{float sweep=left+(right-left)*(c-60)/140.0f;b->rayX=(int)sweep;if(c<170)giant_beam_damage(sweep,top,sweep,bottom-85,10);if(c==180)giant_ring(b->parts[6].x,b->parts[6].y,16,280,64);}}
+ else if(a==2){if(f==0){if(c==80||c==140)for(int i=0;i<2;i++)if(giant_live(i)){int sign=i?-1:1;for(int n=0;n<4;n++)giant_shot(b->parts[i].x,b->parts[i].y,sign*(100+n*90),250+n*25,3);}}
+  else if(f==1){int i=b->attackSide?3:2;if(giant_live(i)){GiantPart*p=b->parts+i;float end=b->aimX+(b->attackSide?-45:45);if(c>=80&&c<110)giant_beam_damage(p->x,p->y,end,bottom,10);}}
+  else{int i=7+b->attackSide;if(giant_live(i)&&c>=90&&c<120){GiantPart*p=b->parts+i;giant_beam_damage(p->x,p->y,b->aimX,bottom,12);}if(c==150){int i=7+(1-b->attackSide);if(giant_live(i))for(int n=-3;n<=3;n++)giant_shot(b->parts[i].x,b->parts[i].y,n*130,350+absn(n)*20,3);}}}
+ else if(a==3){if(f==0){if(c==80)for(int i=0;i<2;i++)if(giant_live(i))for(int n=-1;n<=1;n++)environment_spawn(4,b->parts[i].x+n*24,b->parts[i].y+20,0,260,8,1);}
+  else if(f==1){if(c==80||c==120)for(int i=2;i<4;i++)if(giant_live(i))for(int n=-2;n<=2;n++)giant_shot(b->parts[i].x,b->parts[i].y,n*130,340+absn(n)*20,0);if(c>=150&&c<180&&absn(g.px/Q-b->aimX)<18)hurt_at(g.px/Q,player_y/Q,0,-1);}
+  else{if(c>=90&&c<125){float end=b->aimX+(c-90-17)*3;giant_beam_damage(b->parts[6].x,b->parts[6].y,end,bottom,14);}if(c==170)for(int i=7;i<9;i++)if(giant_live(i))aim(b->parts[i].x*Q,b->parts[i].y*Q,350);}}
+ else if(a==4){if(b->parts[6].visible&&f>=1&&c%60==0)giant_fan(b->parts[6].x,b->parts[6].y,280,f==2?220:140);if(f==2&&c>=120&&c<160){int y=170+(c-120)/2;if(absn(player_y/Q-y)<10&&absn(g.px/Q-b->safeX)>34)hurt_at(g.px/Q,player_y/Q,0,-1);}}
+ else{if(f==0){if(c==70||c==130)for(int i=2;i<4;i++)if(giant_live(i)){int sign=i==2?1:-1;for(int n=0;n<3;n++)giant_shot(b->parts[i].x,b->parts[i].y,sign*(180+n*80),300,0);}}
+  else if(f==1){int power=giant_live(4)+giant_live(5);if(c>=90&&c<130&&power&&absn(g.px/Q-b->aimX)<8+power*12)hurt_at(g.px/Q,player_y/Q,0,-1);if(c==170)for(int i=2;i<4;i++)if(giant_live(i))aim(b->parts[i].x*Q,b->parts[i].y*Q,320);}
+  else{if(c==70||c==130)giant_ring(b->parts[6].x,b->parts[6].y,18,320,c==70?64:192);if(c==100||c==160)for(int i=7;i<9;i++)if(giant_live(i))aim(b->parts[i].x*Q,b->parts[i].y*Q,360);}}
+}

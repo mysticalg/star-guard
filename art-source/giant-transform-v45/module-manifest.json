@@ -1,0 +1,86 @@
+{
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "records": [
+    {
+      "key": "ocean-module-2",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: a flood-control emitter: crescent teal steel drainage wing module with open orange turbine and ribbed sluice vanes. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new middle transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-01418db7-47dd-4415-b503-cd6d3611e594.png",
+      "saved": "art-source\\giant-transform-v45\\ocean-module-2.png",
+      "sha256": "bfd308b65aa1ccc4d403d41b4a4aaaab898031bfd995ca0fe09910e1767d4383"
+    },
+    {
+      "key": "ocean-module-3",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: an enormous storm capacitor: twin glowing blue electrical plates flanking an orange charging coil, steel claw-shaped fins. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new final transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-c9123831-35b6-4dc3-a291-de2af6c42ec8.png",
+      "saved": "art-source\\giant-transform-v45\\ocean-module-3.png",
+      "sha256": "a6c874c5b4358370a36843780e54f32782ca1f77d29c45dc1f75765b883693f4"
+    },
+    {
+      "key": "hive-module-2",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: an exposed bulbous violet brood sac in an amber chitin cradle, living ribbed tether roots, organic vulnerable node, not a metal gun. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new middle transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-ce8b3b7e-beed-4fa1-b4df-76c3e2aaf34e.png",
+      "saved": "art-source\\giant-transform-v45\\hive-module-2.png",
+      "sha256": "da8eac3551cd9ce950feafc58808976c58497d8315e05dbdc34adff72d8441e0"
+    },
+    {
+      "key": "hive-module-3",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: a hooked long amber scythe attack limb with thick living chitin base and purple articulated tendons, large curved blade. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new final transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-bcc66568-ea0c-47e6-83e7-3e3259016262.png",
+      "saved": "art-source\\giant-transform-v45\\hive-module-3.png",
+      "sha256": "86c605ba0725668e26bd5fa8521f19ab23c7230280edc4e69ed22c277606f901"
+    },
+    {
+      "key": "crystal-module-2",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: a deployed silver mechanical mirror wing plate with irregular violet crystalline facets and a luminous prism joint. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new middle transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-3e610c70-02ed-4eee-b529-66b1a8137d8e.png",
+      "saved": "art-source\\giant-transform-v45\\crystal-module-2.png",
+      "sha256": "2c996b734259173ef57db013c748abc7e42f19e101a32f8df29dcabefc5586fc"
+    },
+    {
+      "key": "crystal-module-3",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: an asymmetric heavy siege beam emitter arm, long faceted violet spear lens nested in silver armour, a weapon module. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new final transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-75f792b9-42f1-4743-8d56-eaa2acbf6e5b.png",
+      "saved": "art-source\\giant-transform-v45\\crystal-module-3.png",
+      "sha256": "e7c34bbb1c590670af4535538f5a2b1cab26d26f4c577d515a7a13975486b2a6"
+    },
+    {
+      "key": "ice-module-2",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: an exposed orange-red furnace cooling vent with silver-blue structural braces and broken ice rims. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new middle transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-62f43f57-238b-4380-bab5-258637cfd164.png",
+      "saved": "art-source\\giant-transform-v45\\ice-module-2.png",
+      "sha256": "187f0c0278360d0a5fd7a25c23226cebe1cdf25c34e89e6b46781830c681180d"
+    },
+    {
+      "key": "ice-module-3",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: a long twin-barrel shard rail cannon mounted on an angular ice-blue mechanical arm with frosted fins. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new final transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-66cf4f31-2737-4841-8d32-21cfd92e3f54.png",
+      "saved": "art-source\\giant-transform-v45\\ice-module-3.png",
+      "sha256": "a9e853b344ab6d6bbe5ace7d76d9fe4134817e245050057a5d6f1fe7216f4b55"
+    },
+    {
+      "key": "factory-module-2",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: an exposed industrial power bus with two glowing orange coils, thick insulated cables, gunmetal braces and power connectors. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new middle transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-66669fa9-a1c5-4553-9f43-11d117adc202.png",
+      "saved": "art-source\\giant-transform-v45\\factory-module-2.png",
+      "sha256": "ffc7b756f9a4aff23adfee0fd00e519442496c35e0cd96d1242074e802a03e14"
+    },
+    {
+      "key": "factory-module-3",
+      "ref": "C:\\Users\\drhoo\\AppData\\Local\\Temp\\star-guard-fps-investigation\\ready-fix\\Assets\\journeys\\giant-hulls-v2.png",
+      "prompt": "Use case stylized-concept. One standalone destructible boss attachment sprite for Star Guard: a heavy industrial four-barrel battery module with articulated gunmetal hinges and orange power conduits. Match corresponding boss identity and rich prerendered arcade shading of reference atlas. Actual transparent background. Complete individual module, not a complete vessel and not a sheet. Directly overhead orthographic, front towards bottom. Full centred silhouette with at least 18 percent transparent padding, every fin/blade fully in frame. Texture includes detailed shadowed material, clear silhouette, cohesive polished game artwork. No text, frame, ground, detached debris or cast outer shadow. No rectangle filling the transparent space. This is new final transformation anatomy/equipment, distinctly different from circular generic floating turrets.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-0a252828-fc5a-478a-9ca5-2ac1a3d23324.png",
+      "saved": "art-source\\giant-transform-v45\\factory-module-3.png",
+      "sha256": "9df38b92d7ac36ded191c31d7d89cedcfc600265034a9ba60092aebb86b2e5da"
+    }
+  ]
+}

@@ -1,0 +1,339 @@
+[
+  {
+    "key": "ocean-form-2",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      14,
+      36,
+      484,
+      247
+    ],
+    "source_sha256": "632db4f06e049fe9d9c920663ed513c30ab5ddbf5e4b1693d53250f9cda8ce5a"
+  },
+  {
+    "key": "hive-form-2",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      526,
+      15,
+      484,
+      289
+    ],
+    "source_sha256": "16592d7728231bdac7957ca2cc6e966cd77c167cfdd21c2061e73b20fdddc396"
+  },
+  {
+    "key": "crystal-form-2",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      1038,
+      38,
+      484,
+      243
+    ],
+    "source_sha256": "d3935397a7c39f49e1ff40dc33a4d9dbb26223d8b0b2d50c480b3d2196a9033e"
+  },
+  {
+    "key": "ice-form-2",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      1550,
+      23,
+      484,
+      273
+    ],
+    "source_sha256": "f5118e2c365ac2767fb05a08d3f67bf39487c81caa4c904ff27ca136f506eb8a"
+  },
+  {
+    "key": "factory-form-2",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      2574,
+      32,
+      484,
+      255
+    ],
+    "source_sha256": "e79aa496c6340755cbdd22af891643d326d85017a65aefcd97938cab4a6d2936"
+  },
+  {
+    "key": "ocean-form-3",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      14,
+      348,
+      484,
+      264
+    ],
+    "source_sha256": "33135bdd806a2534839debebe57308628e1c5f4258a59c588909825fa5a67cc2"
+  },
+  {
+    "key": "hive-form-3",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      526,
+      345,
+      484,
+      269
+    ],
+    "source_sha256": "9fb5031803adf5f065ed04c92f9b377cab4d8ef0fee6033ae87088b5f9489b99"
+  },
+  {
+    "key": "crystal-form-3",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      1038,
+      338,
+      484,
+      284
+    ],
+    "source_sha256": "6441ccaf33d1084b9ef67cfc60d1c7ed6ee54c9ffb95ed816a75bada169a816b"
+  },
+  {
+    "key": "ice-form-3",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      1550,
+      344,
+      484,
+      271
+    ],
+    "source_sha256": "4c108e0b5d1284a7a28de7486d028b70451516828670c9cdb2f9df5e9f0f1db6"
+  },
+  {
+    "key": "factory-form-3",
+    "atlas": "giant-forms-v45.png",
+    "rect": [
+      2574,
+      351,
+      484,
+      257
+    ],
+    "source_sha256": "f58880f76f10afec9517f9b6279d880301868ccf1110987622c0e332c69c51d8"
+  },
+  {
+    "key": "worm-head-form-1",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      71,
+      76,
+      242,
+      232
+    ]
+  },
+  {
+    "key": "worm-body-form-1",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      524,
+      71,
+      104,
+      242
+    ]
+  },
+  {
+    "key": "worm-tail-form-1",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      897,
+      71,
+      125,
+      242
+    ]
+  },
+  {
+    "key": "worm-head-form-2",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      26,
+      398,
+      331,
+      356
+    ]
+  },
+  {
+    "key": "worm-body-form-2",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      480,
+      398,
+      191,
+      356
+    ]
+  },
+  {
+    "key": "worm-tail-form-2",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      842,
+      398,
+      236,
+      356
+    ]
+  },
+  {
+    "key": "worm-head-form-3",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      14,
+      792,
+      356,
+      336
+    ]
+  },
+  {
+    "key": "worm-body-form-3",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      455,
+      782,
+      242,
+      356
+    ]
+  },
+  {
+    "key": "worm-tail-form-3",
+    "atlas": "worm-forms-v45.png",
+    "rect": [
+      831,
+      782,
+      258,
+      356
+    ]
+  },
+  {
+    "key": "ocean-module-2",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      14,
+      46,
+      228,
+      163
+    ],
+    "source_sha256": "bfd308b65aa1ccc4d403d41b4a4aaaab898031bfd995ca0fe09910e1767d4383"
+  },
+  {
+    "key": "hive-module-2",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      277,
+      14,
+      214,
+      228
+    ],
+    "source_sha256": "da8eac3551cd9ce950feafc58808976c58497d8315e05dbdc34adff72d8441e0"
+  },
+  {
+    "key": "crystal-module-2",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      526,
+      48,
+      228,
+      159
+    ],
+    "source_sha256": "2c996b734259173ef57db013c748abc7e42f19e101a32f8df29dcabefc5586fc"
+  },
+  {
+    "key": "ice-module-2",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      782,
+      32,
+      228,
+      192
+    ],
+    "source_sha256": "187f0c0278360d0a5fd7a25c23226cebe1cdf25c34e89e6b46781830c681180d"
+  },
+  {
+    "key": "factory-module-2",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      1294,
+      26,
+      228,
+      203
+    ],
+    "source_sha256": "ffc7b756f9a4aff23adfee0fd00e519442496c35e0cd96d1242074e802a03e14"
+  },
+  {
+    "key": "ocean-module-3",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      14,
+      289,
+      228,
+      189
+    ],
+    "source_sha256": "a6c874c5b4358370a36843780e54f32782ca1f77d29c45dc1f75765b883693f4"
+  },
+  {
+    "key": "hive-module-3",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      291,
+      270,
+      186,
+      228
+    ],
+    "source_sha256": "86c605ba0725668e26bd5fa8521f19ab23c7230280edc4e69ed22c277606f901"
+  },
+  {
+    "key": "crystal-module-3",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      535,
+      270,
+      210,
+      228
+    ],
+    "source_sha256": "e7c34bbb1c590670af4535538f5a2b1cab26d26f4c577d515a7a13975486b2a6"
+  },
+  {
+    "key": "ice-module-3",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      783,
+      270,
+      225,
+      228
+    ],
+    "source_sha256": "a9e853b344ab6d6bbe5ace7d76d9fe4134817e245050057a5d6f1fe7216f4b55"
+  },
+  {
+    "key": "factory-module-3",
+    "atlas": "giant-modules-v45.png",
+    "rect": [
+      1294,
+      290,
+      228,
+      188
+    ],
+    "source_sha256": "9df38b92d7ac36ded191c31d7d89cedcfc600265034a9ba60092aebb86b2e5da"
+  },
+  {
+    "file": "giant-forms-v45.png",
+    "sha256": "806742948cec5e6d78c08ae2b6bdbb7b8d3c2a236031202eef7cce3d7e3d5820",
+    "size": [
+      3072,
+      640
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "worm-forms-v45.png",
+    "sha256": "4a3f9a6a9992bf8f5e487677fe50d7269dc6f7b03b5c7d9ba672dfceb553703c",
+    "size": [
+      1152,
+      1152
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "giant-modules-v45.png",
+    "sha256": "f6ca768b77cbe23c0fef6f96269436041dbb1463a9605e72733a1eefc33b2293",
+    "size": [
+      1536,
+      512
+    ],
+    "mode": "RGBA"
+  }
+]

@@ -23,6 +23,7 @@ static void environment_lightning(void){int cycle=ex.env.timer%600;if(cycle==400
 static void storm_hurt(int amount){if(g.shield||ex.invincibleTicks||ex.phoenixTicks)return;g.barrier-=ship_armour_damage(amount);g.shield=25;pc_hit_sound(0,4,g.px/Q);if(g.barrier<=0){g.shield=0;g.barrier=0;hurt_at(g.px/Q,player_y/Q,0,-1);}}
 static void environment_weapon_hit(EnvironmentHazard*h,int damage,int weapon){int rolled=player_hit_roll(damage*player_attack_scale(weapon)/100*variant_damage_scale(weapon)/100,h->x/Q,h->y/Q);if(weapon==8){h->dotTicks=150;h->dotDamage=rolled/10;if(!h->dotClock)h->dotClock=50;rolled=rolled*70/100;}h->wound+=rolled;h->hp-=h->wound/100;h->wound%=100;}
 static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,cycle=t%180;
+ if(!ex.giant.active){
  if(kind==ENV_HIVE||kind==ENV_ROOT||kind==ENV_BEAST){if(cycle>=100&&cycle<140)ex.env.warning=kind==ENV_BEAST?5:4;if(cycle==140){for(int side=-1;side<=1;side+=2){int y=80+(t/180*41)%100,x=side<0?tunnel_left(y)+10:tunnel_right(y)-10;int dx=g.px/Q-x,dy=player_y/Q-y,d=absn(dx)+absn(dy);if(!d)d=1;environment_spawn(kind==ENV_BEAST?3:1,x,y,dx*300/d,dy*300/d,7,1);}}}
  if((kind==ENV_BEAST||kind==ENV_TEETH||(kind==ENV_MOUTH&&t>350))&&cycle>=80&&cycle<130)ex.env.warning=19;
  if((kind==ENV_BEAST||kind==ENV_TEETH||(kind==ENV_MOUTH&&t>350))&&cycle>=130){ex.env.warning=20;if(t%25==0){int x=30+(t/25*67)%260;if(absn(x-160)>44)environment_spawn(13,x,24,0,700,5,1);}if(absn(g.px/Q-160)>65&&g.tick%50==0)storm_hurt(3);for(int e=0;e<MAXE;e++){Obj*o=g.enemies+e;if(o->on&&absn(o->x/Q-160)>65&&g.tick%50==0&&(!enemy_guarded(o)||o->type==4)){damage_enemy(o,250);if(o->hp<=0)killed(o);}}}
@@ -34,6 +35,7 @@ static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,c
  if(kind==ENV_ICE||kind==ENV_BLIZZARD){if(cycle==70)ex.env.strikeX=70+(t/180*71)%180;if(cycle>=70&&cycle<130)ex.env.warning=6;if(cycle==130)for(int n=-1;n<=1;n++)environment_spawn(4,ex.env.strikeX+n*22,-20-absn(n)*24,0,310,9,1);}
  if(kind==ENV_CRYSTAL&&t%110==0)environment_spawn(5,70+(t/110*61)%180,-20,0,260,13,2);
 
+ }
  for(int i=0;i<32;i++){EnvironmentHazard*h=ex.env.hazards+i;if(!h->on)continue;h->age++;if(h->type>=20&&h->type<=25){if(h->age>90){h->vx=(sn(h->age*2+i*61)*120)>>10;h->vy=h->y>170*Q?0:100;}if(!ex.empStop&&h->age%100==40)aim(h->x,h->y,280);}
   if(h->type==12){if(h->age>=120)ex.env.warning=17;if(h->age==180){int freeOrganic=0;for(int z=0;z<32;z++)freeOrganic+=ex.env.hazards[z].on&&ex.env.hazards[z].type>=9&&ex.env.hazards[z].type<=11;if(freeOrganic<10){int x=h->x/Q,y=h->y/Q;h->on=0;environment_spawn(9,x-6,y,0,220,9,2);environment_spawn(10,x+6,y,0,220,9,2);}else h->on=0;continue;}}
   if(h->type==9||h->type==10){int dx=g.px-h->x,dy=player_y-h->y,d=absn(dx)+absn(dy);if(d){h->vx=dx*380/d;h->vy=dy*380/d;}}if(h->type==11&&h->age%100==0)aim(h->x,h->y,300);h->x+=h->vx;h->y+=h->vy;int x=h->x/Q,y=h->y/Q;if(y>play_max_y()+45||x<play_min_x()-54||x>play_max_x()+54||h->age>h->life){h->on=0;continue;}if(y<24)continue;
@@ -57,12 +59,14 @@ static void environment_step(int mask){
  ex.env.timer++;if(ex.env.wallGrace)ex.env.wallGrace--;ex.env.warning=0;ex.env.empActive=0;
  for(int w=0;w<9;w++){int using=w==g.weapon&&(mask&4)&&!g.weaponHeat[w]&&!ex.empDisable;ex.fatigue[w]=clamp(ex.fatigue[w]+(using?1:-3),0,300);}
  pod_contact_step();int kind=journey_kind();if(kind==ENV_BASE)bombing_step();
+ if(!ex.giant.active){
  if(kind==ENV_WALL)asteroid_wall_step(mask);
  if(kind==ENV_SKY||kind==ENV_OCEAN||kind==ENV_ASH)environment_lightning();
  if(kind==ENV_EM||kind==ENV_REACTOR){int c=ex.env.timer%700;if(c>=400&&c<500)ex.env.warning=2;if(c>=500&&c<600){ex.env.empActive=1;ex.env.warning=3;if(g.tick%25==0){g.energy=clamp(g.energy-2,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-2,0,100);}}if(c==500)pc_emp_sound(1,160);}
  if(kind==ENV_OCEAN){int t=ex.env.timer;if(t==500)ex.env.safeX=64+(g.wave*57)%192;if(t>=500&&t<650)ex.env.warning=7;if(t>=650&&t<1000){int y=t-700;if(absn(y-player_y/Q)<18&&absn(g.px/Q-ex.env.safeX)>44)hurt_at(g.px/Q,player_y/Q,0,-1);}}
  if(kind==ENV_TEETH||kind==ENV_ESCAPE){ex.env.warning=kind==ENV_TEETH?8:9;int y=(ex.env.timer-400)*3/5-40;if(absn(y-player_y/Q)<18&&absn(g.px/Q-160)>45){hurt_at(g.px/Q,player_y/Q,0,-1);g.px=160*Q;}if(y>player_y/Q+18&&absn(g.px/Q-160)<45)ex.env.escaped=1;}
  if(kind==ENV_REACTOR){if(g.tick%100==0){g.energy=clamp(g.energy-1,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-1,0,100);}if(!ex.env.warning&&g.tick%100<30)ex.env.warning=18;}
+ }
  environmental_hazards();parasites_step();giant_step(mask);
  if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&!section_has_boss()&&g.clock>=section_duration()&&g.groups>=section_wave_target()&&!route_occupied()&&!hostile_rounds_remain()&&((kind!=ENV_TEETH&&kind!=ENV_ESCAPE)||ex.env.escaped))journey_advance();
 }
