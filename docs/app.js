@@ -5,7 +5,7 @@ const previewArgs=new URLSearchParams(location.search).get('preview')?.split('.'
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');motionPreference.addEventListener('change',()=>globalThis.Module?._web_motion?.(motionPreference.matches?1:0));
 const canvas=document.querySelector('#canvas'),startButton=document.querySelector('#start'),statusText=document.querySelector('#status');
 
-const music=document.querySelector("#music"),musicVolume=document.querySelector("#music-volume");music.volume=.3;const musicFader=StarMusic.createFader(music);musicVolume.oninput=()=>{musicFader.target(+musicVolume.value/100);};
+const music=document.querySelector("#music"),musicVolume=document.querySelector("#music-volume");const musicVolumeKey='starGuardMusicVolume';let initialMusicVolume=60;try{const saved=localStorage.getItem(musicVolumeKey);if(saved!==null&&saved.trim()!==''&&Number.isFinite(Number(saved)))initialMusicVolume=Math.max(0,Math.min(100,Number(saved)));}catch{}musicVolume.value=String(initialMusicVolume);music.volume=initialMusicVolume/100;const musicFader=StarMusic.createFader(music);musicVolume.oninput=()=>{musicFader.target(+musicVolume.value/100);try{localStorage.setItem(musicVolumeKey,musicVolume.value);}catch{}};
 
 let ready=false,assetFailed=false,started=false,touchActive=false;
 
