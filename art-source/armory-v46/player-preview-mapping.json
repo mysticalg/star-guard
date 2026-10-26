@@ -1,0 +1,35 @@
+[
+  {
+    "chassis": 0,
+    "source": "Assets/journeys/player-ships-v2.png",
+    "uv_index": 0,
+    "crop": [
+      17,
+      17,
+      237,
+      239
+    ]
+  },
+  {
+    "chassis": 1,
+    "source": "Assets/journeys/player-ships-v2.png",
+    "uv_index": 6,
+    "crop": [
+      560,
+      17,
+      720,
+      240
+    ]
+  },
+  {
+    "chassis": 2,
+    "source": "Assets/journeys/player-ships-v2.png",
+    "uv_index": 12,
+    "crop": [
+      1040,
+      18,
+      1264,
+      237
+    ]
+  }
+]

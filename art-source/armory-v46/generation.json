@@ -1,0 +1,110 @@
+[
+  {
+    "name": "ship-0",
+    "prompt": "Use case: stylized-concept. Original premium painted science-fiction arcade hangar ship portrait: Vector: balanced agile blue silver twin engine fighter, delta wings. Three-quarter view nose left, ship wholly visible centered with generous margin, cool midnight navy hangar behind, warm small practical lights, photoreal hand-painted game key art. Wide landscape composition, no text, no UI, no logos. Cinematic but clear silhouette.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-e55481bb-30d4-45ec-9353-426e7f6ffbd6.png",
+    "sha256": "ef29782a2329fd564d07197809ee3e9c91adf4a160c2f2df83d2682cb7521c58"
+  },
+  {
+    "name": "ship-1",
+    "prompt": "Use case: stylized-concept. Original premium painted science-fiction arcade hangar ship portrait: Jade: sleek emerald green energy fighter, long swept wings. Three-quarter view nose left, ship wholly visible centered with generous margin, cool midnight navy hangar behind, warm small practical lights, photoreal hand-painted game key art. Wide landscape composition, no text, no UI, no logos. Cinematic but clear silhouette.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-61bac067-2db7-4c9b-9bdb-582b3cf6c90c.png",
+    "sha256": "13f1f6a37c5da391a648e59be34ed6173e2c14643f103150c0120756c2dad4c5"
+  },
+  {
+    "name": "ship-2",
+    "prompt": "Use case: stylized-concept. Original premium painted science-fiction arcade hangar ship portrait: Bastion: red gunmetal heavy armoured broad fighter, chunky twin nacelles. Three-quarter view nose left, ship wholly visible centered with generous margin, cool midnight navy hangar behind, warm small practical lights, photoreal hand-painted game key art. Wide landscape composition, no text, no UI, no logos. Cinematic but clear silhouette.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-ff029e29-c8e6-4717-9621-76e2115c4bb5.png",
+    "sha256": "95146ebb2edfd7d4af2a7670e8e02f69b13e7b926abe90f8aca172c55999950a"
+  },
+  {
+    "name": "weapon-0",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Pulse: precise cyan pulse cannon. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-a7c861a4-01ae-46d5-b2a7-17c0fe64115b.png",
+    "sha256": "e328729d614f15adaf7b02ca6a2664c8183e1e14d3639c40caeb380cb0d1b33a"
+  },
+  {
+    "name": "weapon-1",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Spread: three-barrel fan spread cannon. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-3e631ee6-51e0-4be3-bc91-721caa7bb9f8.png",
+    "sha256": "ae0d1544aa5ac220c25eb37d1be78f9cd13828ee8e1323bf340998b00d05b715"
+  },
+  {
+    "name": "weapon-2",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Rapid: compact rotary rapid-fire blaster. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-2d2c7835-5ce5-47aa-9859-b97516eca5e8.png",
+    "sha256": "496eb1475394d3bbbe80182c148254517985faf2aef853474d1fb5570f58c095"
+  },
+  {
+    "name": "weapon-3",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Death Laser: long powerful red laser emitter. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-15407b4c-dc47-4900-8b7e-3a29d6497ac6.png",
+    "sha256": "f6635b2d62de1143a070f4fdfad22b62b690d210a800cd27d868d0d50bb38bba"
+  },
+  {
+    "name": "weapon-4",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Heatseeker: guided rocket launcher. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-2cf4311f-20cf-46c4-bac7-28bb018566aa.png",
+    "sha256": "e8b29b9bca8e60f9bad14b7133ce767e2a7e8f472187c5ec4d27636380d4d74a"
+  },
+  {
+    "name": "weapon-5",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Triple Death Laser: three linked red laser emitters. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-35d58ce1-a53f-4fb8-91a5-fde56e76a51e.png",
+    "sha256": "0b9748dd3693c4a4f04418ccb38bb9f76c5adf400e4e9da0e2a95d080e5f3b5d"
+  },
+  {
+    "name": "weapon-6",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Ricochet: violet crystalline ricochet cannon. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-79d6978f-7e06-454c-8db7-fa70a0392870.png",
+    "sha256": "e329e180768191d1f8605ab9d893cbf7b2854f5dd7576ac3cc4823fc1a1085ff"
+  },
+  {
+    "name": "weapon-7",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, Bouncing Laser: lime green laser prism launcher. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-d5e04cd9-bd2b-469f-bd1c-33880509225d.png",
+    "sha256": "ffd1aaa13def70d4ad29dae002027264dbce1256cfd3110b842fdd015b01f7bd"
+  },
+  {
+    "name": "weapon-8",
+    "prompt": "Use case: stylized-concept. Single original sci-fi weapon inventory icon, EMP Storm: electric blue tesla coil orb projector. Beautiful detailed painted gun hardware, three-quarter view pointing upper right, graphite metal with luminous energy accents. Whole object isolated on genuine transparent background, centered generous 15% clear padding, square canvas. No text, no frame, no UI, no floor, no decorative sparks near edges. Consistent premium spacecraft armory style, readable at 64 pixels.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-293e7075-1f51-4c4b-837b-9230c4edb030.png",
+    "sha256": "6635bb3c93953b588c6f0dda3fa2a31055c918819169d092d85cc1a3c616a51a"
+  },
+  {
+    "name": "armour",
+    "prompt": "Single premium painted sci-fi inventory icon: layered gunmetal spaceship armour plate with subtle cyan light, compact shield silhouette, centered full object, generous padding, genuine transparent background, no text no UI.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-f1e6498d-f8d3-4871-bd76-a1aa28e7c79b.png",
+    "sha256": "c3262bcfda5ae6981c073baa0b7792be641c963fdab15ab8b169f9026d04259a"
+  },
+  {
+    "name": "resources",
+    "prompt": "Premium sci-fi inventory icon set on genuine transparent background. Three separate objects equally spaced in one horizontal row, each entirely in its own third with wide clear gaps: left a gold credit coin, middle cyan mechanical salvage gear cluster, right a violet glowing rare energy core crystal. No text, no frame, no UI, consistent detailed painted game art.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-0de0b266-67df-4ac4-893a-10416e0d92b2.png",
+    "sha256": "04813aaf9e2d7bdf9a31ebea0b59335e8de27c43c90d201ca79d2b82d752b2e6"
+  },
+  {
+    "name": "concept-hangar",
+    "prompt": "1280x800 native desktop browser game UI concept for STAR GUARD. Midnight navy orbital hangar, elegant condensed ivory typography, cyan fine borders. Header STAR GUARD, nav HANGAR LOADOUT ROUTE MAP SHOP WORKSHOP PILOT / SAVE. Resources PILOT LV1 /300 CREDITS /0 PARTS /0 RARE CORES. Three large ship selection cards VECTOR blue balanced armour100% endurance100%, JADE green energy armour80% endurance120%, BASTION red heavy armour130% endurance85%. Actual lavish painted ships fully visible in each card. VECTOR selected cyan edge. Below cards visible render detail dropdown Balanced/Cinematic/Ultra and prominent LAUNCH MISSION. Footer controls MOVE ARROWS / FIRE SPACE / NOVA B. Strong usable proportions with generous card images. No invented game stats or extra screens.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-125bc9aa-409e-4b29-80a1-45927b9aae2b.png",
+    "sha256": "1fe085b06d80a927031bb1f9f4b5bbf43cb345142002566ba319b96a4446ca41"
+  },
+  {
+    "name": "concept-armory",
+    "prompt": "1280x900 native desktop STAR GUARD workshop UI concept. Polished dark navy orbital hangar metal background, ivory condensed headings, cyan thin borders, coherent detailed painted inventory art. Header nav HANGAR LOADOUT ROUTE MAP SHOP WORKSHOP PILOT/SAVE with WORKSHOP selected. Resource strip LV1 /300 CREDITS /0 PARTS /0 RARE CORES. Nine real weapon family selectors exactly PULSE, SPREAD, RAPID, DEATH LASER, HEATSEEKER, TRIPLE DEATH LASER, RICOCHET, BOUNCING LASER, EMP STORM with painted hardware icons. Three selected-family cards Focus Pulse, Flow Pulse, Breaker Pulse, with View, Equip, Forge controls. Selected Focus: damage100%, energycost100%, projectilespeed100%. Flow damage94 energycost92 projectilespeed108. Breaker damage108 energycost106 speed94. Right/below selected item inspector with small landscape firing range showing actual topdown blue fighter firing straight cyan pulse pellets upwards at practice targets; Pause Preview button, Rank1 / Silent loop. Existing owned Focus recipe 100credits+10parts/LV3; unowned Flow 80credits+9parts/LV1. Armour row below Standard/Laminate/Bulwark/Adaptive. Visible LAUNCH MISSION below. This is a functional equipment UI, no fictional range bars or generic weapon categories.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-8df1e62b-bf2f-4389-ace3-29ef3efa4af1.png",
+    "sha256": "046cf07d3f4ba84d34eed8789e1366c1ee075ae5c3febc81b7e15c54f1bd3778"
+  },
+  {
+    "name": "concept-shop",
+    "prompt": "Native 1280x900 desktop STAR GUARD shop UI concept matching midnight navy orbital hangar, detailed painted equipment, thin cyan borders, ivory condensed headings. Topnav HANGAR LOADOUT ROUTE MAP SHOP WORKSHOP PILOT/SAVE with SHOP selected. PILOT LV1, 300 CREDITS, 0 PARTS, 0 RARE CORES. Nine illustrated family buttons exactly PULSE, SPREAD, RAPID, DEATH LASER, HEATSEEKER, TRIPLE DEATH LASER, RICOCHET, BOUNCING LASER, EMP STORM. Three Pulse item cards: Vector Focus Pulse owned/equipped, BASIC LOANER NOT FOR SALE; Vector Flow Pulse notowned, damage94%, energycost92%, speed108%, BUY120credits; Vector Breaker Pulse notowned, damage108%, energycost106%, speed94%, BUY180credits. View selector, Equip button appropriately disabled unlessowned. Right selected item large painted gun inspector. Armour row Standard protection100 cost100; Laminate protection110 energycost103 buy220credits LV1; Bulwark protection125 energycost106 buy400credits LV3; Adaptive protection115 energycost100 buy1800credits LV10. Bottom render detail + LAUNCH MISSION. Professional functional shop, no fabricated inventory, no range bars, no marketing.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-0d851abf-de06-41ce-a843-a6c5dc0f015a.png",
+    "sha256": "57bf3237caacfc7ec5271caf992efb181594ffacbea7ff86cf528a6af0bb4e2f"
+  },
+  {
+    "name": "concept-board",
+    "prompt": "Use case: ui-mockup. Design a polished desktop browser arcade game UI called STAR GUARD. Create one presentation image containing three clearly separated 1280x800 interface concepts: opening hangar, shop, workshop. Cohesive midnight navy metal, restrained cyan, warm ivory condensed typography, fine borders, original richly painted science fiction art. Opening: compact STAR GUARD header, nav HANGAR / LOADOUT / ROUTE MAP / SHOP / WORKSHOP / PILOT, three large selectable ship cards in a row showing blue balanced fighter VECTOR, green sleek fighter JADE, red heavy fighter BASTION. Truthful stats Balanced armour100 endurance100, Energy armour80 endurance120, Armour armour130 endurance85. Strong visible LAUNCH MISSION below cards, render detail control. Shop: resource strip LV1 /300 CREDITS /0 PARTS /0 CORES, nine compact illustrated weapon family selectors, three variant cards Focus Flow Breaker with painted gun icons and Buy / Equip controls, armour below. Workshop: same family selector and three variant cards on left, right selected weapon inspector and small landscape firing-range animation canvas with a ship firing at target; Pause preview button; exact resource recipe and Forge control. Avoid dense tiny text. Beautiful usable real game UI, not marketing. Include mobile inset showing stacked cards and reachable launch. Concept only.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-2c05e593-035f-498a-b0df-8ee8462e1495.png",
+    "sha256": "41852f99520f462a010f9156a19eb800e5323045391ff5200e6f7188f3c94561"
+  }
+]

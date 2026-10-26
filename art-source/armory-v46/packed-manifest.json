@@ -1,0 +1,132 @@
+[
+  {
+    "name": "ship-0",
+    "source_alpha": [
+      255,
+      255
+    ],
+    "source_top_bottom_alpha_max": 255,
+    "web_file": "docs\\images\\armory-v46\\ship-0.webp"
+  },
+  {
+    "name": "ship-1",
+    "source_alpha": [
+      255,
+      255
+    ],
+    "source_top_bottom_alpha_max": 255,
+    "web_file": "docs\\images\\armory-v46\\ship-1.webp"
+  },
+  {
+    "name": "ship-2",
+    "source_alpha": [
+      255,
+      255
+    ],
+    "source_top_bottom_alpha_max": 255,
+    "web_file": "docs\\images\\armory-v46\\ship-2.webp"
+  },
+  {
+    "name": "weapon-0",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-0.webp"
+  },
+  {
+    "name": "weapon-1",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-1.webp"
+  },
+  {
+    "name": "weapon-2",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-2.webp"
+  },
+  {
+    "name": "weapon-3",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-3.webp"
+  },
+  {
+    "name": "weapon-4",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 1,
+    "web_file": "docs\\images\\armory-v46\\weapon-4.webp"
+  },
+  {
+    "name": "weapon-5",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 1,
+    "web_file": "docs\\images\\armory-v46\\weapon-5.webp"
+  },
+  {
+    "name": "weapon-6",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-6.webp"
+  },
+  {
+    "name": "weapon-7",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-7.webp"
+  },
+  {
+    "name": "weapon-8",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\weapon-8.webp"
+  },
+  {
+    "name": "armour",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_file": "docs\\images\\armory-v46\\armour.webp"
+  },
+  {
+    "name": "resources",
+    "source_alpha": [
+      0,
+      255
+    ],
+    "source_top_bottom_alpha_max": 0,
+    "web_files": [
+      "docs/images/armory-v46/credits.webp",
+      "docs/images/armory-v46/parts.webp",
+      "docs/images/armory-v46/cores.webp"
+    ]
+  }
+]

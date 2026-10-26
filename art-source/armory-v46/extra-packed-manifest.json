@@ -1,0 +1,74 @@
+[
+  {
+    "name": "armour-0",
+    "source_sha256": "09d3e3481d8e2cb3aedfbea1498803441655ad0f7e1e3562218d19c287a630e3",
+    "resized_object_dimensions": [
+      174,
+      224
+    ],
+    "packed_canvas_dimensions": [
+      256,
+      256
+    ]
+  },
+  {
+    "name": "armour-1",
+    "source_sha256": "91a7128891a6240729dc9525fbb160eeaec5f9824ef37e8c5f137a5a9dffce56",
+    "resized_object_dimensions": [
+      224,
+      211
+    ],
+    "packed_canvas_dimensions": [
+      256,
+      256
+    ]
+  },
+  {
+    "name": "armour-2",
+    "source_sha256": "2c06be1b1e843343035c935fc9ed2ee630dd10473848a38ca70b109f3a656c23",
+    "resized_object_dimensions": [
+      224,
+      176
+    ],
+    "packed_canvas_dimensions": [
+      256,
+      256
+    ]
+  },
+  {
+    "name": "armour-3",
+    "source_sha256": "9a8266018074c64bfcf28fbd82005d03483990c0e25a6105f5855928922b683a",
+    "resized_object_dimensions": [
+      224,
+      201
+    ],
+    "packed_canvas_dimensions": [
+      256,
+      256
+    ]
+  },
+  {
+    "name": "range-deck",
+    "source_sha256": "f19a312ce69b40e9aae2eefac14c0b678ecdb8ab22b216e93232b3837524a2eb",
+    "resized_object_dimensions": [
+      960,
+      640
+    ],
+    "packed_canvas_dimensions": [
+      960,
+      640
+    ]
+  },
+  {
+    "name": "range-target",
+    "source_sha256": "1f4bd63339b8ea96da5d0d982e77dad01ba583896cea0bbb5954ed53cae6309f",
+    "resized_object_dimensions": [
+      222,
+      224
+    ],
+    "packed_canvas_dimensions": [
+      256,
+      256
+    ]
+  }
+]

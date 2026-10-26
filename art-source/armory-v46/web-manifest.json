@@ -1,0 +1,327 @@
+[
+  {
+    "file": "docs/images/armory-v46/armour-0.webp",
+    "bytes": 12500,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "0e539a207b5f657eef14be5ec1632871c69985c8916557c81e9933d674f5b459"
+  },
+  {
+    "file": "docs/images/armory-v46/armour-1.webp",
+    "bytes": 12734,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "f98f74edb27d9fb6d16cb5e0df9085b5eec021278693308ead2807264c4eb86a"
+  },
+  {
+    "file": "docs/images/armory-v46/armour-2.webp",
+    "bytes": 12800,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "dd120d75903343d096061abbcc4b2c2c31d87de0552dc1f0b99035f26157d470"
+  },
+  {
+    "file": "docs/images/armory-v46/armour-3.webp",
+    "bytes": 15936,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "63b58db3abb320eeda0d58c2609340a1d98e845d26909341bad47f73a9b8da89"
+  },
+  {
+    "file": "docs/images/armory-v46/armour.webp",
+    "bytes": 12492,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "22b5286c99c69fe76bf5e4c64e8f8645f5afb28602ce555c0ae3a14e4b694cfc"
+  },
+  {
+    "file": "docs/images/armory-v46/cores.webp",
+    "bytes": 3732,
+    "dimensions": [
+      96,
+      96
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "ac177b255d71e959d953c715d24e5f02428773a9527df538bd64e9c954704b3d"
+  },
+  {
+    "file": "docs/images/armory-v46/credits.webp",
+    "bytes": 4540,
+    "dimensions": [
+      96,
+      96
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "620c88d757a9e96ff2a0eaac8ca25ceaa17c70d62ef545124c83d4c3f32ca061"
+  },
+  {
+    "file": "docs/images/armory-v46/parts.webp",
+    "bytes": 3638,
+    "dimensions": [
+      96,
+      96
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "21d59b3e0a0a40f5460ddfcbf3c48a28405130838036cd450f171a530d72e326"
+  },
+  {
+    "file": "docs/images/armory-v46/player-0.webp",
+    "bytes": 13104,
+    "dimensions": [
+      100,
+      101
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "8f8a84c4dfccad29f0cd5c7b28b0bbd529e3ea5e38b866d5be668f30af234b9e"
+  },
+  {
+    "file": "docs/images/armory-v46/player-1.webp",
+    "bytes": 15998,
+    "dimensions": [
+      86,
+      120
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "4664215e2126d1354c3795953fc1549c8fbaa839fb7cb7fc87c985b4da92a945"
+  },
+  {
+    "file": "docs/images/armory-v46/player-2.webp",
+    "bytes": 11698,
+    "dimensions": [
+      100,
+      98
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "3d3d5af401dd5dfeabd530c52c7f4e26a3fa1ecbcce9859040755b7cd62abbd5"
+  },
+  {
+    "file": "docs/images/armory-v46/range-deck.webp",
+    "bytes": 86404,
+    "dimensions": [
+      960,
+      640
+    ],
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "sha256": "701038e49a802af154899f2f6b4febad4dc088af57500196248c0d2015f32052"
+  },
+  {
+    "file": "docs/images/armory-v46/range-target.webp",
+    "bytes": 13732,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "f260f0a339b2e5ca6c90b734e5b3803d7a43ec26444f626c9d04d7229da7cee8"
+  },
+  {
+    "file": "docs/images/armory-v46/ship-0.webp",
+    "bytes": 85354,
+    "dimensions": [
+      720,
+      480
+    ],
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "sha256": "c9799f482944447d88946413ce61c4f2e0678b1399014d787451090b08a2f120"
+  },
+  {
+    "file": "docs/images/armory-v46/ship-1.webp",
+    "bytes": 68050,
+    "dimensions": [
+      720,
+      360
+    ],
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "sha256": "0c60a7f0c5381f19014a3f9901be87668b93dd3d38e8e15e6df0c239c001bfa4"
+  },
+  {
+    "file": "docs/images/armory-v46/ship-2.webp",
+    "bytes": 76454,
+    "dimensions": [
+      720,
+      405
+    ],
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "sha256": "2b31f7c07c2a00c6caeac10d432a4936bc939fbebf0c330690d4c5b7670c9712"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-0.webp",
+    "bytes": 11592,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "6f9bd04bb5f355d4b2fb65a1f63dd6639793bba66e32a5e1498492ce1db86460"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-1.webp",
+    "bytes": 17232,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "fb43edbd5aeb762d207e873d8efb0b27146700f3175ac008520d4f9b6f6c43a3"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-2.webp",
+    "bytes": 13546,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "f73d190b685d47644789a77c96e82f05421c6ed77e32c8fe8da8eff3d814af09"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-3.webp",
+    "bytes": 10804,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "cdf6f5c48c24ebdc47ee814314b8ca924fefd8b3578d84fb8dcbc970a360a5b3"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-4.webp",
+    "bytes": 13200,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "0c70eb107d10d9d2d2a8b01991d021698e9d4dca2dffcdab4259033310504473"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-5.webp",
+    "bytes": 16740,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "c9ad6e82bf7de79240a113301efc0e0ed4aee4c84baa237003aeb35af070f35a"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-6.webp",
+    "bytes": 11694,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "89d848944fd343996170e9eec77fa16044493c143cfc3cc45dc1cc5dc6335637"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-7.webp",
+    "bytes": 12014,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "c065ede07cf4a3690380cc56cc989ca75953132654297d047c14e1e4e83a6c33"
+  },
+  {
+    "file": "docs/images/armory-v46/weapon-8.webp",
+    "bytes": 14066,
+    "dimensions": [
+      256,
+      256
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "867af2221b526cd3c07fae70e69570b407395ad377911195cb0f5a0d9a644d35"
+  }
+]

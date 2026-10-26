@@ -1,0 +1,38 @@
+[
+  {
+    "name": "armour-0",
+    "prompt": "Original premium painted sci-fi inventory icon. Standard: a simple thin steel hull panel with four bolts, silver and slate blue. Show a compact physical spacecraft armour plate in three quarter view, entire object centered with generous transparent margin, clean detailed metal, readable distinctive silhouette at 96px. Genuine transparent background, no text, no numbers, no UI, no shadow floor.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-ea875985-b922-47a3-9865-307c30e7ad5b.png",
+    "sha256": "09d3e3481d8e2cb3aedfbea1498803441655ad0f7e1e3562218d19c287a630e3"
+  },
+  {
+    "name": "armour-1",
+    "prompt": "Original premium painted sci-fi inventory icon. Laminate: overlapping layered silver plates and visible composite seams. Show a compact physical spacecraft armour plate in three quarter view, entire object centered with generous transparent margin, clean detailed metal, readable distinctive silhouette at 96px. Genuine transparent background, no text, no numbers, no UI, no shadow floor.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-ddc3b6c7-ca62-48ff-b4cc-9be1fab57089.png",
+    "sha256": "91a7128891a6240729dc9525fbb160eeaec5f9824ef37e8c5f137a5a9dffce56"
+  },
+  {
+    "name": "armour-2",
+    "prompt": "Original premium painted sci-fi inventory icon. Bulwark: a thick heavy dark steel reinforced hull slab with large ribs and armour blocks. Show a compact physical spacecraft armour plate in three quarter view, entire object centered with generous transparent margin, clean detailed metal, readable distinctive silhouette at 96px. Genuine transparent background, no text, no numbers, no UI, no shadow floor.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-3e7fb38a-44bd-47db-a49b-8662b21838f2.png",
+    "sha256": "2c06be1b1e843343035c935fc9ed2ee630dd10473848a38ca70b109f3a656c23"
+  },
+  {
+    "name": "armour-3",
+    "prompt": "Original premium painted sci-fi inventory icon. Adaptive: a futuristic hexagonal adaptive hull panel with luminous cyan-violet cells. Show a compact physical spacecraft armour plate in three quarter view, entire object centered with generous transparent margin, clean detailed metal, readable distinctive silhouette at 96px. Genuine transparent background, no text, no numbers, no UI, no shadow floor.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-0cd3bd8f-6a37-43b2-99bd-f184b12aea66.png",
+    "sha256": "9a8266018074c64bfcf28fbd82005d03483990c0e25a6105f5855928922b683a"
+  },
+  {
+    "name": "range-deck",
+    "prompt": "Original premium painted science fiction game environment. Strict orthographic TOP DOWN VIEW looking directly down onto an empty spaceship weapons testing deck. Wide rectangular dark graphite metal floor, subtle worn panel seams, narrow raised walls along left and right edges, small warm practical lamps on walls, restrained cyan light strips. Center floor mostly open dark matte metal for readability of bright weapons. No ships, no characters, no targets, no weapons, no projectiles, no text, no UI. Landscape 3:2 composition, crisp detailed game background, coherent orbital hangar art.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-77962417-3d00-44ce-ad38-26fbde31de31.png",
+    "sha256": "f19a312ce69b40e9aae2eefac14c0b678ecdb8ab22b216e93232b3837524a2eb"
+  },
+  {
+    "name": "range-target",
+    "prompt": "Single original premium painted sci fi practice target drone sprite, strict top down view. Compact circular gunmetal disc drone with four short radial armoured fins and a red-white central physical target disc, tiny amber side lamps. Flat readable spacecraft game sprite, entire object visible centered with generous 20 percent clear transparent padding. Genuine transparent background, no text, no UI, no floor, no shadow background.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-8d4fab38-4178-4d4b-8f2d-d8427161a427.png",
+    "sha256": "1f4bd63339b8ea96da5d0d982e77dad01ba583896cea0bbb5954ed53cae6309f"
+  }
+]
