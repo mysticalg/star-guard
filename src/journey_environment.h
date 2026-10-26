@@ -18,7 +18,7 @@ static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,c
  if(kind==ENV_BLIZZARD&&cycle>=70&&cycle<130)ex.env.warning=6;
  if(kind==ENV_BEAST&&t%300==40){int side=(t/300)&1,y=65,x=side?tunnel_right(y)-12:tunnel_left(y)+12;environment_spawn(12,x,y,0,90,14,4);}
  if(kind==ENV_BEAST&&t%220==1)environment_spawn(9+(t/220)%3,100+(t/220*47)%120,-12,0,260,9,2);
- if(kind==ENV_WRECK||kind==ENV_REACTOR||kind==ENV_ESCAPE){if(t%100==0)environment_spawn(2,48+(t/100*67)%224,-18,((t/100)%3-1)*35,240,11,2);if(g.wave!=1&&kind!=ENV_ESCAPE)environment_lightning();}
+ if(kind==ENV_WRECK||kind==ENV_REACTOR||kind==ENV_ESCAPE){if(t%100==0)environment_spawn(2,48+(t/100*67)%224,-18,((t/100)%3-1)*35,240,11,2);}
  if(kind==ENV_ICE||kind==ENV_BLIZZARD){if(cycle==70)ex.env.strikeX=70+(t/180*71)%180;if(cycle>=70&&cycle<130)ex.env.warning=6;if(cycle==130)for(int n=-1;n<=1;n++)environment_spawn(4,ex.env.strikeX+n*22,-20-absn(n)*24,0,310,9,1);}
  if(kind==ENV_CRYSTAL&&t%110==0)environment_spawn(5,70+(t/110*61)%180,-20,0,260,13,2);
 
@@ -50,7 +50,7 @@ static void environment_step(int mask){
  pod_contact_step();int kind=journey_kind();if(kind==ENV_BASE)bombing_step();
  if(!ex.giant.active){
  if(kind==ENV_WALL)asteroid_wall_step(mask);
- if(g.wave!=1&&!weather_front()&&(kind==ENV_SKY||kind==ENV_OCEAN||kind==ENV_ASH))environment_lightning();
+
  if(kind==ENV_EM||kind==ENV_REACTOR){int c=ex.env.timer%1500;if(c>=350&&c<500)ex.env.warning=2;if(c>=500&&c<1000){ex.env.empActive=1;ex.env.warning=3;if(g.tick%25==0){g.energy=clamp(g.energy-2,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-2,0,100);}}if(c==500)pc_emp_sound(1,160);}
  if(kind==ENV_OCEAN){int t=ex.env.timer;if(t==500)ex.env.safeX=64+(g.wave*57)%192;if(t>=500&&t<650)ex.env.warning=7;if(t>=650&&t<1000){int y=t-700;if(absn(y-player_y/Q)<18&&absn(g.px/Q-ex.env.safeX)>44)hurt_at(g.px/Q,player_y/Q,0,-1);}}
  if(kind==ENV_TEETH||kind==ENV_ESCAPE){ex.env.warning=kind==ENV_TEETH?8:9;int y=journey_exit_gate(ex.env.timer);if(absn(y-player_y/Q)<18&&absn(g.px/Q-160)>45){hurt_at(g.px/Q,player_y/Q,0,-1);g.px=160*Q;}if(y>player_y/Q+18&&absn(g.px/Q-160)<45)ex.env.escaped=1;}

@@ -24,4 +24,8 @@ static void giant_move_root(void){Giant*b=&ex.giant;if(b->archetype==4){b->rootX
  float xx,yy;giant_motion_point(c+1,period,b->archetype,b->diveX,b->diveY,b->sweepSide,&xx,&yy);float dx=xx-b->rootX,dy=yy-b->rootY,target=0;
  if(c>=70&&c<215&&fabsf(dx)+fabsf(dy)>.01f)target=clamp((int)(-atan2f(dx,dy)*57.2957795f*.32f),b->archetype==3?-8:-18,b->archetype==3?8:18);
  b->rootAngle+=(target-b->rootAngle)*.16f;
+ float speed=hypotf(b->rootX-b->previousRootX,b->rootY-b->previousRootY)*giant_world_scale();
+ if(speed>1.2f&&g.tick%3==0&&!b->morph){GiantEcho *e=b->echoes+b->echoHead;b->echoHead=(b->echoHead+1)%12;*e=(GiantEcho){b->rootX,b->rootY,b->rootAngle,g.tick,b->form};}
+ if((c==110||c==155||c==270)&&speed>.5f){float scale=giant_world_scale();b->flybySerial++;b->flybyTick=g.tick;b->flybyX=(int)(160+b->rootX*scale);b->flybyY=(int)(100+b->rootY*scale);b->flybyDX=(int)((b->rootX-b->previousRootX)*scale*50);b->flybyDY=(int)((b->rootY-b->previousRootY)*scale*50);pc_giant_flyby(b->flybyX,b->flybyY,b->flybyDX,b->flybyDY,b->archetype);}
+
 }

@@ -19,7 +19,7 @@ static int boss_entrance_ticks(int mission){return (10+5*(mission-1))*50;}
 #define MAX_NOVA_BOMBS 5
 /* Deterministic 11 drops per 80 kills: 10% more than the former 1-in-8 cadence. */
 #define NSTARS 144
-typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide,strength,openingTicks;} Obj;
+typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide,strength,openingTicks,weatherHitUntil;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
@@ -55,6 +55,7 @@ static void cavern_steer_hazard(EnvironmentHazard*,int,int);
 static void cavern_prepare_obstacle(Obj*);
 static void cavern_steer_obstacle(Obj*,int,int);
 extern void read_mouse(int*);
+extern void pc_giant_flyby(int,int,int,int,int);
 
 extern void sprite_plot(int,int,int), sprite_bank(void*), rowcopy(void*,const void*,int), sound(int,int,int,int);
 extern void sound_slide(int,int,int,int),sound_mod(int,int,int);

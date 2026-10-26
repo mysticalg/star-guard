@@ -23,7 +23,9 @@ static void lighting_sources(void){
  if(ex.bombAge){float r=ex.bombRadius,fade=fminf(1,(61-ex.bombAge)/10.0f);world_light(ex.bombX,ex.bombY,25+r*.4f,(SDL_FColor){.45f,.75f,1,fade});for(int i=0;i<8;i++){float a=i*PI/4;world_light(ex.bombX+cosf(a)*r,ex.bombY+sinf(a)*r*.8f,27,(SDL_FColor){.4f,.7f,1,fade*(reducedMotion?.8f:1.6f)});}}
  if(ex.empPulse)world_light(ex.empX/(float)Q,ex.empY/(float)Q,25+(22-ex.empPulse)*6,(SDL_FColor){.45f,.7f,1,ex.empPulse/22.0f});
  Weather *weather=&ex.env.weather;
- if(weather->stage==2&&(weather->kind==WEATHER_STORM||weather->kind==WEATHER_ION)){int clock=lightning_clock()%lightning_period();if(clock>=35&&clock<53){int seed=lightning_seed(),center=weather->safeX+((seed&1)?100:-100);for(int i=0;i<=STORM_BOLT_SEGMENTS;i+=2)world_light(storm_bolt_x(center,seed,i),storm_bolt_y(i),65,(SDL_FColor){.7f,.85f,1,reducedMotion?.8f:1.8f});}}
+ if(weather->stage==2&&(weather->kind==WEATHER_STORM||weather->kind==WEATHER_ION)){int clock=lightning_clock()%lightning_period();if(clock>=35&&clock<53){int seed=lightning_seed(),center=weather->safeX+((seed&1)?100:-100);for(int i=0;i<=STORM_BOLT_SEGMENTS;i+=2)world_light(storm_bolt_x(center,seed,i),storm_bolt_y(i),65,(SDL_FColor){weather->kind==WEATHER_ION?.85f:.7f,weather->kind==WEATHER_ION?.35f:.85f,1,reducedMotion?.8f:1.8f});}}
+ /* Real hot/cold/acid actors reveal nearby world surfaces in their biome colours. */
+ for(int i=0,lit=0;i<48&&lit<12&&worldLightCount<WORLD_LIGHT_MAX;i++){WeatherActor *a=ex.env.weather.actors+i;if(!a->on||a->age<0||a->type==WEATHER_ASTEROID)continue;SDL_FColor c=a->type==WEATHER_FIRE?(SDL_FColor){1,.45f,.12f,1.2f}:a->type==WEATHER_ICE?(SDL_FColor){.4f,.7f,1,.8f}:(SDL_FColor){.45f,1,.18f,.7f};world_light(a->x/(float)Q,a->y/(float)Q,24+a->r,c);lit++;}
  for(int i=0;i<64&&worldLightCount<WORLD_LIGHT_MAX;i++){Wave *w=waves+i;if(w->life<=0||w->age>=w->life)continue;float fade=1-w->age/w->life;world_light(w->x,w->y,18+w->radius*.48f,(SDL_FColor){1,.72f,.36f,fade*(reducedMotion?1:2)});}
 }
 static void lighting_apply(int cameraActive){

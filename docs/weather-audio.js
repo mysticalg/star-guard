@@ -25,10 +25,10 @@ window.WeatherAudio=(()=>{
   currentKind=kind;booms=booms.filter(b=>context.currentTime<b.end);
   gain.gain.setTargetAtTime(!paused&&stage===2?[0,0,.008,.018,.012,.02,.018][kind]||0:0,context.currentTime,paused?.025:.25);
   filter.frequency.setTargetAtTime([200,260,200,950,2400,550,1500][kind]||200,context.currentTime,.25);
-  const rain=!paused&&s(77)>0;rainGain.gain.setTargetAtTime(rain?.18*(booms.length?.6:1)*(speaking?.55:1):0,context.currentTime,paused?.025:.35);
+  const rain=!paused&&s(77)>0;rainGain.gain.setTargetAtTime(rain?(stage===2&&kind===1?.18:.06)*(booms.length?.6:1)*(speaking?.55:1):0,context.currentTime,paused?.025:.35);
   thunderBus.gain.setTargetAtTime(speaking?.56:.7,context.currentTime,.08);
   const strike=s(10412),strikeTick=s(10413);if(tick<lastTick){pending=null;lastStrike=0;}if(paused)stopBooms();
-  if(!paused&&strike&&strike!==lastStrike&&tick>lastTick)pending={at:strikeTick+15};
+  if(!paused&&kind===1&&strike&&strike!==lastStrike&&tick>lastTick)pending={at:strikeTick+15};
   if(pending&&!paused&&tick>=pending.at&&buffers.length){
    const variant=cursor++%buffers.length,source=context.createBufferSource(),volume=context.createGain();source.buffer=buffers[variant];volume.gain.value=.7;
    if(booms.length>=3){const oldest=booms.shift();oldest.volume.gain.setTargetAtTime(0,context.currentTime,.04);try{oldest.source.stop(context.currentTime+.18)}catch{}}

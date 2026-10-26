@@ -16,10 +16,10 @@ static void rain_drop_at(int i,float seconds,float angle,int reduced,RainDrop*d)
   .alpha=(.14f+depth*.16f+variation*.10f)*(reduced?.6f:1),.speed=speed};
 }
 static void draw_storm_rain(void){
- renderedRain=0;int kind=journey_kind();float strength=kind==ENV_OCEAN?1:kind==ENV_SKY&&ex.phase==10?.55f+.45f*earth_cloud_cover():0;
+ renderedRain=0;int kind=journey_kind();float strength=kind==ENV_OCEAN?.2f:kind==ENV_SKY&&ex.phase==10?.1f+.1f*earth_cloud_cover():0;
  if(ex.env.weather.kind==WEATHER_STORM&&ex.env.weather.stage==2)strength=1.35f;
  if(!strength||!g.fx)return;
- int count=quality==2?720:quality==1?420:220;if(reducedMotion)count/=3;
+ int count=(int)((quality==2?720:quality==1?420:220)*fminf(1,.25f+strength*.6f));if(reducedMotion)count/=3;
  float clock=visualTick*.02f,angle=flight_view_angle();rainClockSample=clock;
  SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);
  for(int pass=0;pass<2;pass++){

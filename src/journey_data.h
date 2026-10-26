@@ -18,12 +18,13 @@ typedef struct{int x,y,life;} CritNotice;
 typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound,damageUntil;} EnvironmentHazard;
 enum { WEATHER_NONE,WEATHER_STORM,WEATHER_ASTEROID,WEATHER_ACID,WEATHER_ION,WEATHER_FIRE,WEATHER_ICE };
 typedef struct{int on,type,x,y,oldX,oldY,vx,vy,r,hp,age;} WeatherActor;
-typedef struct{int kind,stage,left,safeX,strikeX,strikeSerial,strikeTick,strikeLegacy,serial,playerHits,enemyHits,bossHits,blasts,recoveryGiven;WeatherActor actors[48];} Weather;
+typedef struct{int kind,stage,left,safeX,strikeX,strikeSerial,strikeTick,strikeLegacy,serial,playerHits,enemyHits,bossHits,blasts,recoveryGiven,interceptions;WeatherActor actors[48];} Weather;
 typedef struct{Weather weather;int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 #define WORM_SEGMENTS 168
 typedef struct{float x,y,angle;int visible;} WormSegment;
-typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick,form,oldForm,morph,formAge,transformSerial,attackKind,attackClock,attackSerial,aimX,aimY,safeX,attackSide,escortWaves,addMask;float zoom,scale,rootX,rootY;int openingTicks,openingTotal,growthTicks,growthShieldSerial,sweepCycle,sweepForm,sweepSide,sweepPhase,cueTicks,sweepSerial;float rootAngle,previousRootX,previousRootY,previousRootAngle,previousScale,diveX,diveY,morphRootX,morphRootY,morphRootAngle,morphScale;int previousPartX[9],previousPartY[9],previousPartAngle[9],previousPartW[9],previousPartH[9],woundForm[9],woundValid[9];float woundLX[9],woundLY[9];GiantPart parts[9];WormSegment worm[WORM_SEGMENTS];} Giant;
+typedef struct{float x,y,angle;int tick,form;} GiantEcho;
+typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick,form,oldForm,morph,formAge,transformSerial,attackKind,attackClock,attackSerial,aimX,aimY,safeX,attackSide,escortWaves,addMask;float zoom,scale,rootX,rootY;int openingTicks,openingTotal,growthTicks,growthShieldSerial,sweepCycle,sweepForm,sweepSide,sweepPhase,cueTicks,sweepSerial;float rootAngle,previousRootX,previousRootY,previousRootAngle,previousScale,diveX,diveY,morphRootX,morphRootY,morphRootAngle,morphScale;int previousPartX[9],previousPartY[9],previousPartAngle[9],previousPartW[9],previousPartH[9],woundForm[9],woundValid[9];float woundLX[9],woundLY[9];GiantPart parts[9];WormSegment worm[WORM_SEGMENTS];GiantEcho echoes[12];int echoHead,flybySerial,flybyTick,flybyX,flybyY,flybyDX,flybyDY;} Giant;
 static int mission_phase(int),mission_index(int),journey_kind(void),journey_depth(void),section_final(void),section_has_boss(void),section_wave_target(void),section_duration(void),environment_exclusive(void),custom_environment(void);
 
 static void salvage_flush(void);
