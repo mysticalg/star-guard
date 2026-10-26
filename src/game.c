@@ -33,7 +33,7 @@ int player_y;
 #include "expansion_state.h"
 #include "terrain_state.h"
 static int cavern_phase(int phase){return phase==5||phase==2||phase==15||(phase==ex.phase&&journey_kind()==ENV_WRECK)||(ex.travel&&phase==ex.oldPhase&&ex.oldKind==ENV_WRECK);}
-static int flight_side_mode(void){if(terrain.active&&journey_kind()==ENV_WALL&&terrain.sideOverride>=0)return terrain.sideOverride;if(ex.giant.active||journey_kind()==ENV_BASE)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
+static int flight_side_mode(void){/* Storm Coast stays vertical across all sections and encounters. */if(g.wave==1)return 0;if(terrain.active&&journey_kind()==ENV_WALL&&terrain.sideOverride>=0)return terrain.sideOverride;if(ex.giant.active||journey_kind()==ENV_BASE)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
 static int cavern_turn_pending(void){return (ex.phase==2||ex.phase==15)&&ex.cavernLeg<2&&g.groups>=4*(ex.cavernLeg+1);}
 extern void pc_sprite(int,float,float);
 extern void pc_equipment_sprite(int,float,float,float);
