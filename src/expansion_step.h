@@ -11,11 +11,13 @@ static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj
 static void hazard(int,int,int);
 static int tunnel_center(int);
 static int tunnel_lane(int,int);
+static int tunnel_left(int),tunnel_right(int),tunnel_visible(int);
+#include "floor_mount.h"
 #include "enemies.h"
 static int formation_type(void){static const int table[17][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14},{12,14,18},{15,19,25},{20,21,15},{13,18,17},{19,16,25}};if(g.groups==7)return 26;if(g.groups%9==8)return 25;if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,16)][g.groups%3];}
 static void hazard(int type,int x,int y){Obj*o=slot(ex.obstacles,MAXH);if(o){o->type=type;o->x=x*Q;o->y=y*Q;o->vx=0;o->vy=ex.phase==5?(ex.scrollSpeed>>2):type==2?230:type==3?100:160+(ex.scrollSpeed>>1);o->base=type==1?21:type==3?10:13;o->hp=type==3?2:8;o->phase=rnd()&255;ex.hazardSerial++;}}
 static int tunnel_center(int),tunnel_half(int),tunnel_left(int),tunnel_right(int);
-static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;o->y+=o->type==9?(ex.scrollSpeed>>2):340;y=o->y>>8;if(o->type==9)o->x=((o->phase&1)?tunnel_right(y)-9:tunnel_left(y)+9)*Q;else o->x=tunnel_lane(y,o->phase&1)*Q;if(remn(o->age,96)==64&&y>35&&y<220)aim(o->x,o->y,430);return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
+static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;if(o->type==9)floor_mount_step(o);else{o->y+=340;o->x=tunnel_lane(o->y/Q,o->phase&1)*Q;}y=o->y/Q;if(remn(o->age,96)==64&&y>35&&y<220){if(o->type==9)floor_fire(o,430);else aim(o->x,o->y,430);}return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
 static int tunnel_visible(int y);
 /* Long smooth chambers and bottlenecks, continuous across the 512-unit world wrap. */
 static int tunnel_center(int y){int w=(ex.backgroundY>>8)+y;return 160+(sn(w>>1)>>6)+(sn(w)>>7);}
@@ -25,7 +27,8 @@ static int tunnel_right(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(
 static int tunnel_island(int y,int*l,int*r){if(ex.giant.active||(custom_environment()&&journey_kind()!=ENV_CRYSTAL))return 0;int world=(ex.backgroundY>>8)+y,w=world&511,taper=w-112;if(288-w<taper)taper=288-w;int radius=clamp(taper,0,40)*(((world>>9)&1)?18:14)/40;int arena=ex.bossWarning?(100-ex.bossWarning)*256/100:ex.bossSpawned?256:0;radius=radius*(256-arena)/256;if(radius<2)return 0;int center=tunnel_center(y);*l=center-radius;*r=center+radius;return 1;}
 static int tunnel_lane(int y,int side){int l,r;if(tunnel_island(y,&l,&r))return side?(r+tunnel_right(y))/2:(tunnel_left(y)+l)/2;return tunnel_center(y);}
 static int cavern_speed(void){int w=((ex.backgroundY>>8)+(player_y>>8))&511;return w>=350&&w<448?1536:w>=112&&w<288?3072:w<96?3840:2304;}
-static void cavern_crash(int x,int y){if(custom_environment()){hurt_at(x,y,0,-1);g.px=clamp(g.px,(tunnel_left(y)+12)*Q,(tunnel_right(y)-12)*Q);return;}if(g.shield||g.active||ex.invincibleTicks||ex.phoenixTicks){hit_sparks(x,y,0,0,3);return;}g.barrier=0;hurt_at(x,y,0,0);int yy=player_y>>8,center=tunnel_center(yy);g.px=tunnel_lane(yy,(g.px>>8)>center)*Q;}
+static void cavern_crash(int x,int y){hurt_amount(x,y,0,-1,75,3);int yy=player_y/Q,l=tunnel_left(yy)+12,r=tunnel_right(yy)-12,il,ir;if(tunnel_island(yy,&il,&ir)&&g.px/Q+8>il&&g.px/Q-8<ir)g.px=tunnel_lane(yy,g.px/Q>tunnel_center(yy))*Q;g.px=clamp(g.px,l*Q,r*Q);}
+
 static void trail_point(int x,int y,int tint){Trail*t=ex.trails+ex.nextTrail;ex.nextTrail++;if(ex.nextTrail==384)ex.nextTrail=0;t->x=x;t->y=y;t->life=g.fx?15:8;t->tint=tint;}
 static void trail_segment(int x,int y,int xx,int yy,int tint){trail_point(x,y,tint);if(g.fx){trail_point((x+xx)>>1,(y+yy)>>1,tint);if(absn(xx-x)+absn(yy-y)>8*Q)trail_point((x*3+xx)>>2,(y*3+yy)>>2,tint);}}
 static int cave_projectile(Obj*o,int hostile){int x=o->x>>8,y=o->y>>8,l,r;if(y<24||y>=256||!tunnel_visible(y))return 0;l=tunnel_left(y);r=tunnel_right(y);int il,ir,island=tunnel_island(y,&il,&ir)&&x>il&&x<ir;if(x<l||x>r||island){o->on=0;hit_sparks(clamp(x,l,r),y,x<l?1:-1,0,hostile?2:3);if(o->type!=8)pc_hit_sound(ex.phase==15?3:2,o->type,x);if(o->type==7)pc_reflection_sound(ex.phase==15?3:2,0,x);return 1;}return 0;}
@@ -87,7 +90,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
  for(i=0;i<384;i++)if(ex.trails[i].life)ex.trails[i].life--;
  for(i=0;i<12;i++)if(ex.impacts[i].on&&++ex.impacts[i].age>9)ex.impacts[i].on=0;
  ex.followX[ex.followHead]=g.px;ex.followY[ex.followHead]=player_y;ex.followHead=(ex.followHead+1)&63;
- if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-5;yy<=(player_y>>8)+5;yy+=5){int l=tunnel_left(yy),r=tunnel_right(yy),il,ir;if(tunnel_island(yy,&il,&ir)&&px+6>il&&px-6<ir){cavern_crash(px,yy);break;}if(px-6<l){cavern_crash(l,yy);break;}if(px+6>r){cavern_crash(r,yy);break;}}}
+ if(tunnel_visible(player_y>>8)&&!ex.travel&&ex.phaseAge>50){int yy,px=g.px>>8;for(yy=(player_y>>8)-player_hull_ry()+2;yy<=(player_y>>8)+player_hull_ry()-2;yy+=player_hull_ry()-2){int half=yy==(player_y>>8)?player_hull_rx():player_hull_rx()*3/5;int l=tunnel_left(yy),r=tunnel_right(yy),il,ir;if(tunnel_island(yy,&il,&ir)&&px+half>il&&px-half<ir){cavern_crash(px,yy);break;}if(px-half<l){cavern_crash(l,yy);break;}if(px+half>r){cavern_crash(r,yy);break;}}}
  if(phase>=6&&phase<10&&player_y>222*Q)player_y-=Q;
  if(phase==11&&!custom_environment()&&!ex.travel)g.px=clamp(g.px,14*Q,278*Q);
  if(ch=='o')ex.optionsOn=!ex.optionsOn;

@@ -43,6 +43,6 @@ static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->timer
   if(g.beam&&(g.tick&3)==0&&p->y<player_y/Q&&beam_hits(p->x,p->y,p->w/2))giant_hit_family(i,(ex.phoenixTicks?600:120)*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);
   if(ex.bombAge==25)giant_hit_family(i,1200,-1);
   for(int n=0;n<ex.options&&n<5;n++)if(!ex.podContact[n]&&absn(option_x(n)-p->x)<p->w/2+6&&absn(option_y(n)-p->y)<p->h/2+6){giant_hit_family(i,25,0);ex.podContact[n]=20;}
-  if(absn(g.px/Q-p->x)<p->w/2+5&&absn(player_y/Q-p->y)<p->h/2+5)hurt_at(g.px/Q,player_y/Q,0,-1);
+  if(absn(g.px/Q-p->x)<p->w/2+5&&absn(player_y/Q-p->y)<p->h/2+5)hurt_amount(g.px/Q,player_y/Q,0,-1,100,2);
  }
 }

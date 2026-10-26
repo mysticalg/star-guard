@@ -74,3 +74,5 @@
 
 /* Keep upper weakpoints clear of the boss information panel. */
 #boss-hud{width:46%;left:27%;right:auto;padding:6px 9px;font-size:9px}#boss-weakness{font-size:8px;line-height:1.25}#boss-name{font-size:9px}
+
+#damage-status{position:absolute;top:79px;right:10px;max-width:55%;padding:4px 7px;background:#081421dc;border:1px solid #26465b;border-radius:4px;color:#d6edf4;font:600 11px Rajdhani,sans-serif;letter-spacing:.04em;pointer-events:none}#damage-status[data-state=hit]{color:#ffd4bf;border-color:#ff7352;background:#38151ce8}#damage-status[data-state=protected]{color:#b6e6ff;border-color:#64b6e6}
