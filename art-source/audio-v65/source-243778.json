@@ -1,0 +1,15 @@
+{
+  "author": "bastipictures",
+  "id": 243778,
+  "source_page": "https://freesound.org/people/bastipictures/sounds/243778/",
+  "download": "https://cdn.freesound.org/previews/243/243778_997601-hq.mp3",
+  "license_links": [
+    "creativecommons.org/publicdomain/zero/1.0/"
+  ],
+  "source_sha256": "712ca6556d51fe993f2338c587ab6b886af4df931eda9ae091eeaf9fc5d0c525",
+  "status": "Additional distinct recorded clap selected for authorized no-repeat rotation; primaryDaniloB explicitly accepted",
+  "license": "CC0 1.0",
+  "derivative": "docs/audio/weather-thunder-v65-2.ogg",
+  "edits": "7second excerpt at1.05s;5msin/1sout fades;48kVorbisq5; no pitch/synth layers",
+  "derivative_sha256": "dd13a25541b7560c97185a5f9cc32ac4043453c6ebb001e974ffe901606ebb99"
+}

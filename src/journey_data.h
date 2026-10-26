@@ -8,8 +8,8 @@ static const int journeyKinds[6][JOURNEY_SECTIONS_MAX]={{ENV_SKY,ENV_OCEAN,ENV_W
 static const int journeyMinis[6][JOURNEY_SECTIONS_MAX]={{10,7,11},{6,5,2},{4,-1,13,-1,15},{8,12,-1,-1,-1,16},{1,-1,-1,-1,-1,-1,-1,9,-1},{3,-1,14,0,-1,-1,-1,-1,-1,-1,-1,-1}};
 static const int journeyGiantAt[6]={2,2,4,5,7,10};
 /* Approximate whole-mission active budgets; physical cutting/objectives may extend. */
-static const int missionActiveSeconds[6]={150,180,300,420,540,720};
-static const int journeySeconds[6][JOURNEY_SECTIONS_MAX]={{50,50,50},{60,60,60},{70,45,70,45,70},{70,70,70,70,70,70},{60,60,60,60,60,60,60,60,60},{65,50,65,90,60,60,50,55,55,55,65,50}};
+static const int missionActiveSeconds[6]={180,240,360,480,600,780};
+static const int journeySeconds[6][JOURNEY_SECTIONS_MAX]={{90,45,45},{80,80,80},{90,45,90,45,90},{80,80,80,80,80,80},{70,65,65,65,65,65,65,70,70},{70,55,70,90,70,65,55,60,60,60,70,55}};
 /* Added traversal blocks do not silently increase existing enemy/miniboss HP. */
 static const int journeyDepthWeight[6][JOURNEY_SECTIONS_MAX]={{1,1,1},{1,1,1},{1,1,1,0,1},{1,1,0,0,0,1},{1,1,0,0,0,0,0,1,1},{1,0,1,1,0,1,0,0,0,0,1,1}};
 static const char*journeyNames[6]={"STORM COAST","HIVE DESCENT","SHATTERED BELT","FROZEN PASSAGE","LIVING NEBULA","REACTOR RUN"};
@@ -18,7 +18,7 @@ typedef struct{int x,y,life;} CritNotice;
 typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound,damageUntil;} EnvironmentHazard;
 enum { WEATHER_NONE,WEATHER_STORM,WEATHER_ASTEROID,WEATHER_ACID,WEATHER_ION,WEATHER_FIRE,WEATHER_ICE };
 typedef struct{int on,type,x,y,oldX,oldY,vx,vy,r,hp,age;} WeatherActor;
-typedef struct{int kind,stage,left,safeX,strikeX,serial,playerHits,enemyHits,bossHits,blasts,recoveryGiven;WeatherActor actors[48];} Weather;
+typedef struct{int kind,stage,left,safeX,strikeX,strikeSerial,strikeTick,strikeLegacy,serial,playerHits,enemyHits,bossHits,blasts,recoveryGiven;WeatherActor actors[48];} Weather;
 typedef struct{Weather weather;int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 #define WORM_SEGMENTS 168

@@ -1,8 +1,8 @@
 #include "giant_pose.h"
 #include "giant_contact.h"
 #include "giant_anchor.h"
-static int giant_opening_ticks(int mission){return (15+5*(mission-1))*50;}
-static int giant_opening_selected(int archetype){return archetype==0||archetype==2||archetype==5;}
+static int giant_opening_ticks(int mission){return boss_entrance_ticks(mission);}
+static int giant_opening_selected(int archetype){return archetype>=0&&archetype<6;}
 /* Independent collision targets; hull art is not a collision rectangle. HP uses hundredths. */
 static int giant_live(int n){return ex.giant.parts[n].hp>0;}
 static int giant_open(int n){Giant*b=&ex.giant;int c=b->timer%240;if(!b->active||b->timer<120||b->morph||b->openingTicks||b->growthTicks||!giant_live(n)||giant_add_count())return 0;

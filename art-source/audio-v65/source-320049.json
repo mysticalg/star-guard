@@ -1,0 +1,15 @@
+{
+  "author": "InspectorJ",
+  "id": 320049,
+  "source_page": "https://freesound.org/people/InspectorJ/sounds/320049/",
+  "download": "https://cdn.freesound.org/previews/320/320049_5121236-hq.mp3",
+  "license_links": [
+    "creativecommons.org/licenses/by/4.0/"
+  ],
+  "source_sha256": "12532eb9270622bf78e00b46221326e95a2ae3ee9a0c765dab61bd206a1bc3ae",
+  "status": "Additional distinct recorded clap selected for authorized no-repeat rotation; primaryDaniloB explicitly accepted",
+  "license": "CC BY 4.0",
+  "derivative": "docs/audio/weather-thunder-v65-3.ogg",
+  "edits": "7second excerpt at0.55s;5msin/1sout fades;48kVorbisq5; no pitch/synth layers",
+  "derivative_sha256": "dcfff446f8de32677d3c11b2fb412220adc052a6889b7e27e75787fcec7b77a6"
+}

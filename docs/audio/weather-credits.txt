@@ -1,0 +1,16 @@
+Bundled weather recordings, edited for Star Guard:
+Thunder Clap by DaniloSFX, Freesound672776, CC0 1.0.
+https://freesound.org/people/DaniloSFX/sounds/672776/
+Exact human-approved B excerpt:0.1..7.1s with5ms/1s fades; browserVorbis q5.
+peal of thunder close by bastipictures, Freesound243778, CC0 1.0.
+https://freesound.org/people/bastipictures/sounds/243778/
+Excerpt1.05..8.05s,5ms/1s fades, browserVorbisq5.
+Thunder, Very Close, No Rain, B.wav by InspectorJ (www.jshaw.co.uk), Freesound320049, CC BY4.0.
+https://freesound.org/people/InspectorJ/sounds/320049/
+Excerpt0.55..7.55s,5ms/1s fades, browserVorbisq5.
+Rain, Moderate, C.wav by InspectorJ (www.jshaw.co.uk), Freesound401275, CC BY4.0.
+https://freesound.org/people/InspectorJ/sounds/401275/
+Source10..34s,20s loop using4s tail/head crossfade, browserVorbisq5.
+https://creativecommons.org/publicdomain/zero/1.0/
+https://creativecommons.org/licenses/by/4.0/
+Attribution is also present in game footer. Source previews are preserved unmodified with SHA-256 receipts. No endorsement implied. Rejected candidates are not used by the game.

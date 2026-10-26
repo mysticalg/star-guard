@@ -1,0 +1,12 @@
+{
+  "title": "Rain, Moderate, C.wav",
+  "author": "InspectorJ (www.jshaw.co.uk)",
+  "source_page": "https://freesound.org/people/InspectorJ/sounds/401275/",
+  "download": "https://cdn.freesound.org/previews/401/401275_5121236-hq.mp3",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "source_type": "Official HQ preview; raw moderate rain, H1 Zoom field recording",
+  "source_sha256": "0cdf4af06a39f36d095b8466ccfee56f2efc679f5951ba0175ff1f09c8b8e555",
+  "derivative": "docs/audio/weather-rain-v65.ogg",
+  "edits": "20s looping excerpt from10..34s with4s tail/head crossfade;48kVorbis"
+}
