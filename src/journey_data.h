@@ -8,10 +8,9 @@ static const int journeyMinis[6][6]={{10,7,11},{6,5,2},{4,-1,13,15},{8,12,16},{1
 static const int journeyGiantAt[6]={2,2,3,2,2,4};
 static const char*journeyNames[6]={"STORM COAST","HIVE DESCENT","SHATTERED BELT","FROZEN PASSAGE","LIVING NEBULA","REACTOR RUN"};
 static const char*journeySections[6][6]={{"TEMPEST APPROACH","OCEAN / TIDAL FRONT","FLOODED WRECK"},{"CANOPY APPROACH","ROOT CAVERNS","THE INSECT HIVE"},{"SHATTERED APPROACH","ASTEROID WALL / CUT A PATH","DERELICT MINING SHIP","CRYSTAL MINES"},{"FROST RIDGE","WHITEOUT","ICE CAVERN"},{"ELECTROMAGNETIC FRONT","THE MAW","INSIDE THE LEVIATHAN","ESCAPE THROUGH THE TEETH"},{"HYPERLANE","ASH AND FIRE","THE WEAPONS BASE","ASSEMBLY HALLS","COLOSSUS REACTOR","FACILITY ESCAPE"}};
-typedef struct{int hp,maxHp,material,openedAt,regrow;} WallCell;
 typedef struct{int x,y,life;} CritNotice;
 typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound;} EnvironmentHazard;
-typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;WallCell wall[192];EnvironmentHazard hazards[32];} Environment;
+typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick,form,oldForm,morph,formAge,transformSerial,attackKind,attackClock,attackSerial,aimX,aimY,safeX,attackSide,escortWaves,addMask;float zoom,scale;GiantPart parts[9];} Giant;
 static int mission_phase(int),mission_index(int),journey_kind(void),journey_depth(void),section_final(void),section_has_boss(void),section_wave_target(void),section_duration(void),environment_exclusive(void),custom_environment(void);

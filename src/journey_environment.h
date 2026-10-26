@@ -1,23 +1,7 @@
 static EnvironmentHazard*environment_spawn(int type,int x,int y,int vx,int vy,int radius,int hp){for(int i=0;i<32;i++)if(!ex.env.hazards[i].on){EnvironmentHazard*h=ex.env.hazards+i;*h=(EnvironmentHazard){1,type,x*Q,y*Q,vx,vy,radius,hp,0,900};return h;}return 0;}
 #include "journey_bombing.h"
-static void environment_enter(void){int kind=journey_kind();ex.env=(Environment){.kind=kind,.safeX=160,.strikeX=160};if(kind==ENV_BASE)bombing_enter();if(kind==ENV_WALL)for(int i=0;i<192;i++){int row=i/12,material=row<5?3:row<10?2:row<13?1:0;ex.env.wall[i]=(WallCell){.hp=material+1,.maxHp=material+1,.material=material};}}
-static int wall_x(int i){return 6+(i%12)*28;}
-static int wall_y(int i){return (i/12)*28-448+ex.env.timer*3/5;}
-static int wall_remaining(void){int n=0;for(int i=0;i<192;i++)n+=ex.env.wall[i].hp>0;return n;}
-static void wall_break(int i){if(ex.env.wall[i].hp){ex.env.wall[i].hp=0;ex.env.wall[i].openedAt=ex.env.timer;ex.env.wall[i].regrow=0;ex.env.cellHits++;g.score+=15;pc_impact(wall_x(i),wall_y(i),1);pc_hit_sound(2,g.weapon,wall_x(i));}}
-static void wall_hit(int i,int damage){if(!ex.env.wall[i].hp)return;if(damage>=ex.env.wall[i].hp)wall_break(i);else{ex.env.wall[i].hp-=damage;pc_impact(wall_x(i),wall_y(i),1);}}
-static void wall_regrowth(void){for(int i=0;i<192;i++){WallCell*c=ex.env.wall+i;if(c->hp||c->material!=3||!c->openedAt)continue;int y=wall_y(i);if(y<=player_y/Q+45||absn(wall_x(i)-g.px/Q)<24&&absn(y-player_y/Q)<45){c->regrow=0;continue;}if(ex.env.timer-c->openedAt<100)continue;if(!c->regrow)c->regrow=31;if(--c->regrow==0){c->hp=c->maxHp;c->openedAt=0;}}}
-static void wall_ship_lost(void){if(ex.env.wallGrace||g.mode!=1)return;g.lives--;g.barrier=75;g.shield=100;ex.env.wallGrace=100;parasites_new_hull();burst(g.px/Q,player_y/Q,1);int safe=-1,best=10000;for(int x=20;x<=300;x+=14){int clear=1;for(int i=0;i<192;i++)if(ex.env.wall[i].hp&&absn(wall_x(i)-x)<20&&absn(wall_y(i)-230)<19){clear=0;break;}if(clear&&absn(x-g.px/Q)<best){safe=x;best=absn(x-g.px/Q);}}if(safe>=0)g.px=safe*Q;else for(int i=0;i<192;i++)if(absn(wall_x(i)-g.px/Q)<22&&absn(wall_y(i)-230)<24)wall_break(i);player_y=230*Q;if(g.lives<=0){g.mode=g.continues?3:2;g.continueTicks=450;g.continueReady=0;}}
-static void asteroid_wall_step(int mask){wall_regrowth();
- for(int i=0;i<192;i++){if(!ex.env.wall[i].hp)continue;int x=wall_x(i),y=wall_y(i);if(y<-20||y>280)continue;
-  for(int n=0;n<MAXS;n++){Obj*s=g.shots+n;if(!s->on||absn(s->x/Q-x)>18||absn(s->y/Q-y)>18)continue;int radius=s->type==9?48:s->type==4?36:0;s->on=0;wall_hit(i,s->type==9?8:s->type==4?3:1);if(radius)for(int k=0;k<192;k++)if(absn(wall_x(k)-x)+absn(wall_y(k)-y)<radius)wall_hit(k,s->type==9?8:3);break;}
-  if(g.beam&&(g.tick&3)==0&&y<player_y/Q&&beam_hits(x,y,15))wall_hit(i,1);
-  if(ex.bombAge&&bomb_reached(x,y,18))wall_break(i);
-  if(ex.env.wall[i].hp&&absn(g.px/Q-x)<20&&absn(player_y/Q-y)<19)wall_ship_lost();
- }
- ex.env.cutter=0;
- if((mask&4)&&(g.weaponHeat[g.weapon]||g.weaponEnergy[g.weapon]<2)){ex.env.cutter=1;if(g.tick%20==0){int best=-1,distance=10000;for(int i=0;i<192;i++){int dy=player_y/Q-wall_y(i);if(ex.env.wall[i].hp&&absn(wall_x(i)-g.px/Q)<20&&dy>=0&&dy<distance){best=i;distance=dy;}}if(best>=0&&distance<140)wall_break(best);}}
-}
+#include "terrain_core.h"
+static void environment_enter(void){int kind=journey_kind();ex.env=(Environment){.kind=kind,.safeX=160,.strikeX=160};terrain.active=kind==ENV_WALL;if(kind==ENV_BASE)bombing_enter();if(kind==ENV_WALL)terrain_enter();}
 static void pod_contact_step(void){for(int n=0;n<5;n++){if(ex.podContact[n])ex.podContact[n]--;if(n>=ex.options||!ex.optionsOn||ex.empDisable||ex.podContact[n])continue;int x=option_x(n),y=option_y(n);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&absn(o->x/Q-x)<13&&absn(o->y/Q-y)<13&&(!enemy_guarded(o)||o->type==4)){damage_enemy(o,o->type==4?25:60);ex.podContact[n]=20;pc_impact(x,y,3);if(o->hp<=0)killed(o);break;}}}}
 static void environment_lightning(void){int cycle=ex.env.timer%600;if(cycle==400)ex.env.strikeX=36+(ex.env.timer/600*83+g.wave*31)%248;if(cycle>=400&&cycle<475)ex.env.warning=1;if(cycle==475){int x=ex.env.strikeX;pc_emp_sound(1,x);if(absn(g.px/Q-x)<18)hurt_at(g.px/Q,player_y/Q,0,-1);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&absn(o->x/Q-x)<22){damage_enemy(o,250);if(o->hp<=0)killed(o);}}}}
 static void storm_hurt(int amount){if(g.shield||ex.invincibleTicks||ex.phoenixTicks)return;g.barrier-=ship_armour_damage(amount);g.shield=25;pc_hit_sound(0,4,g.px/Q);if(g.barrier<=0){g.shield=0;g.barrier=0;hurt_at(g.px/Q,player_y/Q,0,-1);}}
@@ -68,5 +52,5 @@ static void environment_step(int mask){
  if(kind==ENV_REACTOR){if(g.tick%100==0){g.energy=clamp(g.energy-1,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-1,0,100);}if(!ex.env.warning&&g.tick%100<30)ex.env.warning=18;}
  }
  environmental_hazards();parasites_step();giant_step(mask);
- if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&!section_has_boss()&&g.clock>=section_duration()&&g.groups>=section_wave_target()&&!route_occupied()&&!hostile_rounds_remain()&&((kind!=ENV_TEETH&&kind!=ENV_ESCAPE)||ex.env.escaped))journey_advance();
+ if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&!section_has_boss()&&g.clock>=section_duration()&&terrain_ready()&&g.groups>=section_wave_target()&&!route_occupied()&&!hostile_rounds_remain()&&((kind!=ENV_TEETH&&kind!=ENV_ESCAPE)||ex.env.escaped))journey_advance();
 }

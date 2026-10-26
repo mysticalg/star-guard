@@ -1,0 +1,22 @@
+{
+  "art-source\\wall-v48\\wall-face-0.png": {
+    "bytes": 3787436,
+    "sha256": "1b8e27a705dabbdda0b2c59b08e8298daa712619d8aa749eedeec9327eaec9cf"
+  },
+  "art-source\\wall-v48\\wall-face-1.png": {
+    "bytes": 3515322,
+    "sha256": "4b4f46f35909cf0f33316094ff1b0a09864b4a59ebc7a46fafe9007d6949d728"
+  },
+  "art-source\\wall-v48\\wall-face-2.png": {
+    "bytes": 3708758,
+    "sha256": "01a69950e180b5e0109880a23938ad9fe9978aad95f40961bd6ce1e9708b87ba"
+  },
+  "art-source\\wall-v48\\wall-face-3.png": {
+    "bytes": 3306013,
+    "sha256": "78b045c7021be399f347ddb1424fa9c77b299958b4c6eb7b20362584838b1bd8"
+  },
+  "Assets\\journeys\\wall-faces-v48.png": {
+    "bytes": 2508791,
+    "sha256": "52bf21b05f9e748b153f90568a2aed2b23b05745d9d86e6944cc7808875e4aeb"
+  }
+}

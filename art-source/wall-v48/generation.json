@@ -1,0 +1,42 @@
+[
+  {
+    "name": "wall-face-0",
+    "prompt": "Use case: stylized-concept. Original seamless repeatable 2D science fiction arcade terrain texture. dark slate asteroid rock, densely packed fine mineral grain and shallow fissures. Strict flat front-facing orthographic material surface fills every pixel edge-to-edge. Continuous opaque dense solid material, no isolated rocks, no separated clusters, no holes, no border, no cell/block grid, no floating objects. Fine irregular natural texture, subtle small relief and readable highlights, dark enough for cyan projectiles to stand out. Hand-painted premium game environment art, square texture canvas. Must tile horizontally and vertically with matching edge coverage. No text, no UI, no symbols.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-854e70bb-051c-4896-a652-492dadd8cb50.png",
+    "sha256": "1b8e27a705dabbdda0b2c59b08e8298daa712619d8aa749eedeec9327eaec9cf",
+    "source_alpha": [
+      255,
+      255
+    ]
+  },
+  {
+    "name": "wall-face-1",
+    "prompt": "Use case: stylized-concept. Original seamless repeatable 2D science fiction arcade terrain texture. pale cyan ice, tightly bonded frozen crystalline facets with fine cloudy grain. Strict flat front-facing orthographic material surface fills every pixel edge-to-edge. Continuous opaque dense solid material, no isolated rocks, no separated clusters, no holes, no border, no cell/block grid, no floating objects. Fine irregular natural texture, subtle small relief and readable highlights, dark enough for cyan projectiles to stand out. Hand-painted premium game environment art, square texture canvas. Must tile horizontally and vertically with matching edge coverage. No text, no UI, no symbols.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-3b1669ff-0eed-40af-9743-23863e05b049.png",
+    "sha256": "4b4f46f35909cf0f33316094ff1b0a09864b4a59ebc7a46fafe9007d6949d728",
+    "source_alpha": [
+      255,
+      255
+    ]
+  },
+  {
+    "name": "wall-face-2",
+    "prompt": "Use case: stylized-concept. Original seamless repeatable 2D science fiction arcade terrain texture. dark brushed spacecraft alloy, continuous welded dense metal face with scuffs and fine cracks, no panels or tiles. Strict flat front-facing orthographic material surface fills every pixel edge-to-edge. Continuous opaque dense solid material, no isolated rocks, no separated clusters, no holes, no border, no cell/block grid, no floating objects. Fine irregular natural texture, subtle small relief and readable highlights, dark enough for cyan projectiles to stand out. Hand-painted premium game environment art, square texture canvas. Must tile horizontally and vertically with matching edge coverage. No text, no UI, no symbols.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-b4c00cd4-90b3-4cef-862e-fd7bab485b17.png",
+    "sha256": "01a69950e180b5e0109880a23938ad9fe9978aad95f40961bd6ce1e9708b87ba",
+    "source_alpha": [
+      255,
+      255
+    ]
+  },
+  {
+    "name": "wall-face-3",
+    "prompt": "Use case: stylized-concept. Original seamless repeatable 2D science fiction arcade terrain texture. rich amethyst purple crystal, tightly interlocked fine crystalline facets forming one solid dense mass. Strict flat front-facing orthographic material surface fills every pixel edge-to-edge. Continuous opaque dense solid material, no isolated rocks, no separated clusters, no holes, no border, no cell/block grid, no floating objects. Fine irregular natural texture, subtle small relief and readable highlights, dark enough for cyan projectiles to stand out. Hand-painted premium game environment art, square texture canvas. Must tile horizontally and vertically with matching edge coverage. No text, no UI, no symbols.",
+    "path": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-b2c39726-06cc-47e0-8e4c-56d2d16e61c9.png",
+    "sha256": "78b045c7021be399f347ddb1424fa9c77b299958b4c6eb7b20362584838b1bd8",
+    "source_alpha": [
+      255,
+      255
+    ]
+  }
+]
