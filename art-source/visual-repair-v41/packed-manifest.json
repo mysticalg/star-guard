@@ -1,0 +1,56 @@
+[
+  {
+    "file": "Assets\\journeys\\player-ships-v2.png",
+    "size": [
+      1536,
+      768
+    ],
+    "mode": "RGBA",
+    "sha256": "5478be73b4ac744e2394058f1e5c41a898de8697d9405fd69631bdad389dd32f"
+  },
+  {
+    "file": "Assets\\journeys\\giant-hulls-v2.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "e2a78ef9be01415bff799ce1ea848da7e9481784ea9b3edc8df08b15e50b1040"
+  },
+  {
+    "file": "Assets\\journeys\\world-objects-v2.png",
+    "size": [
+      1024,
+      512
+    ],
+    "mode": "RGBA",
+    "sha256": "fa827922c5db51c433e75fe20eeb067f837289d64f00a31e1ecb138604a81d5d"
+  },
+  {
+    "file": "Assets\\modern\\boss-frames-v2.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "mode": "RGBA",
+    "sha256": "e5c586e209390f68f56de9abf2323476a893e74ae52d5bb195af26e12bda3539"
+  },
+  {
+    "file": "Assets\\journeys\\organic-parasites-v2.png",
+    "size": [
+      1024,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "5b4b6a8ced2e206c995ea91d170c9e09acb61adc674baf741ef27777c4eccaf5"
+  },
+  {
+    "file": "Assets\\journeys\\giant-worm-v2.png",
+    "size": [
+      768,
+      256
+    ],
+    "mode": "RGBA",
+    "sha256": "17551e2a93f977b636e6a8873bb4695a39992f45656d27c8028df374a35651d2"
+  }
+]

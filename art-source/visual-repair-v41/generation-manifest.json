@@ -1,0 +1,212 @@
+{
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "records": [
+    {
+      "key": "hull-ocean",
+      "prompt": "Production game art repair. Use case stylized-concept. ONE enormous teal salvage-steel ocean leviathan, chains and orange turbine lights boss hull for Star Guard. Rich polished shaded prerendered arcade artwork, directly overhead orthographic view, front towards BOTTOM. Full coherent broad silhouette with central spine and articulated lateral wings. No detached pieces, text, floor, outer shadow or background. Actual transparent background alpha. Center the entire boss with at least 15 percent transparent padding on all four sides, no clipped wings or appendages. This is the supporting HULL only: leave five dark recessed sockets, two at upper left/right, two at lower left/right, one in center for separate destructible weapons to attach. Do not paint bright cores or separate cannon turrets into these sockets. Keep surfaces detailed but silhouette strong at small game size. Authentic complex spacecraft/chitin texture, no geometric placeholders. Reference is the existing matching boss in supplied atlas; preserve theme but repair matte and silhouette.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-4fa779e6-8dde-47e2-aaaa-a88531fdfae4.png"
+    },
+    {
+      "key": "hull-hive",
+      "prompt": "Production game art repair. Use case stylized-concept. ONE enormous amber chitin hive queen with purple abdomen and hooked arthropod limbs boss hull for Star Guard. Rich polished shaded prerendered arcade artwork, directly overhead orthographic view, front towards BOTTOM. Full coherent broad silhouette with central spine and articulated lateral wings. No detached pieces, text, floor, outer shadow or background. Actual transparent background alpha. Center the entire boss with at least 15 percent transparent padding on all four sides, no clipped wings or appendages. This is the supporting HULL only: leave five dark recessed sockets, two at upper left/right, two at lower left/right, one in center for separate destructible weapons to attach. Do not paint bright cores or separate cannon turrets into these sockets. Keep surfaces detailed but silhouette strong at small game size. Authentic complex spacecraft/chitin texture, no geometric placeholders. Reference is the existing matching boss in supplied atlas; preserve theme but repair matte and silhouette.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-feb9bece-d856-4c8e-a633-dcc2c2f09993.png"
+    },
+    {
+      "key": "hull-crystal",
+      "prompt": "Production game art repair. Use case stylized-concept. ONE enormous silver alien dreadnought clad in irregular purple mineral crystals boss hull for Star Guard. Rich polished shaded prerendered arcade artwork, directly overhead orthographic view, front towards BOTTOM. Full coherent broad silhouette with central spine and articulated lateral wings. No detached pieces, text, floor, outer shadow or background. Actual transparent background alpha. Center the entire boss with at least 15 percent transparent padding on all four sides, no clipped wings or appendages. This is the supporting HULL only: leave five dark recessed sockets, two at upper left/right, two at lower left/right, one in center for separate destructible weapons to attach. Do not paint bright cores or separate cannon turrets into these sockets. Keep surfaces detailed but silhouette strong at small game size. Authentic complex spacecraft/chitin texture, no geometric placeholders. Reference is the existing matching boss in supplied atlas; preserve theme but repair matte and silhouette.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-1823f3bf-0e9b-415a-b1ec-294d5001fc54.png"
+    },
+    {
+      "key": "hull-ice",
+      "prompt": "Production game art repair. Use case stylized-concept. ONE enormous icy blue metal frozen citadel with red glowing furnace vents boss hull for Star Guard. Rich polished shaded prerendered arcade artwork, directly overhead orthographic view, front towards BOTTOM. Full coherent broad silhouette with central spine and articulated lateral wings. No detached pieces, text, floor, outer shadow or background. Actual transparent background alpha. Center the entire boss with at least 15 percent transparent padding on all four sides, no clipped wings or appendages. This is the supporting HULL only: leave five dark recessed sockets, two at upper left/right, two at lower left/right, one in center for separate destructible weapons to attach. Do not paint bright cores or separate cannon turrets into these sockets. Keep surfaces detailed but silhouette strong at small game size. Authentic complex spacecraft/chitin texture, no geometric placeholders. Reference is the existing matching boss in supplied atlas; preserve theme but repair matte and silhouette.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-70819e2f-80f1-40ed-bb6b-e3a8e164bacf.png"
+    },
+    {
+      "key": "hull-factory",
+      "prompt": "Production game art repair. Use case stylized-concept. ONE enormous charcoal industrial factory colossus with orange reactor coils and scaffold armour boss hull for Star Guard. Rich polished shaded prerendered arcade artwork, directly overhead orthographic view, front towards BOTTOM. Full coherent broad silhouette with central spine and articulated lateral wings. No detached pieces, text, floor, outer shadow or background. Actual transparent background alpha. Center the entire boss with at least 15 percent transparent padding on all four sides, no clipped wings or appendages. This is the supporting HULL only: leave five dark recessed sockets, two at upper left/right, two at lower left/right, one in center for separate destructible weapons to attach. Do not paint bright cores or separate cannon turrets into these sockets. Keep surfaces detailed but silhouette strong at small game size. Authentic complex spacecraft/chitin texture, no geometric placeholders. Reference is the existing matching boss in supplied atlas; preserve theme but repair matte and silhouette.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-89c60182-7934-44cf-b317-5c1df634a5a0.png"
+    },
+    {
+      "key": "hull-ocean-solid",
+      "prompt": "Use case precise-object-edit. Repair this Star Guard boss HULL sprite. Preserve its identity, materials, complete silhouette and directly overhead view facing down. Remove ALL five black circular weapon sockets and their protruding cannon barrels. Replace each socket/barrel area with continuous matching solid armour plates or organic chitin, no holes, no bright weapon cores. This will be a continuous supporting chassis underneath independently positioned destructible weapons in the game, so no duplicate painted weapons or sockets should remain. Make the design shorter and wider while preserving the full wings and appendages. Center the full silhouette on a truly transparent background, with 15 percent clear padding on all sides. No backdrop, floor, external glow, shadows, text or chopped edges. Keep internal dark metal. Output only one complete hull.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-906166b1-5d0d-4915-b181-0810b67794f1.png",
+      "project_source": "art-source\\visual-repair-v41\\hull-ocean-solid.png",
+      "source_sha256": "2ff14147d5bbd3ef35a465eae91914d78781a328adc259b7cf76c2cd684c0657",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-4fa779e6-8dde-47e2-aaaa-a88531fdfae4.png"
+    },
+    {
+      "key": "hull-hive-solid",
+      "prompt": "Use case precise-object-edit. Repair this Star Guard boss HULL sprite. Preserve its identity, materials, complete silhouette and directly overhead view facing down. Remove ALL five black circular weapon sockets and their protruding cannon barrels. Replace each socket/barrel area with continuous matching solid armour plates or organic chitin, no holes, no bright weapon cores. This will be a continuous supporting chassis underneath independently positioned destructible weapons in the game, so no duplicate painted weapons or sockets should remain. Make the design shorter and wider while preserving the full wings and appendages. Center the full silhouette on a truly transparent background, with 15 percent clear padding on all sides. No backdrop, floor, external glow, shadows, text or chopped edges. Keep internal dark metal. Output only one complete hull.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-cd3ab798-31b5-4602-b317-e65b89f04f1a.png",
+      "project_source": "art-source\\visual-repair-v41\\hull-hive-solid.png",
+      "source_sha256": "405273cb6326edf19c651adcbb5222e5955ca3562d13c8f35e0b77a9fbf2e003",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-feb9bece-d856-4c8e-a633-dcc2c2f09993.png"
+    },
+    {
+      "key": "hull-crystal-solid",
+      "prompt": "Use case precise-object-edit. Repair this Star Guard boss HULL sprite. Preserve its identity, materials, complete silhouette and directly overhead view facing down. Remove ALL five black circular weapon sockets and their protruding cannon barrels. Replace each socket/barrel area with continuous matching solid armour plates or organic chitin, no holes, no bright weapon cores. This will be a continuous supporting chassis underneath independently positioned destructible weapons in the game, so no duplicate painted weapons or sockets should remain. Make the design shorter and wider while preserving the full wings and appendages. Center the full silhouette on a truly transparent background, with 15 percent clear padding on all sides. No backdrop, floor, external glow, shadows, text or chopped edges. Keep internal dark metal. Output only one complete hull.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-4c1c26b6-3d6b-4a59-80c6-abce7af1ed9c.png",
+      "project_source": "art-source\\visual-repair-v41\\hull-crystal-solid.png",
+      "source_sha256": "e4677d55b8e2e05a368ab81aa3ff975f0cc66dbd9e1cefd7ad4528abb6b8ef69",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-1823f3bf-0e9b-415a-b1ec-294d5001fc54.png"
+    },
+    {
+      "key": "hull-ice-solid",
+      "prompt": "Use case precise-object-edit. Repair this Star Guard boss HULL sprite. Preserve its identity, materials, complete silhouette and directly overhead view facing down. Remove ALL five black circular weapon sockets and their protruding cannon barrels. Replace each socket/barrel area with continuous matching solid armour plates or organic chitin, no holes, no bright weapon cores. This will be a continuous supporting chassis underneath independently positioned destructible weapons in the game, so no duplicate painted weapons or sockets should remain. Make the design shorter and wider while preserving the full wings and appendages. Center the full silhouette on a truly transparent background, with 15 percent clear padding on all sides. No backdrop, floor, external glow, shadows, text or chopped edges. Keep internal dark metal. Output only one complete hull.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-671a63f3-b718-4e29-a40a-9af2b55d4941.png",
+      "project_source": "art-source\\visual-repair-v41\\hull-ice-solid.png",
+      "source_sha256": "5b76bcc3c8e1a8e8fcf5ddf1c205c377bd2d1464d2b45e5269fe3d7abd09722d",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-70819e2f-80f1-40ed-bb6b-e3a8e164bacf.png"
+    },
+    {
+      "key": "hull-factory-solid",
+      "prompt": "Use case precise-object-edit. Repair this Star Guard boss HULL sprite. Preserve its identity, materials, complete silhouette and directly overhead view facing down. Remove ALL five black circular weapon sockets and their protruding cannon barrels. Replace each socket/barrel area with continuous matching solid armour plates or organic chitin, no holes, no bright weapon cores. This will be a continuous supporting chassis underneath independently positioned destructible weapons in the game, so no duplicate painted weapons or sockets should remain. Make the design shorter and wider while preserving the full wings and appendages. Center the full silhouette on a truly transparent background, with 15 percent clear padding on all sides. No backdrop, floor, external glow, shadows, text or chopped edges. Keep internal dark metal. Output only one complete hull.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-b2aee60b-4fc7-46bd-a3eb-62e898c9c03d.png",
+      "project_source": "art-source\\visual-repair-v41\\hull-factory-solid.png",
+      "source_sha256": "4149595467b18eb465766d67df001f1308a28824d1ea6f54faca46f3a7c68641",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-89c60182-7934-44cf-b317-5c1df634a5a0.png"
+    },
+    {
+      "key": "meteor",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single jagged molten volcanic meteor, charcoal rock with orange lava fissures and a short attached tapered flame tail pointing UP. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-2f004582-0c2b-4964-8acb-22dd7e1efa04.png",
+      "project_source": "art-source\\visual-repair-v41\\meteor.png",
+      "source_sha256": "80d3a346fe28bb4e3c2993d21ea1a0488e495ccf43abf6b4f11a0ed093ddd78d"
+    },
+    {
+      "key": "wall-rock",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single chunky irregular brown-grey asteroid rock slab, rough craggy detailed stone, near-square silhouette with chipped corners. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-f4cc3803-f34a-4252-a5f7-138aa865aac4.png",
+      "project_source": "art-source\\visual-repair-v41\\wall-rock.png",
+      "source_sha256": "0eaa03879c74c11705f34d9f438df78b23c0db817ed3c8981e96b00f7bc26285"
+    },
+    {
+      "key": "wall-ice",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single chunky irregular glacial ice slab, translucent pale blue frozen crystal and frosty cracks, near-square silhouette with chipped corners. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-a9f79064-6bfa-4128-9d57-384c0762fef1.png",
+      "project_source": "art-source\\visual-repair-v41\\wall-ice.png",
+      "source_sha256": "2f80909b2fbf7c95d4e82b74ad535729e6da36bd3696c1a6f286bcb044d72421"
+    },
+    {
+      "key": "wall-metal",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single chunky damaged industrial armoured bulkhead slab, grey gunmetal plates, bolts, brass conduits, near-square silhouette with ragged edges. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-31cd113f-63bd-4a19-a714-d5a02cd0f9ab.png",
+      "project_source": "art-source\\visual-repair-v41\\wall-metal.png",
+      "source_sha256": "d7852fdc068e714c9b8a22bf28b1ac345b49bd71afdc544329d6fe846737f666"
+    },
+    {
+      "key": "wall-crystal",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single dense irregular violet crystal cluster slab with fractured mineral faces, near-square silhouette with chipped corners. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-90400f1a-a9ce-4737-8a8c-f72000f6964d.png",
+      "project_source": "art-source\\visual-repair-v41\\wall-crystal.png",
+      "source_sha256": "55d0e652733217f2f19615a5103932569dead00d29677c6327031751a541422d"
+    },
+    {
+      "key": "root",
+      "prompt": "Use case stylized-concept. ONE isolated production world sprite for polished prerendered arcade shooter Star Guard: a single gnarled twisted alien root branch with mossy bark, small green leaves, curving along an L shaped silhouette with multiple fine branch tips. Rich natural material shading, strong silhouette readable at 24 pixels. Orthographic directly overhead view. Complete entire object centered in middle 60 percent of image with 20 percent empty transparent border all sides. No other objects, floor, shadows, backdrop, lettering or atmospheric glow. Actual transparent alpha outside the solid object, no rectangles. Original coherent detailed game artwork.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-d5f83320-89d4-4a36-8a46-bbf9551444d4.png",
+      "project_source": "art-source\\visual-repair-v41\\root.png",
+      "source_sha256": "5153d796990a55d3ea297daab37bc8cefcfd962f3a724bc8c03cd53608de8290"
+    },
+    {
+      "key": "prism",
+      "prompt": "Production sprite animation sheet. ONE original silver and lavender solar angel dreadnought, angular prismatic wings with translucent violet energy panels, golden central mechanical spine miniboss spacecraft for Star Guard, polished detailed prerendered arcade game art. THREE equal cells in one horizontal row: same boss in compact, expanded and fully expanded combat forms. Nose/front points DOWN in all three directly overhead orthographic views. Each full complete silhouette independently centered within its third of the image, with at least 20 percent transparent margin all sides of each cell; no touching neighbours. No chopped wings, no floor, shadows, external glow or backdrop. Genuine transparent alpha outside the three metal/energy silhouettes. No text. Keep every solid surface, including dark machinery. Beautiful complex material shading, strong readable silhouette at 90 pixels.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-f3a73d88-de7f-448e-a2b5-c42dc720c246.png",
+      "project_source": "art-source\\visual-repair-v41\\prism.png",
+      "source_sha256": "95465d2d28e4f092cba05566b0c1deadd427484d427b12664d9086a46bf9569b"
+    },
+    {
+      "key": "isotope",
+      "prompt": "Production sprite animation sheet. ONE original black and gunmetal uranium dreadnought with serrated green crystal wings, emerald reactor and radioactive green coils miniboss spacecraft for Star Guard, polished detailed prerendered arcade game art. THREE equal cells in one horizontal row: same boss in compact, expanded and fully expanded combat forms. Nose/front points DOWN in all three directly overhead orthographic views. Each full complete silhouette independently centered within its third of the image, with at least 20 percent transparent margin all sides of each cell; no touching neighbours. No chopped wings, no floor, shadows, external glow or backdrop. Genuine transparent alpha outside the three metal/energy silhouettes. No text. Keep every solid surface, including dark machinery. Beautiful complex material shading, strong readable silhouette at 90 pixels.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-a7e0dd0d-2870-4b3a-880e-50a003963d28.png",
+      "project_source": "art-source\\visual-repair-v41\\isotope.png",
+      "source_sha256": "4ba8c3ad9f83d9401f0fcdc3c957aa3b48cae22024af6037e040da42e953eb13"
+    },
+    {
+      "key": "wave",
+      "prompt": "Production game sprite for Star Guard. One wide horizontal advancing ocean tidal-wave crest, detailed churning dark turquoise water with white curling foam, overhead view, irregular natural tapered edges. Ratio 4 wide to 1 tall, no straight rectangular boundaries. Isolated single wave, no beach or sea background. Complete entire object centered with at least 15 percent empty margin. Genuinely transparent alpha outside the object. No backdrop, floor, shadow, external glow, lettering or other objects. Richly shaded prerendered game art readable at small sizes.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-92c4a2cf-471e-4478-b2bb-a5ba3b405f50.png",
+      "project_source": "art-source\\visual-repair-v41\\wave.png",
+      "source_sha256": "2bcef631ac67406d215a32db6f44596b8be2df1934daa82b75a43fe1828008ee"
+    },
+    {
+      "key": "burrow",
+      "prompt": "Production game sprite for Star Guard. One alien fleshy worm burrow opening, oval dark cavity surrounded by thick magenta organic ribbed tissue and small green acid glands. Top-down orthographic. The center is a dark hole, outer silhouette irregular, polished detailed arcade realism. Complete entire object centered with at least 15 percent empty margin. Genuinely transparent alpha outside the object. No backdrop, floor, shadow, external glow, lettering or other objects. Richly shaded prerendered game art readable at small sizes.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-01a35e4f-7e65-417d-80e7-60aea9fb6100.png",
+      "project_source": "art-source\\visual-repair-v41\\burrow.png",
+      "source_sha256": "045b84fe0786616d4d755f96642c40e97c5f72438a2f858057f38d8213e1bd19"
+    },
+    {
+      "key": "ship-blue",
+      "prompt": "Use case background-extraction. EDIT this sprite sheet. Remove ALL the dark background AND all blue/gold atmospheric halos between/around the six spacecraft, leaving ONLY the solid metal spacecraft silhouettes with correct antialiased edges. The output MUST have genuinely empty transparent pixels between objects, not dark painted pixels or semi-transparent colored mist. Keep each spacecraft's internal dark metal, canopy, shape, and fine mechanical details intact. No shadows or glow beyond silhouettes. Move/scale each existing sprite smaller, centered within its equal 2-column x 3-row cell with 20 percent empty transparent padding on every side, so all six separate objects are fully contained and no wing touches a cell boundary. Preserve the different top and true side profiles. No text or checkerboard. Actual clean alpha cutouts required.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-b7830772-5446-4da5-9779-854a48fcccf1.png",
+      "project_source": "art-source\\visual-repair-v41\\ship-blue.png",
+      "source_sha256": "1646d82dec69221bfcfeaeefa0172dd272fc103873b527a74241db4dd054405c",
+      "reference_image": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-406e1047-61ad-40b6-917a-4fb94088a730.png"
+    },
+    {
+      "key": "ship-green",
+      "prompt": "Use case: stylized-concept. Production transparent game sprite sheet for Star Guard. ONE consistent GREEN AND BRONZE energy fighter spacecraft, narrow twin forward prongs, emerald canopy and reactor, bronze mechanical trim, paired nacelles. Richly shaded polished prerendered arcade realism, crisp silhouette readable at 32 pixels. Exactly TWO columns and THREE rows in equal cells. LEFT column genuine orthographic TOP view with nose pointing UP. RIGHT column genuine orthographic SIDE PROFILE with nose pointing RIGHT, slender fuselage and canopy visible from side, NOT rotated overhead art. Row 1 normal ship, row 2 same ship with extended gold Phoenix armour/wing blades (no flames beyond hull), row 3 matching small autonomous weapon pod in top and side views. All six full silhouettes entirely within their cells, centered with at least 18 percent blank margin on ALL sides of EACH cell. Absolutely no background, floor, shadow, checkerboard or text. Actual transparent alpha around and between every sprite. No artwork may touch a cell border.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-eb661e73-d154-4e78-abd8-7a133a4d19f0.png",
+      "project_source": "art-source\\visual-repair-v41\\ship-green.png",
+      "source_sha256": "b9eeec19aa55ab2578286245ac952e6edff3429af8be1ef670c0af9db81a99d1"
+    },
+    {
+      "key": "ship-red",
+      "prompt": "Use case: stylized-concept. Production transparent game sprite sheet for Star Guard. ONE consistent RED AND GUNMETAL heavy armour fighter spacecraft, broad stubby swept wings, ruby canopy, thick charcoal plating, red nose, paired heavy engines. Richly shaded polished prerendered arcade realism, crisp silhouette readable at 32 pixels. Exactly TWO columns and THREE rows in equal cells. LEFT column genuine orthographic TOP view with nose pointing UP. RIGHT column genuine orthographic SIDE PROFILE with nose pointing RIGHT, slender fuselage and canopy visible from side, NOT rotated overhead art. Row 1 normal ship, row 2 same ship with extended gold Phoenix armour/wing blades (no flames beyond hull), row 3 matching small autonomous weapon pod in top and side views. All six full silhouettes entirely within their cells, centered with at least 18 percent blank margin on ALL sides of EACH cell. Absolutely no background, floor, shadow, checkerboard or text. Actual transparent alpha around and between every sprite. No artwork may touch a cell border.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-7e3e1399-29f8-4b10-88d2-533b8dc5b14b.png",
+      "project_source": "art-source\\visual-repair-v41\\ship-red.png",
+      "source_sha256": "5db1ed9bd5a9406424a237d4f3fae1d10315b61a6b53bf0c9b0c369bb75b0cc3"
+    },
+    {
+      "key": "parasite-tick",
+      "prompt": "Production transparent sprite for Star Guard. one compact six-legged alien tick parasite, magenta segmented chitin, green mouthparts, overhead view, head pointing DOWN. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-ec2246b2-bc9c-4ef9-86a4-9b286b0d84d0.png",
+      "project_source": "art-source\\visual-repair-v41\\parasite-tick.png",
+      "source_sha256": "22f9768dc1a3e14fec6837139ffb44e963a698e2b24bd98c2f27969438aca538"
+    },
+    {
+      "key": "parasite-leech",
+      "prompt": "Production transparent sprite for Star Guard. one curved segmented fleshy alien leech, magenta chitin ridges and green underside, small toothed head at bottom. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-d86b19c1-368c-4bb0-b7c8-d244b124068a.png",
+      "project_source": "art-source\\visual-repair-v41\\parasite-leech.png",
+      "source_sha256": "5328ae12c9532e970cca001f5560166785a32944f75ebd6c13cc2e8b9866cc5b"
+    },
+    {
+      "key": "parasite-wing",
+      "prompt": "Production transparent sprite for Star Guard. one bat-winged alien parasite, magenta organic body, green sacs and two full leathery wings, overhead view, head pointing DOWN. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-a43f8dff-bcc6-4378-932f-20b7de4efa79.png",
+      "project_source": "art-source\\visual-repair-v41\\parasite-wing.png",
+      "source_sha256": "89e5f70ad3b098887223947322db3802c9ea3021b0c9181ce06d8a62f862b3ea"
+    },
+    {
+      "key": "parasite-egg",
+      "prompt": "Production transparent sprite for Star Guard. one swollen alien parasite egg sac, mottled magenta translucent organic membrane, glowing green larva coiled visibly inside, overhead view. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-0bf231cf-c859-4f65-9ed2-becda305fbd1.png",
+      "project_source": "art-source\\visual-repair-v41\\parasite-egg.png",
+      "source_sha256": "c3b8a9b063481bd3e81d1618e3cfdf472d1960da224bd4a5ed5d8b9fb3409e38"
+    },
+    {
+      "key": "worm-head",
+      "prompt": "Production transparent sprite for Star Guard. one giant alien worm head facing UP, magenta armoured chitin and green mouth interior, huge curved mandibles fully visible, a short tubular neck opening at bottom, overhead view. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-49649c85-c8db-4bbe-bb4e-39bb4c708d76.png",
+      "project_source": "art-source\\visual-repair-v41\\worm-head.png",
+      "source_sha256": "143401ca46c62374c97321ac2eb1b0b1ba388dfc672ec91a1c9c0425ca068834"
+    },
+    {
+      "key": "worm-body",
+      "prompt": "Production transparent sprite for Star Guard. one rounded tubular alien worm body segment, magenta ridged chitin and small green acid sacs, top-down view, tapered smoothly at both top and bottom for overlap in a chain. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-8978e19e-e20c-4140-b5eb-8f351b3f8fad.png",
+      "project_source": "art-source\\visual-repair-v41\\worm-body.png",
+      "source_sha256": "9fe4a40095112df710dfa84e907361b0dd3d0a9222afcdfbadc51e1dfd291ea3"
+    },
+    {
+      "key": "worm-tail",
+      "prompt": "Production transparent sprite for Star Guard. one curled tapering alien worm tail segment with sharp curved pale horn tip at top, magenta chitin and green sacs, matching a segmented giant worm, overhead view. Intricate polished shaded prerendered arcade realism matching dark organic alien spacecraft. Strong readable complete silhouette, centered within the middle 65 percent of a square image with generous empty transparent padding on EVERY side. No other objects, background, floor, shadow or exterior glowing haze. Actual transparent alpha around the entire silhouette. No cut off limbs or horns. No text.",
+      "source": "C:\\Users\\drhoo\\.codex\\generated_images\\01a172c3-fd35-76b3-8886-faddb5fe7f38\\exec-f0e77bcf-37dc-4e8f-9320-b5bce424a174.png",
+      "project_source": "art-source\\visual-repair-v41\\worm-tail.png",
+      "source_sha256": "f83193613ea67d41bddd98c803f74b5e8b79b64c4e437989e2b3fcb355939cf6"
+    }
+  ]
+}
