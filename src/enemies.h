@@ -1,8 +1,9 @@
-/* Eight specialist enemies. Their own age clock drives readable tells and attacks. */
+#include "aircraft_weapons.h"
+/* Specialist enemies. Their own age clock drives readable tells and attacks. */
 static int enemy_guarded(const Obj*o){return !enemy_damageable(o)||(o->type==4&&(o->age<=120||o->morph>0||o->shieldCharge>0||(o->attack>60&&o->attack<=85)))||(o->type==15&&o->age%140<85)||(o->type==18&&o->age%130>=85&&o->age%130<105);}
-static void specialist_group(int type,int formation){int n=(type>=23?4:type==19?3:type==15?4:6)+mission_pressure()/6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=enemy_hull((type==19?8:type==15?6:3)+enemy_bonus()),.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
+static void specialist_group(int type,int formation){int n=(aircraft_weapon_role(type)?3:type>=23?4:type==19?3:type==15?4:6)+mission_pressure()/6;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;*o=(Obj){.on=1,.type=type,.hp=enemy_hull((type==19?8:type==15?6:3)+enemy_bonus()),.x=(38+i*244/(n-1))*Q,.y=(-24-i*22)*Q,.base=38+i*244/(n-1),.phase=i*23+formation*41};}}
 static void ground_group(int type,int formation){for(int n=0;n<4+mission_pressure()/7;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=type,.hp=enemy_hull((type==23?5:4)+enemy_bonus()),.x=(type==23?276:273)*Q,.y=(-32-n*66-formation*8)*Q,.base=293,.phase=n*17};}}
-static void specialist_step(Obj*o){int t=o->age,x=o->x,y=o->y;
+static void specialist_step(Obj*o){if(aircraft_weapon_role(o->type)){aircraft_step(o);return;}int t=o->age,x=o->x,y=o->y;
  switch(o->type){
  case 26:if(t<65||t>260){o->y+=t>260?1100:420;}else{int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;int speed=900;o->vx=clamp(o->vx+clamp(dx*speed/d-o->vx,-40,40),-900,900);o->vy=clamp(o->vy+clamp(dy*speed/d-o->vy,-40,40),-900,900);o->x+=o->vx;o->y+=o->vy;}break;
  case 25:o->x=o->base*Q+sn(t*2+o->phase)*5;if(t<100)o->y+=360;else if(t<155)o->y+=40;else o->y-=800;if(t==105||t==145){Obj*b=bullet(o->x,o->y,0,30);if(b){b->type=t==145?6:2;if(b->type==6)b->hp=3;}pc_impact(o->x/Q,o->y/Q,1);}break;
