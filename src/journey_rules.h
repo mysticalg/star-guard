@@ -15,8 +15,8 @@ static int section_final(void){return ex.section==journeyCounts[journey_number()
 static int section_has_boss(void){int m=journey_number();return (!ex.miniDone&&journeyMinis[m][ex.section]>=0)||(journeyGiantAt[m]==ex.section&&!ex.giant.defeated);}
 static int environment_exclusive(void){int k=journey_kind();return k==ENV_WALL||k==ENV_MOUTH||k==ENV_TEETH||k==ENV_ESCAPE||k==ENV_BLIZZARD||k==ENV_ASH||k==ENV_EM||k==ENV_BASE;}
 static int custom_environment(void){int k=journey_kind();return k!=ENV_SKY&&k!=ENV_SPACE&&k!=ENV_ASH&&k!=ENV_FORTRESS;}
-static int section_wave_target(void){return environment_exclusive()?0:6;}
-static int section_duration(void){int k=journey_kind();if(k==ENV_WALL)return 1300;if(k==ENV_MOUTH)return 700;if(k==ENV_TEETH)return 900;if(k==ENV_ESCAPE)return 1200;if(k==ENV_OCEAN)return 1500;return 1400*(170-3*clamp(journey_depth()-2,0,14))/170;}
+static int section_wave_target(void){return environment_exclusive()?0:clamp(section_duration()/formation_interval()+1,4,18);}
+static int section_duration(void){if(ex.miniDone&&ex.section==journeyGiantAt[journey_number()])return 700;if(journey_number()==0){static const int coast[3]={1400,750,500};return coast[clamp(ex.section,0,2)];}int k=journey_kind();if(k==ENV_WALL)return 1300;if(k==ENV_MOUTH)return 700;if(k==ENV_TEETH)return 900;if(k==ENV_ESCAPE)return 1200;if(k==ENV_OCEAN)return 1500;return 1400*(170-3*clamp(journey_depth()-2,0,14))/170;}
 static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[clamp(g.chassis,0,2)];}
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}
@@ -29,7 +29,7 @@ static void journey_advance(void){
  ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;
 }
 static void journey_after_encounter(void){
- if(ex.encounterTier==1){ex.miniDone=1;ex.encounterTier=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;if(journeyGiantAt[journey_number()]==ex.section)return;}
+ if(ex.encounterTier==1){ex.miniDone=1;ex.encounterTier=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;if(journeyGiantAt[journey_number()]==ex.section){g.clock=g.groups=0;return;}}
  journey_advance();
 }
 static void giant_start(void);

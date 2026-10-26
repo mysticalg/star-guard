@@ -15,7 +15,7 @@ EMSCRIPTEN_KEEPALIVE void range_init(int ship,int weapon,int variant,int gear,in
 EMSCRIPTEN_KEEPALIVE void range_step(void){
  if(rangeAge++>=300)range_init(rangeShip,rangeWeapon,rangeVariant,rangeQuality,rangeArmour);
  /* Durable range targets: production guidance, hit and chain routines apply. */
- for(int i=0;i<3;i++){Obj *o=g.enemies+i;int linked=o->empLinked;*o=(Obj){.on=1,.type=0,.hp=100000,.base=130+i*30,.x=(130+i*30)*Q,.y=(120-i*18)*Q,.empLinked=linked};}
+ for(int i=0;i<3;i++){Obj *o=g.enemies+i;int linked=o->empLinked;*o=(Obj){.on=1,.type=0,.hp=100000,.entryTicks=12,.base=130+i*30,.x=(130+i*30)*Q,.y=(120-i*18)*Q,.empLinked=linked};}
  memset(g.bullets,0,sizeof(g.bullets));g.clock=-100000;ex.torpedoCool=10000;
  game_step(4,0);update_fx(.02f);
 }

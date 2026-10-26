@@ -15,7 +15,7 @@ int main(void){headless=1;int seen[17]={0},sections=0;for(int m=0;m<6;m++){V(jou
  arena(6,5);journey_advance();V(ex.campaignWon&&g.mode==2);
  arena(5,0);ex.env.timer=499;environment_step(0);V(ex.env.empActive&&player_attack_scale(0)==80);ex.fatigue[0]=300;V(player_attack_scale(0)==72);ex.env.empActive=0;V(player_attack_scale(0)==90);for(int t=0;t<60;t++)environment_step(0);V(ex.fatigue[0]==120);
  for(int chassis=0;chassis<3;chassis++){selectedShip=chassis;game_reset();V(g.chassis==chassis);g.mode=3;g.continueTicks=100;g.continueReady=0;ex.section=1;game_step(0,13);V(g.chassis==chassis&&ex.section==1&&ex.bombs==5);}
- arena(2,2);ex.options=1;ex.optionsOn=1;int x=option_x(0),y=option_y(0);g.enemies[0]=(Obj){.on=1,.x=x*Q,.y=y*Q,.hp=10};pod_contact_step();V(g.enemies[0].wound==60&&ex.podContact[0]==20);pod_contact_step();V(g.enemies[0].wound==60);
+ arena(2,2);player_y=180*Q;for(int n=0;n<64;n++){ex.followX[n]=160*Q;ex.followY[n]=180*Q;}ex.options=1;ex.optionsOn=1;int x=option_x(0),y=option_y(0);g.enemies[0]=(Obj){.on=1,.entryTicks=12,.x=x*Q,.y=y*Q,.hp=10};pod_contact_step();V(g.enemies[0].wound==60&&ex.podContact[0]==20);pod_contact_step();V(g.enemies[0].wound==60);
  /* Exercise the real section scheduler, warnings, victories and handovers end to end. */
  selectedShip=0;game_reset();g.mode=1;g.fx=0;int minis=0,giants=0,visited[6][6]={{0}},ticks=0;
  while(!ex.campaignWon&&ticks++<120000){if(ex.refit)journey_commit_refit();g.shield=100000;g.px=160*Q;player_y=230*Q;visited[g.wave-1][ex.section]=1;
