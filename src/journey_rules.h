@@ -8,6 +8,7 @@ static int giant_world_x(int x){return 160+(int)((x-160+ex.giant.rootX)*giant_wo
 static int giant_world_y(int y){return 100+(int)((y-100+ex.giant.rootY)*giant_world_scale());}
 static int journey_number(void){return clamp(g.wave-1,0,MISSION_COUNT-1);}
 static int journey_kind(void){int m=journey_number();return journeyKinds[m][clamp(ex.section,0,journeyCounts[m]-1)];}
+static int organic_context(void){int k=journey_kind();return k==ENV_ROOT||k==ENV_HIVE||k==ENV_MOUTH||k==ENV_BEAST||k==ENV_TEETH;}
 static int journey_depth(void){int depth=ex.section;for(int m=0;m<journey_number();m++)depth+=journeyCounts[m];return depth;}
 static int mission_phase(int wave){int m=clamp(wave-1,0,5);return journeyPhases[m][clamp(ex.section,0,journeyCounts[m]-1)];}
 static int mission_index(int phase){for(int m=0;m<6;m++)for(int s=0;s<journeyCounts[m];s++)if(journeyPhases[m][s]==phase)return m;return 0;}

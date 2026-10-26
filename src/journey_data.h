@@ -9,7 +9,7 @@ static const int journeyGiantAt[6]={2,2,3,2,2,4};
 static const char*journeyNames[6]={"STORM COAST","HIVE DESCENT","SHATTERED BELT","FROZEN PASSAGE","LIVING NEBULA","REACTOR RUN"};
 static const char*journeySections[6][6]={{"TEMPEST APPROACH","OCEAN / TIDAL FRONT","FLOODED WRECK"},{"CANOPY APPROACH","ROOT CAVERNS","THE INSECT HIVE"},{"SHATTERED APPROACH","ASTEROID WALL / CUT A PATH","DERELICT MINING SHIP","CRYSTAL MINES"},{"FROST RIDGE","WHITEOUT","ICE CAVERN"},{"ELECTROMAGNETIC FRONT","THE MAW","INSIDE THE LEVIATHAN","ESCAPE THROUGH THE TEETH"},{"HYPERLANE","ASH AND FIRE","THE WEAPONS BASE","ASSEMBLY HALLS","COLOSSUS REACTOR","FACILITY ESCAPE"}};
 typedef struct{int x,y,life;} CritNotice;
-typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound;} EnvironmentHazard;
+typedef struct{int on,type,x,y,vx,vy,r,hp,age,life,dotTicks,dotClock,dotDamage,wound,damageUntil;} EnvironmentHazard;
 typedef struct{int kind,timer,warning,strikeX,safeX,empActive,escaped,cutter,cellHits,wallGrace;EnvironmentHazard hazards[32];} Environment;
 typedef struct{int hp,maxHp,x,y,w,h,role,visible,angle,dotTicks,dotClock,dotDamage,damageUntil;} GiantPart;
 typedef struct{int active,defeated,timer,phase,archetype,rayX,partsDestroyed,addWaves,aoeX,aoeY,blastSerial,lastAddTick,form,oldForm,morph,formAge,transformSerial,attackKind,attackClock,attackSerial,aimX,aimY,safeX,attackSide,escortWaves,addMask;float zoom,scale,rootX,rootY;GiantPart parts[9];} Giant;

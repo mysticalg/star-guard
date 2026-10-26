@@ -82,7 +82,7 @@ static void phoenix_charge(int amount){if(!ex.phoenixTicks)ex.phoenixMeter=clamp
 static int enemy_in_view(const Obj*o){return o->x>=(play_min_x()+8)*Q&&o->x<=(play_max_x()-8)*Q&&o->y>=(play_min_y()+8)*Q&&o->y<=(play_max_y()+4)*Q;}
 static int enemy_damageable(const Obj*o){return o->type==4||(enemy_in_view(o)&&o->entryTicks>=12);}
 static int enemy_hull(int base){return base*2+1;}
-static void damage_enemy(Obj*o,int damage){if(!enemy_damageable(o))return;if(o->type==4){if(o->age<=120||o->morph>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){phoenix_charge(clamp(damage,0,o->shieldCharge)/50);o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}int oldHealth=o->hp*100-o->wound;phoenix_charge(clamp(damage,0,oldHealth)/50);o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}if(o->type==4&&o->hp*100-o->wound<oldHealth)o->damageUntil=g.tick+5;}
+static void damage_enemy(Obj*o,int damage){if(!enemy_damageable(o))return;if(o->type==4){if(o->age<=120||o->morph>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){phoenix_charge(clamp(damage,0,o->shieldCharge)/50);o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}int oldHealth=o->hp*100-o->wound;phoenix_charge(clamp(damage,0,oldHealth)/50);o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}if(o->hp*100-o->wound<oldHealth)o->damageUntil=g.tick+5;}
 static int boss_weakness(int variant){static const int weapon[17]={5,3,6,0,4,6,1,7,2,3,0,4,2,4,5,7,1};return weapon[clamp(variant,0,16)];}
 static int boss_hull_weakness(int variant){return (boss_weakness(variant)+3)%9;}
 static int enemy_resist_mask(const Obj*o){switch(o->type){case 13:return 1<<7;case 15:return (1<<3)|(1<<5);case 18:return 1<<8;case 19:return (1<<4)|(1<<9);case 4:{int family=o->variant%3==0?7:o->variant%3==1?3:8;return family==boss_weakness(o->variant)||family==boss_hull_weakness(o->variant)?0:1<<family;}}return 0;}
@@ -124,7 +124,7 @@ static void aoe_combo(int kills,int previous){int bonus=combo_value(kills)-combo
 static void killed(Obj*);
 static int enemy_guarded(const Obj*);
 static int hazard_material(const Obj*o){return o->type==5||o->type==7||o->type==10||(o->type<2&&ex.phase==8)?3:o->type==6?4:o->type==9||o->type==11?5:o->type==8||o->type==2?0:2;}
-static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(o->type==4)return o->variant==8||o->variant==12||o->variant==15?3:o->variant==9?4:o->variant==14||o->variant==16?5:0;return o->type>=10&&o->type<=13?4:o->type==18||o->type==21?5:0;}
+static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(organic_context())return 3;if(o->type==4)return o->variant==8||o->variant==12||o->variant==15?3:o->variant==9?4:o->variant==14||o->variant==16?5:0;return o->type>=10&&o->type<=13?4:o->type==18||o->type==21?5:0;}
 
 #include "bugs.h"
 #include "journey_parasites.h"
