@@ -1,0 +1,8 @@
+#define main star_guard_main
+#include "../src/pc.c"
+#undef main
+static int checks;
+#define V(x) do{checks++;if(!(x)){fprintf(stderr,"FAIL %d %s mission%d tick%d\n",__LINE__,#x,g.wave,g.tick);exit(1);}}while(0)
+static void setup(int m){game_reset();g.mode=1;g.fx=0;g.wave=m;ex.section=journeyGiantAt[m-1];ex.phase=ex.oldPhase=mission_phase(m);ex.intro=ex.travel=ex.entryY=0;ex.rearSpawned=1;g.shield=100000;environment_enter();giant_start();g.viewZoom=ex.giant.zoom;}
+static void tick(void){g.tick++;giant_step(0);}
+int main(void){headless=1;for(int m=1;m<=6;m++){setup(m);Giant*b=&ex.giant;int duration=giant_opening_selected(m-1)?(15+5*(m-1))*50:0;V(b->openingTotal==duration);g.mode=3;g.continueReady=1;game_step(0,13);V(g.mode==1&&b->openingTicks==duration);g.shield=100000;int fired=0;for(int t=0;t<duration;t++){int hp=b->parts[6].hp;giant_raw_hit(6,100);V(b->parts[6].hp==hp);V(!giant_open(6));tick();for(int i=0;i<MAXB;i++)if(g.bullets[i].on){fired++;g.bullets[i].on=0;}V(b->openingTicks==duration-t-1);}if(duration)V(fired>0);b->openingTicks=0;b->timer=1000;b->addMask=3;giant_set_form(1);int serial=b->growthShieldSerial;for(int t=0;t<60;t++){V(b->morph==60-t);V(!b->growthTicks);tick();}V(!b->morph&&b->growthTicks==300&&b->growthShieldSerial==serial+1);int clock=g.tick;g.paused=1;for(int t=0;t<20;t++)game_step(0,0);V(g.tick==clock&&b->growthTicks==300);g.paused=0;for(int t=0;t<300;t++){V(!giant_open(6));int hp=b->parts[6].hp;giant_raw_hit(6,100);V(b->parts[6].hp==hp);tick();V(b->growthTicks==299-t);}V(b->growthShieldSerial==serial+1);if(m!=5)V(fabsf(b->scale-2)<.0001f);printf("mission%d opening%ds growth6s attacks%d PASS\n",m,duration/50,fired);}printf("PASS %d timer checks\n",checks);return 0;}

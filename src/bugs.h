@@ -1,11 +1,11 @@
 /* Compact insect squadrons: banked entry, hovering ranks, individual dive sorties. */
 static void bug_group(int type,int formation){int n=16+8*((formation+g.wave)%3);if(g.wave<3&&n>24)n=24;for(int i=0;i<n;i++){Obj*o=slot(g.enemies,MAXE);if(!o)break;int col=i&7,row=i>>3;o->type=type;o->hp=enemy_hull((type==13?3:1)+enemy_bonus());o->phase=i+((formation&1)<<5);o->buff=formation%4;o->base=o->buff==2?24+(col/4)*160+(col%4)*29:36+col*35;o->vx=(42+row*21+(o->buff==1?absn(col-3)*7:o->buff==3?(col&1)*18:0))*Q;o->vy=g.px;o->x=((formation&1)?344:-24)*Q;o->y=-28*Q;}}
-static void bug_step(Obj*o){int ordinal=o->phase&31,delay=(ordinal&7)*3+(ordinal>>3)*6,t=o->age-delay,sortie=245+ordinal*9+(o->type-10)*13;if(t<0){o->y=-28*Q;return;}
- if(t<95){int u=t*256/95,from=(o->phase&32)?344:-24;o->x=from*Q+(o->base-from)*u+((sn(t*3+ordinal*7)*9*(256-u))>>8);o->y=-28*Q+((o->vx+28*Q)*u>>8)-sn(t*2)*5;}
+static void bug_step(Obj*o){int ordinal=o->phase&31,delay=(ordinal&7)*3+(ordinal>>3)*6,t=o->age-delay,sortie=245+ordinal*9+(o->type-10)*13;int entryY=o->reinforcement?play_min_y()-28:-28,fromX=o->reinforcement?((o->phase&32)?play_max_x()+24:play_min_x()-24):((o->phase&32)?344:-24);if(t<0){o->y=entryY*Q;return;}
+ if(t<95){int u=t*256/95,from=fromX;o->x=from*Q+(o->base-from)*u+((sn(t*3+ordinal*7)*9*(256-u))>>8);o->y=entryY*Q+((o->vx-entryY*Q)*u>>8)-sn(t*2)*5;}
  else if(t<sortie){o->x=o->base*Q+sn((g.tick>>1)+o->phase*5)*2;o->y=o->vx+(sn(g.tick+ordinal*8)*3>>1);}
  else{int d=t-sortie;if(d==0)o->vy=g.px;if(o->type==12&&o->variant<2){int u=d*256/150;o->x=o->base*Q+sn(u*2)*18;o->y=o->vx+sn(u>>1)*28;if(d>=150){o->variant++;if(o->variant<2)o->age=delay+100;}}
   else{if(o->type==12)d-=150;o->x=o->base*Q+((o->vy-o->base*Q)*clamp(d,0,80)/80)+sn(d*3+o->phase)*6;o->y=o->vx+d*(o->type==11?760:550);}}
- if(t>110&&((o->age+ordinal*13)&127)==80&&o->y>30*Q&&o->y<205*Q)aim(o->x,o->y,420+(g.wave<<2));
+ if(t>110&&((o->age+ordinal*13)&127)==80&&o->y>(play_min_y()+12)*Q&&o->y<(play_max_y()-35)*Q&&enemy_damageable(o))aim(o->x,o->y,420+(g.wave<<2));
 }
 static void ricochet(Obj*s,Obj*enemy,int id){float nx=(float)(s->x-enemy->x),ny=(float)(s->y-enemy->y),len=sqrtf(nx*nx+ny*ny);if(len<1){nx=0;ny=1;len=1;}nx/=len;ny/=len;float vx=s->vx,vy=s->vy,dot=vx*nx+vy*ny;vx-=2*dot*nx;vy-=2*dot*ny;
  /* A small alternating cant avoids perfectly vertical rebounds. */
