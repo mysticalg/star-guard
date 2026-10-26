@@ -1,3 +1,11 @@
+static float play_view_zoom(void){return (ex.giant.active||ex.giant.defeated)&&ex.giant.archetype!=4&&g.viewZoom>0&&g.viewZoom<1?g.viewZoom:1;}
+static int play_min_x(void){return (int)(160-146/play_view_zoom());}
+static int play_max_x(void){return (int)(160+146/play_view_zoom());}
+static int play_min_y(void){return (int)(140-100/play_view_zoom());}
+static int play_max_y(void){return (int)(140+100/play_view_zoom());}
+static float giant_world_scale(void){return ex.giant.archetype==4?1:ex.giant.scale>0?ex.giant.scale:1;}
+static int giant_world_x(int x){return 160+(int)((x-160)*giant_world_scale());}
+static int giant_world_y(int y){return 100+(int)((y-100)*giant_world_scale());}
 static int journey_number(void){return clamp(g.wave-1,0,MISSION_COUNT-1);}
 static int journey_kind(void){int m=journey_number();return journeyKinds[m][clamp(ex.section,0,journeyCounts[m]-1)];}
 static int journey_depth(void){int depth=ex.section;for(int m=0;m<journey_number();m++)depth+=journeyCounts[m];return depth;}

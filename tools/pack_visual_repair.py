@@ -88,6 +88,12 @@ def biology():
   dst=Image.new('RGBA',(len(keys)*256,256))
   for i,key in enumerate(keys):dst.paste(fitted(read(key),256,16),(i*256,0))
   dst.save(OUT/name)
+  if name=='giant-worm-v2.png':
+   uv=[]
+   for i in range(3):
+    a=dst.crop((i*256,0,i*256+256,256)).getchannel('A').point(lambda a:255 if a>16 else 0);l,t,r,b=a.getbbox();l=max(0,l-3);t=max(0,t-3);r=min(256,r+3);b=min(256,b+3)
+    uv.append('{'+','.join(f'{v:.9f}f' for v in [(i*256+l)/768,t/256,(r-l)/768,(b-t)/256])+'}')
+   (ROOT/'src/worm_art_uv.h').write_text('static const float wormArtUV[3][4]={\n'+',\n'.join(uv)+'\n};\n')
 ships();hulls();hazards();bosses();biology()
 audit=[]
 for path in [OUT/'player-ships-v2.png',OUT/'giant-hulls-v2.png',OUT/'world-objects-v2.png',ROOT/'Assets/modern/boss-frames-v2.png',OUT/'organic-parasites-v2.png',OUT/'giant-worm-v2.png']:
