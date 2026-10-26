@@ -24,6 +24,7 @@ static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}
 static void journey_advance(void){
+ globules_clear();
  ex.oldKind=journey_kind();ex.missionHandover=0;if(section_final()){ex.completedMissionMask|=1<<(g.wave-1);salvage_flush();}
  if(!section_final())ex.section++;
  else if(g.wave<MISSION_COUNT){ex.refit=1;ex.refitNext=g.wave+1;ex.victory=ex.bossSpawned=ex.clearTicks=0;return;}
