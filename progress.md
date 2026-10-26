@@ -22,3 +22,5 @@ Release50 active: user-expanded scope adds 150sec active-progression floor, sele
 Completed release51: commit1b6a664, Pages40286000747 success; canonical live11 files plus4 old-query entries verified. Live midpoint/edge render and normal launch/UI suite pass. Complete combat release50 at ef9a205 retained, no pending fixes. Reports ../release50-report.md and ../release51-report.md.
 
 Release62: authored10/30/10 biome fronts, true both-side/boss damage and real fine-mask/scenic blasts; soft gas/spores, local weather audio.174754checks plus native visuals/actual no-fire asteroid miniboss impact pass. Report ../release62-report.md. Publication pending; mechanical strength and six active progression targets remain.
+
+Release63: mixed mechanical strength with original regular baseline, yellow115%HP/+5%speedfire,red130%HP/+10%. Separateidentityfield,exactfractionalHP,sourcealpha/luminance material and1/2/3pips; organic excluded.361080checks and actualnativeHP1265->1165 redcue5->0 pass. Publishing pending. Final64mission schedules still active.

@@ -1,0 +1,1 @@
+const {chromium}=require('C:/Users/drhoo/.codex/skills/develop-web-game/scripts/node_modules/playwright');const launch=chromium.launch.bind(chromium);chromium.launch=async(...args)=>{const b=await launch(...args),newPage=b.newPage.bind(b);b.newPage=async(...a)=>{const p=await newPage(...a);await p.route('**/api/**',r=>r.fulfill({json:{scores:[]}}));return p};return b};

@@ -18,7 +18,7 @@ typedef unsigned int u32;
 #define MAX_NOVA_BOMBS 5
 /* Deterministic 11 drops per 80 kills: 10% more than the former 1-in-8 cadence. */
 #define NSTARS 144
-typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide;} Obj;
+typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide,strength;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
@@ -66,6 +66,7 @@ static int formation_interval(void);
 static void globules_clear(void);
 #include "journey_rules.h"
 static int enemy_organic(const Obj*o){return organic_context()||o->type==26||(o->type>=10&&o->type<=13);}
+#include "enemy_strength.h"
 static int organic_cell(const Obj*o){return o->type==4?6:(o->type==9||o->type==23||o->type==24)?(o->type==9?2:3):o->type==26?4:o->type>=10&&o->type<=13?0:o->type==15||o->type==19?1:o->type==18||o->type==25?5:o->type==21||o->type==27?7:(o->type+o->phase/23)%2?0:4;}
 static int enemy_blood(const Obj*o){if(!organic_context())return o->type==26||(o->type>=10&&o->type<=13);int cell=organic_cell(o);return cell==0||cell==1||cell==6||cell==7;}
 
@@ -140,7 +141,7 @@ static void armored_aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=abs
 /* Relative swept segments catch fast shots crossing between fixed simulation ticks. */
 static int projectile_crosses(const Obj*s,const Obj*b){float dx=(b->x-s->x)/(float)Q,dy=(b->y-s->y)/(float)Q,vx=(b->vx-s->vx)/(float)Q,vy=(b->vy-s->vy)/(float)Q;if(fabsf(dx)>fabsf(vx)+5||fabsf(dy)>fabsf(vy)+5)return 0;float vv=vx*vx+vy*vy,t=vv>0?fmaxf(0,fminf(1,(dx*vx+dy*vy)/vv)):0;dx-=vx*t;dy-=vy*t;return dx*dx+dy*dy<=25;}
 static void aim(int x,int y,int speed){int dx=g.px-x,dy=player_y-y,d=absn(dx)+absn(dy);if(!d)d=1;Obj*o=bullet(x,y,divn(dx*speed,d),divn(dy*speed,d));if(o)o->variant=1;}
-static void enemy_volley(Obj*o,int speed){aim(o->x,o->y,speed);int pressure=mission_pressure(),volley=(o->age+o->phase)/enemy_fire_interval();if(pressure>=8&&volley%(pressure>=12?3:4)==0){int dx=g.px-o->x,dy=player_y-o->y,d=absn(dx)+absn(dy);if(!d)d=1;int vx=dx*speed/d,vy=dy*speed/d;bullet(o->x,o->y,vx-120,vy);bullet(o->x,o->y,vx+120,vy);}}
+static void enemy_volley(Obj*o,int speed){aim(o->x,o->y,speed);int pressure=mission_pressure(),volley=(o->age+o->phase)/enemy_strength_interval(o,enemy_fire_interval());if(pressure>=8&&volley%(pressure>=12?3:4)==0){int dx=g.px-o->x,dy=player_y-o->y,d=absn(dx)+absn(dy);if(!d)d=1;int vx=dx*speed/d,vy=dy*speed/d;bullet(o->x,o->y,vx-120,vy);bullet(o->x,o->y,vx+120,vy);}}
 static int combo_value(int kills){return kills<2?0:125*kills*(kills-1);}
 static void aoe_combo(int kills,int previous){int bonus=combo_value(kills)-combo_value(previous);if(bonus<=0)return;g.score+=bonus;ex.comboKills=kills;ex.comboBonus=combo_value(kills);ex.comboTicks=125;if(ex.victory)ex.clearScore=g.score-ex.stageScore;}
 static void killed(Obj*);
@@ -225,15 +226,16 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  }
  if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<section_wave_target()&&!environment_exclusive()&&!cavern_turn_pending()&&!ex.cavernTurn&&enemy_count()<=20&&section_formation_clock()+(ex.travel==2?ex.travelTick:0)>=1+g.groups*formation_interval()+(g.groups/4)*50){if(journey_kind()==ENV_BEAST){for(int n=0;n<3;n++)environment_spawn(9+(g.groups+n)%3,100+n*60,-16-n*15,0,250,9,2);}else group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
  for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;int traceX=o->x,traceY=o->y;/* Own attachments may overlap the short real hull-to-muzzle path. */if(!o->age&&o->phase!=-2&&o->vy<0&&absn(o->x-g.px)<18*Q&&absn(o->y-player_y)<18*Q&&globules_shot(o,g.px,player_y))continue;o->previousX=o->x;o->previousY=o->y;o->age++;if(o->base>0)o->base--;if(o->type==9){o->vy=clamp(o->vy-45,-2100,-900);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,1);o->x+=o->vx;o->y+=o->vy;if(globules_shot(o,traceX,traceY))continue;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)||o->age>=120||o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q||o->y<(play_min_y()-17)*Q||o->y>(play_max_y()+14)*Q)detonate_torpedo(o);continue;}if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(globules_shot(o,traceX,traceY))continue;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)||(ex.phase==11&&!custom_environment()&&o->x>=288*Q)||o->age>=28||o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q||o->y>(play_max_y()+12)*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(globules_shot(o,traceX,traceY))continue;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)){if(o->type==4)detonate_heatseeker(o);continue;}if(o->type==6||o->type==7){if(o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q){o->x=clamp(o->x,(play_min_x()-11)*Q,(play_max_x()+11)*Q);o->vx=-o->vx;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->y<(play_min_y()-14)*Q||o->y>(play_max_y()+12)*Q){o->y=clamp(o->y,(play_min_y()-14)*Q,(play_max_y()+12)*Q);o->vy=-o->vy;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->age>150)o->on=0;}else if(o->y<(play_min_y()-20)*Q||o->x<(play_min_x()-14)*Q||o->x>(play_max_x()+14)*Q)o->on=0;}
- for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;if(o->dotTicks){o->dotTicks--;if(--o->dotClock<=0){o->dotClock=50;if(!enemy_guarded(o)||o->type==4)damage_enemy(o,o->dotDamage);if(o->hp<=0){killed(o);continue;}}}int oldx=o->x,oldy=o->y;o->previousX=oldx;o->previousY=oldy;cavern_enemy_base(o);if(ex.env.empActive&&(g.tick&1)){}else if(ex.empStop>0){}else if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
+ for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;enemy_strength_prepare(o);if(o->dotTicks){o->dotTicks--;if(--o->dotClock<=0){o->dotClock=50;if(!enemy_guarded(o)||o->type==4)damage_enemy(o,o->dotDamage);if(o->hp<=0){killed(o);continue;}}}int oldx=o->x,oldy=o->y;o->previousX=oldx;o->previousY=oldy;cavern_enemy_base(o);if(ex.env.empActive&&(g.tick&1)){}else if(ex.empStop>0){}else if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
   if(o->type==4){stage_boss_step(o);
   }else{if(o->type<8)o->y+=(o->vy*ex.enemySpeed)>>8;new_enemy_step(o);if(o->type==0)o->x=o->base*Q+sn(o->age*2+o->phase)*5;
    if(o->type==1){o->x=o->base*Q+sn(o->age+o->phase)*9;if(o->age>100)o->y+=180;}
    if(o->type==2)o->x=160*Q+sn(o->age*2+o->phase)*33;
    if(o->type==3)o->x=o->base*Q+sn((o->age>>1)+o->phase)*3;
-   if(!aircraft_weapon_role(o->type)&&o->y>24*Q&&remn(o->age+o->phase,enemy_fire_interval())==0)enemy_volley(o,450+(g.wave<<3));
+   if(!aircraft_weapon_role(o->type)&&o->y>24*Q&&remn(o->age+o->phase,enemy_strength_interval(o,enemy_fire_interval()))==0)enemy_volley(o,450+(g.wave<<3));
   }
   }
+  if(o->strength>1&&!floor_enemy(o)){int speed=enemy_strength_scale(o);o->x=oldx+(o->x-oldx)*speed/100;o->y=oldy+(o->y-oldy)*speed/100;}
   cavern_steer_enemy(o,oldx,oldy);
   if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else if(!floor_enemy(o)){int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
   if(o->type==22&&oldy>252*Q&&o->y<=252*Q)pc_rear_boost(o->x/Q);
