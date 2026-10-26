@@ -1,0 +1,9 @@
+/* Finite, telegraphed escorts. Optional adds never participate in required-part gates. */
+static void encounter_support_step(void){int active=ex.bossSpawned&&!ex.victory&&!ex.refit&&!ex.travel&&!ex.intro&&(ex.giant.active||ex.encounterTier==1);if(!active){ex.escortClock=ex.escortUsed=ex.escortWarning=ex.escortOwner=0;for(int i=0;i<MAXE;i++)if(g.enemies[i].reinforcement)g.enemies[i].on=0;return;}
+ int owner=g.wave*100+ex.section*3+ex.encounterTier;if(owner!=ex.escortOwner){ex.escortClock=ex.escortUsed=ex.escortWarning=0;ex.escortOwner=owner;}
+ int guarded=0;if(ex.giant.active)guarded=ex.giant.timer<120||ex.giant.morph||giant_add_count();else{int found=0;for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4){found=1;guarded=g.enemies[i].age<160||g.enemies[i].morph;}if(!found)return;}
+ if(guarded){ex.escortWarning=ex.escortClock=0;for(int i=0;i<MAXE;i++)if(g.enemies[i].reinforcement)g.enemies[i].on=0;return;}int alive=0;for(int i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].reinforcement){if(g.enemies[i].age>600)g.enemies[i].on=0;else alive++;}
+ if(ex.escortUsed>=(ex.giant.active?6:3)){ex.escortWarning=0;return;}
+ int c=ex.escortClock++%450;if(c>=170&&c<230)ex.escortWarning=230-c;else ex.escortWarning=0;if(c!=230||alive>0)return;
+ int worm=ex.giant.active&&ex.giant.archetype==4;int count=worm?4:ex.giant.active?4+ex.giant.form:4,type=(ex.escortUsed&1)?11:10;for(int n=0;n<count;n++){Obj*o=slot(g.enemies,MAXE);if(!o)break;int x=play_min_x()+24+(play_max_x()-play_min_x()-48)*n/(count-1);*o=(Obj){.on=1,.type=type,.reinforcement=1,.hp=enemy_hull(type==11?2:1),.phase=n,.base=x,.x=x*Q,.y=(play_min_y()-48-n*10)*Q,.vx=(play_min_y()+28+(n&1)*20)*Q};}if(worm)for(int n=0;n<MAXE;n++){Obj*o=g.enemies+n;if(!o->on||!o->reinforcement)continue;int order=o->phase&31,x=tunnel_left(80)+24+(tunnel_right(80)-tunnel_left(80)-48)*order/(count-1);o->type=14;o->base=x;o->x=x*Q;o->y=(24-order*10)*Q;o->phase=order*64;}ex.escortUsed++;
+}

@@ -1,0 +1,6 @@
+#define main star_guard_main
+#include "../src/pc.c"
+#undef main
+int main(void){headless=1;for(int m=1;m<=6;m++){pilotConfigured=0;game_reset();g.mode=1;g.wave=m;int combat=0,travel=0,intro=0,mini=0,clear=0,ticks=0,waves=0,seen[27]={0};while(!ex.giant.active&&ticks++<40000){g.shield=100000;g.px=160*Q;player_y=230*Q;if(ex.intro)intro++;else if(ex.travel)travel++;else if(ex.victory)clear++;else if(ex.bossSpawned)mini++;else combat++;int groups=g.groups;game_step(0,0);if(g.groups>groups)waves++;
+for(int n=0;n<MAXE;n++)if(g.enemies[n].on){seen[g.enemies[n].type]=1;if(g.enemies[n].type==4)killed(g.enemies+n);else g.enemies[n].on=0;}memset(g.bullets,0,sizeof(g.bullets));memset(ex.obstacles,0,sizeof(ex.obstacles));if(journey_kind()==ENV_WALL)terrain_clear_box(130,wall_origin_y(),60,TERRAIN_H);if(journey_kind()==ENV_BASE&&!ex.bombing.complete){for(int n=0;n<8;n++)ex.bombing.targets[n].hp=0;ex.bombing.targetsDestroyed=8;ex.bombing.cleared=1;ex.bombing.stage=3;ex.bombing.timer=74;}}
+int kinds=0;for(int n=0;n<27;n++)if(n!=4)kinds+=seen[n];if(!ex.giant.active||combat<7500||combat>9500||waves<35){fprintf(stderr,"FAIL mission timing/waves %d\n",m);exit(1);}printf("MISSION%d total%.2f combat%.2f intro%.2f transit%.2f mini%.2f clear%.2f waves%d enemyKinds%d final%d\n",m,ticks/50.,combat/50.,intro/50.,travel/50.,mini/50.,clear/50.,waves,kinds,ex.giant.active); }return 0;}
