@@ -18,7 +18,7 @@ typedef unsigned int u32;
 #define MAX_NOVA_BOMBS 5
 /* Deterministic 11 drops per 80 kills: 10% more than the former 1-in-8 cadence. */
 #define NSTARS 144
-typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots;} Obj;
+typedef struct {int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
@@ -41,6 +41,17 @@ extern void pc_sprite(int,float,float);
 extern void pc_equipment_sprite(int,float,float,float);
 extern void pc_hazard_sprite(int,Obj*,float,float);
 extern void pc_enemy_sprite(int,Obj*,float,float);
+extern int pc_enemy_radius(const Obj*);
+static int cavern_guard_active(void);
+static int cavern_option_x(int,int,int);
+static void cavern_prepare_enemy(Obj*,int);
+static void cavern_enemy_base(Obj*);
+static int cavern_retarget(Obj*,int);
+static void cavern_steer_enemy(Obj*,int,int);
+static void cavern_prepare_hazard(EnvironmentHazard*);
+static void cavern_steer_hazard(EnvironmentHazard*,int,int);
+static void cavern_prepare_obstacle(Obj*);
+static void cavern_steer_obstacle(Obj*,int,int);
 extern void read_mouse(int*);
 
 extern void sprite_plot(int,int,int), sprite_bank(void*), rowcopy(void*,const void*,int), sound(int,int,int,int);
@@ -138,8 +149,8 @@ static int enemy_material(const Obj*o){if(enemy_guarded(o))return 1;if(enemy_org
 #include "journey_parasites.h"
 static void specialist_group(int,int);
 static void ground_group(int,int);
-static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o=slot(g.enemies,MAXE);if(o)*o=(Obj){.on=1,.type=26,.hp=2,.x=(12+(n%8)*42)*Q,.y=(-20-(n/8)*24)*Q,.phase=n*19,.vy=420};}return;}if(type==25||type>=27){specialist_group(type,groupno);return;}if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+(journey_depth()>>2)+mission_pressure()/7;if(n>10)n=10;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=enemy_hull((type==6?6:type==7?3:type==3?4:1)+enemy_bonus());o->phase=i*27+groupno*41;int pattern=groupno%8;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:pattern==5?70+(i*37)%180:pattern==6?(i&1?236:84)+(i/2)*7:pattern==7?160+(i&1?1:-1)*(18+(i/2)*19):28+i*(n>8?264/(n-1):38);o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;}}
-static void boss(void){if(ex.miniDone||journeyMinis[journey_number()][ex.section]<0){giant_start();return;}ex.encounterTier=1;Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=journeyMinis[journey_number()][ex.section];o->hp=(70+journey_depth()*8)*(100+3*(g.pilotLevel-1))/100;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;}}
+static void group(int type,int groupno){if(type==26){for(int n=0;n<32;n++){Obj*o=slot(g.enemies,MAXE);if(o){*o=(Obj){.on=1,.type=26,.hp=2,.x=(12+(n%8)*42)*Q,.y=(-20-(n/8)*24)*Q,.phase=n*19,.vy=420};cavern_prepare_enemy(o,1);}}return;}if(type==25||type>=27){specialist_group(type,groupno);return;}if(type>=23){ground_group(type,groupno);return;}if(type>=14){specialist_group(type,groupno);return;}if(type>=10){bug_group(type,groupno);return;}int i,n=6+(journey_depth()>>2)+mission_pressure()/7;if(n>10)n=10;for(i=0;i<n;i++){Obj *o=slot(g.enemies,MAXE);if(!o)break;o->type=type;o->hp=enemy_hull((type==6?6:type==7?3:type==3?4:1)+enemy_bonus());o->phase=i*27+groupno*41;int pattern=groupno%8;o->base=pattern==1?160+(i&1?1:-1)*(20+(i/2)*27):pattern==2?38+i*14:pattern==3?282-i*14:pattern==4?40+(i%3)*110:pattern==5?70+(i*37)%180:pattern==6?(i&1?236:84)+(i/2)*7:pattern==7?160+(i&1?1:-1)*(18+(i/2)*19):28+i*(n>8?264/(n-1):38);o->x=o->base*Q;o->y=(-24-i*(pattern==2||pattern==3?28:14))*Q;o->vx=(i&1)?220:-220;o->vy=type==3?105:180+type*35;cavern_prepare_enemy(o,1);}}
+static void boss(void){if(ex.miniDone||journeyMinis[journey_number()][ex.section]<0){giant_start();return;}ex.encounterTier=1;Obj *o=slot(g.enemies,MAXE);if(o){o->type=4;o->variant=journeyMinis[journey_number()][ex.section];o->hp=(70+journey_depth()*8)*(100+3*(g.pilotLevel-1))/100;o->base=o->hp;o->x=160*Q;o->y=-64*Q;o->phase=1;g.bossPhase=1;cavern_prepare_enemy(o,0);}}
 static void hit_sparks(int x,int y,int nx,int ny,int tint){pc_impact(x,y,tint);int i;Obj*f=slot(ex.impacts,12);if(f){f->x=x;f->y=y;f->type=tint;}ex.contactX=x;ex.contactY=y;ex.contactTick=g.tick;for(i=0;i<10;i++){int a=rnd()&255;particle(x*Q,y*Q,nx*180+(sn(a)>>1),ny*180+(sn(a+64)>>1),8+(rnd()&7),tint);}}
 static void fan_fire(int type){int level=power_level(type),pairs=type==1?level+1:type==7?level:type==2?(level==4?2:level>1?1:0):level-1;
  if(type==4){for(int n=0;n<level;n++){Obj*o=slot(g.shots,MAXS);if(o)*o=(Obj){.on=1,.type=4,.x=g.px+(n*2-level+1)*3*Q,.y=player_y-10*Q,.vx=(n*2-level+1)*300+g.playerVX,.vy=-1300,.power=level,.phase=-1,.variant=n?102:0};}return;}
@@ -210,7 +221,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
  }
  if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<section_wave_target()&&!environment_exclusive()&&!cavern_turn_pending()&&!ex.cavernTurn&&enemy_count()<=20&&g.clock+(ex.travel==2?ex.travelTick:0)>=1+g.groups*formation_interval()+(g.groups/4)*50){if(journey_kind()==ENV_BEAST){for(int n=0;n<3;n++)environment_spawn(9+(g.groups+n)%3,100+n*60,-16-n*15,0,250,9,2);}else group(ex.phase==5?(g.groups&1?9:8):formation_type(),g.groups);g.groups++;}
  for(i=0;i<MAXS;i++){Obj *o=g.shots+i;if(!o->on)continue;int traceX=o->x,traceY=o->y;o->previousX=o->x;o->previousY=o->y;o->age++;if(o->base>0)o->base--;if(o->type==9){o->vy=clamp(o->vy-45,-2100,-900);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,1);o->x+=o->vx;o->y+=o->vy;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)||o->age>=120||o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q||o->y<(play_min_y()-17)*Q||o->y>(play_max_y()+14)*Q)detonate_torpedo(o);continue;}if(o->type==8){if(o->phase){o->vx+=14;}else o->vy+=6;o->x+=o->vx;o->y+=o->vy;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)||(ex.phase==11&&!custom_environment()&&o->x>=288*Q)||o->age>=28||o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q||o->y>(play_max_y()+12)*Q){detonate_charge(o);}continue;}if(o->type==4)home_shot(o);trail_segment(o->x,o->y,o->x+o->vx,o->y+o->vy,o->type==2||o->type==4?1:3);o->x+=o->vx;o->y+=o->vy;if(terrain_projectile(o,traceX,traceY,0))continue;if(cave_projectile(o,0)){if(o->type==4)detonate_heatseeker(o);continue;}if(o->type==6||o->type==7){if(o->x<(play_min_x()-11)*Q||o->x>(play_max_x()+11)*Q){o->x=clamp(o->x,(play_min_x()-11)*Q,(play_max_x()+11)*Q);o->vx=-o->vx;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->y<(play_min_y()-14)*Q||o->y>(play_max_y()+12)*Q){o->y=clamp(o->y,(play_min_y()-14)*Q,(play_max_y()+12)*Q);o->vy=-o->vy;if(o->type==7){o->heading++;pc_reflection_sound(cavern_phase(ex.phase)?(ex.phase==15?3:2):5,0,o->x/Q);}}if(o->age>150)o->on=0;}else if(o->y<(play_min_y()-20)*Q||o->x<(play_min_x()-14)*Q||o->x>(play_max_x()+14)*Q)o->on=0;}
- for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;if(o->dotTicks){o->dotTicks--;if(--o->dotClock<=0){o->dotClock=50;if(!enemy_guarded(o)||o->type==4)damage_enemy(o,o->dotDamage);if(o->hp<=0){killed(o);continue;}}}int oldx=o->x,oldy=o->y;if(ex.env.empActive&&(g.tick&1)){}else if(ex.empStop>0){}else if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
+ for(i=0;i<MAXE;i++){Obj *o=g.enemies+i;int x,y;if(!o->on)continue;if(o->dotTicks){o->dotTicks--;if(--o->dotClock<=0){o->dotClock=50;if(!enemy_guarded(o)||o->type==4)damage_enemy(o,o->dotDamage);if(o->hp<=0){killed(o);continue;}}}int oldx=o->x,oldy=o->y;cavern_enemy_base(o);if(ex.env.empActive&&(g.tick&1)){}else if(ex.empStop>0){}else if(o->empFreeze>0&&o->type!=4){o->empFreeze--;}else{o->age++;
   if(o->type==4){stage_boss_step(o);
   }else{if(o->type<8)o->y+=(o->vy*ex.enemySpeed)>>8;new_enemy_step(o);if(o->type==0)o->x=o->base*Q+sn(o->age*2+o->phase)*5;
    if(o->type==1){o->x=o->base*Q+sn(o->age+o->phase)*9;if(o->age>100)o->y+=180;}
@@ -219,7 +230,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
    if(!aircraft_weapon_role(o->type)&&o->y>24*Q&&remn(o->age+o->phase,enemy_fire_interval())==0)enemy_volley(o,450+(g.wave<<3));
   }
   }
-  if((ex.phase==2||ex.phase==15)&&o->type!=4&&!floor_enemy(o)){int yy=o->y/Q,l=tunnel_left(yy),r=tunnel_right(yy),il,ir;if(tunnel_island(yy,&il,&ir)){if(o->phase&1)l=ir;else r=il;}o->x=clamp(o->x,(l+8)*Q,(r-8)*Q);}
+  cavern_steer_enemy(o,oldx,oldy);
   if(o->type==4){int target=clamp((o->x-oldx)*8/Q,-12,12)*16,diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+diff/4+5760)%5760;}else if(!floor_enemy(o)){int dx=o->x-oldx,dy=o->y-oldy;if(absn(dx)+absn(dy)>64){int target=(int)(atan2f((float)dx,(float)-dy)*916.732472f);int diff=(target-o->heading+8640)%5760-2880;o->heading=(o->heading+clamp(diff/3,-480,480)+5760)%5760;}}
   if(o->type==22&&oldy>252*Q&&o->y<=252*Q)pc_rear_boost(o->x/Q);
   if(o->entryTicks<12&&enemy_in_view(o))o->entryTicks++;x=o->x>>8;y=o->y>>8;if(o->age>120&&(y>play_max_y()+64||x<play_min_x()-94||x>play_max_x()+94||y<play_min_y()-136)){o->on=0;continue;}

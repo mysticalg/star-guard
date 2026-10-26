@@ -1,4 +1,4 @@
-static EnvironmentHazard*environment_spawn(int type,int x,int y,int vx,int vy,int radius,int hp){for(int i=0;i<32;i++)if(!ex.env.hazards[i].on){EnvironmentHazard*h=ex.env.hazards+i;*h=(EnvironmentHazard){1,type,x*Q,y*Q,vx,vy,radius,hp,0,900};return h;}return 0;}
+static EnvironmentHazard*environment_spawn(int type,int x,int y,int vx,int vy,int radius,int hp){for(int i=0;i<32;i++)if(!ex.env.hazards[i].on){EnvironmentHazard*h=ex.env.hazards+i;*h=(EnvironmentHazard){1,type,x*Q,y*Q,vx,vy,radius,hp,0,900};cavern_prepare_hazard(h);return h;}return 0;}
 #include "journey_bombing.h"
 #include "terrain_core.h"
 static void environment_enter(void){int kind=journey_kind();ex.env=(Environment){.kind=kind,.safeX=160,.strikeX=160};terrain.active=kind==ENV_WALL;if(kind==ENV_BASE)bombing_enter();if(kind==ENV_WALL)terrain_enter();}
@@ -21,9 +21,9 @@ static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,c
  if(kind==ENV_CRYSTAL&&t%110==0)environment_spawn(5,70+(t/110*61)%180,-20,0,260,13,2);
 
  }
- for(int i=0;i<32;i++){EnvironmentHazard*h=ex.env.hazards+i;if(!h->on)continue;h->age++;if(h->type>=20&&h->type<=25){if(h->age>90){h->vx=(sn(h->age*2+i*61)*120)>>10;h->vy=h->y>170*Q?0:100;}if(!ex.empStop&&h->age%100==40)aim(h->x,h->y,280);}
+ for(int i=0;i<32;i++){EnvironmentHazard*h=ex.env.hazards+i;if(!h->on)continue;int oldX=h->x,oldY=h->y;h->age++;if(h->type>=20&&h->type<=25){if(h->age>90){h->vx=(sn(h->age*2+i*61)*120)>>10;h->vy=h->y>170*Q?0:100;}if(!ex.empStop&&h->age%100==40)aim(h->x,h->y,280);}
   if(h->type==12){if(h->age>=120)ex.env.warning=17;if(h->age==180){int freeOrganic=0;for(int z=0;z<32;z++)freeOrganic+=ex.env.hazards[z].on&&ex.env.hazards[z].type>=9&&ex.env.hazards[z].type<=11;if(freeOrganic<10){int x=h->x/Q,y=h->y/Q;h->on=0;environment_spawn(9,x-6,y,0,220,9,2);environment_spawn(10,x+6,y,0,220,9,2);}else h->on=0;continue;}}
-  if(h->type==9||h->type==10){int dx=g.px-h->x,dy=player_y-h->y,d=absn(dx)+absn(dy);if(d){h->vx=dx*380/d;h->vy=dy*380/d;}}if(h->type==11&&h->age%100==0)aim(h->x,h->y,300);h->x+=h->vx;h->y+=h->vy;int x=h->x/Q,y=h->y/Q;if(y>play_max_y()+45||x<play_min_x()-54||x>play_max_x()+54||h->age>h->life){h->on=0;continue;}if(y<24)continue;
+  if(h->type==9||h->type==10){int dx=g.px-h->x,dy=player_y-h->y,d=absn(dx)+absn(dy);if(d){h->vx=dx*380/d;h->vy=dy*380/d;}}if(h->type==11&&h->age%100==0)aim(h->x,h->y,300);h->x+=h->vx;h->y+=h->vy;cavern_steer_hazard(h,oldX,oldY);int x=h->x/Q,y=h->y/Q;if(y>play_max_y()+45||x<play_min_x()-54||x>play_max_x()+54||h->age>h->life){h->on=0;continue;}if(y<24)continue;
   if(h->type==6&&h->age%80==0)aim(h->x,h->y,400);
   int shielded=0;if(h->type==6)for(int j=0;j<32;j++)if(ex.env.hazards[j].on&&ex.env.hazards[j].type==8&&absn(ex.env.hazards[j].y-h->y)<90*Q)shielded=1;
   for(int j=0;j<MAXS;j++){Obj*s=g.shots+j;if(!s->on||s->base>0||absn(s->x/Q-x)>h->r+3||absn(s->y/Q-y)>h->r+3)continue;if(!shielded)environment_weapon_hit(h,s->type==9?800:projectile_damage(s),s->type);if(h->type==5){s->vy=-s->vy;s->vx=-s->vx+120;s->base=4;pc_reflection_sound(3,0,x);}else s->on=0;pc_impact(x,y,h->type==1?3:1);break;}

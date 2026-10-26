@@ -1,4 +1,4 @@
-static int option_x(int n){int offset=n==4?0:(n&1?1:-1)*(11+(n/2)*11);return clamp((ex.followX[(ex.followHead-1-(n+1)*8)&63]>>8)+offset,9,311);}
+static int option_x(int n){int offset=n==4?0:(n&1?1:-1)*(11+(n/2)*11),x=ex.followX[(ex.followHead-1-(n+1)*8)&63]>>8,y=clamp((ex.followY[(ex.followHead-1-(n+1)*8)&63]>>8)+10+(n/2)*5,34,247);return cavern_option_x(x,y,offset); }
 static int option_y(int n){return clamp((ex.followY[(ex.followHead-1-(n+1)*8)&63]>>8)+10+(n/2)*5,34,247);}
 static int satellite_x(void){return (g.px>>8)+(sn(g.tick*3)*19>>10);}
 static int satellite_y(void){return (player_y>>8)+(sn(g.tick*3+64)*16>>10);}
@@ -15,17 +15,19 @@ static int tunnel_left(int),tunnel_right(int),tunnel_visible(int);
 #include "floor_mount.h"
 #include "enemies.h"
 static int formation_type(void){static const int table[17][3]={{10,1,14},{12,5,15},{7,13,16},{11,0,17},{6,19,2},{8,9,8},{18,10,20},{21,7,13},{3,12,14},{19,15,16},{14,20,12},{23,24,14},{12,14,18},{15,19,25},{20,21,15},{13,18,17},{19,16,25}};if(!organic_context()){int event=g.groups%12;if(event==3)return 16;if(event==5)return 27;if(event==9)return 28;if(event==11)return 25;}if(g.groups==7)return 26;if(g.groups%9==8)return 25;if(g.groups%6==2)return 10+(ex.phase+g.groups/3)%4;if(g.groups%6==4)return 14+(ex.phase+g.groups)%8;return table[clamp(ex.phase,0,16)][g.groups%3];}
-static void hazard(int type,int x,int y){Obj*o=slot(ex.obstacles,MAXH);if(o){o->type=type;o->x=x*Q;o->y=y*Q;o->vx=0;o->vy=ex.phase==5?(ex.scrollSpeed>>2):type==2?230:type==3?100:160+(ex.scrollSpeed>>1);o->base=type==1?21:type==3?10:13;o->hp=type==3?2:8;o->phase=rnd()&255;ex.hazardSerial++;}}
+static void hazard(int type,int x,int y){Obj*o=slot(ex.obstacles,MAXH);if(o){o->type=type;o->x=x*Q;o->y=y*Q;o->vx=0;o->vy=ex.phase==5?(ex.scrollSpeed>>2):type==2?230:type==3?100:160+(ex.scrollSpeed>>1);o->base=type==1?21:type==3?10:13;o->hp=type==3?2:8;o->phase=rnd()&255;ex.hazardSerial++;cavern_prepare_obstacle(o);}}
 static int tunnel_center(int),tunnel_half(int),tunnel_left(int),tunnel_right(int);
 static void new_enemy_step(Obj*o){if(o->type>=14){specialist_step(o);return;}if(o->type>=10){bug_step(o);return;}if(o->type>=8){int y;if(o->type==9)floor_mount_step(o);else{o->y+=340;o->x=tunnel_lane(o->y/Q,o->phase&1)*Q;}y=o->y/Q;if(remn(o->age,96)==64&&y>35&&y<220){if(o->type==9)floor_fire(o,430);else aim(o->x,o->y,430);}return;}if(o->type==5){o->x=o->base*Q+sn(o->age*3+o->phase)*14;o->y+=90;if(remn(o->age,96)==64&&o->y>30*Q){aim(o->x-8*Q,o->y,450);aim(o->x+8*Q,o->y,450);}}if(o->type==6){o->x=o->base*Q+sn((o->age>>1)+o->phase)*7;o->y-=65;if((o->age&63)==0&&o->y>30*Q){int k;for(k=-1;k<=1;k++)bullet(o->x,o->y,k*180,330);}}if(o->type==7){o->x=o->base*Q+sn(o->age+o->phase)*6;if((o->age&127)==64&&o->y>35*Q&&o->y<175*Q)hazard(3,o->x>>8,o->y>>8);}}
 static int tunnel_visible(int y);
 /* Long smooth chambers and bottlenecks, continuous across the 512-unit world wrap. */
-static int tunnel_center(int y){int w=(ex.backgroundY>>8)+y;return 160+(sn(w>>1)>>6)+(sn(w)>>7);}
-static int tunnel_half(int y){if(ex.giant.active)return ex.giant.archetype==4?86:155;if(journey_kind()==ENV_BEAST)return 83-clamp(sn(g.tick*2)*12/1024,0,12);if(journey_kind()==ENV_ROOT)return 75+(sn(((ex.backgroundY>>8)+y))*16>>10);if(custom_environment())return 78+(sn(((ex.backgroundY>>8)+y)>>1)*12>>10);int w=(ex.backgroundY>>8)+y,half=66+(sn((w>>1)+51)*28>>10)+(sn(w+23)*5>>10),pinch=absn((w&511)-400);if(pinch<48)half-=(half-14)*(48-pinch)/48;int arena=ex.bossWarning?(100-ex.bossWarning)*256/100:ex.bossSpawned?256:0;if(ex.phase==2||ex.phase==15)half+=ex.phase==15?14:20;return half+(110-half)*arena/256;}
-static int tunnel_left(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)-tunnel_half(y)+(sn(w*2+13)+1024)/512;}
-static int tunnel_right(int y){int w=(ex.backgroundY>>8)+y;return tunnel_center(y)+tunnel_half(y)-(sn(w*2+97)+1024)/512;}
-static int tunnel_island(int y,int*l,int*r){if(ex.giant.active||(custom_environment()&&journey_kind()!=ENV_CRYSTAL))return 0;int world=(ex.backgroundY>>8)+y,w=world&511,taper=w-112;if(288-w<taper)taper=288-w;int radius=clamp(taper,0,40)*(((world>>9)&1)?18:14)/40;int arena=ex.bossWarning?(100-ex.bossWarning)*256/100:ex.bossSpawned?256:0;radius=radius*(256-arena)/256;if(radius<2)return 0;int center=tunnel_center(y);*l=center-radius;*r=center+radius;return 1;}
+#include "cavern_profile.h"
+static int tunnel_center(int y){if(ex.giant.active){if(ex.giant.archetype!=4)return 160;int w=(ex.backgroundY>>8)+y;return 160+(sn(w>>1)>>6)+(sn(w)>>7);}return (int)cavern_phrase(y,1);}
+static int tunnel_half(int y){if(ex.giant.active)return ex.giant.archetype==4?86:1500;float half=cavern_phrase(y,0),island=cavern_island_radius(y);if(island>0)half=fmaxf(half,86+island);float arena=ex.bossWarning?(100-ex.bossWarning)/100.0f:ex.bossSpawned?1:0;return (int)(half+(155-half)*arena);}
+static int tunnel_left(int y){int w=ex.giant.active?(ex.backgroundY>>8)+y:(int)cavern_world(y);return tunnel_center(y)-tunnel_half(y)+(sn(w*2+13)+1024)/512;}
+static int tunnel_right(int y){int w=ex.giant.active?(ex.backgroundY>>8)+y:(int)cavern_world(y);return tunnel_center(y)+tunnel_half(y)-(sn(w*2+97)+1024)/512;}
+static int tunnel_island(int y,int*l,int*r){int radius=(int)cavern_island_radius(y);if(radius<2)return 0;int center=tunnel_center(y);*l=center-radius;*r=center+radius;return 1;}
 static int tunnel_lane(int y,int side){int l,r;if(tunnel_island(y,&l,&r))return side?(r+tunnel_right(y))/2:(tunnel_left(y)+l)/2;return tunnel_center(y);}
+#include "cavern_guard.h"
 static int cavern_speed(void){int w=((ex.backgroundY>>8)+(player_y>>8))&511;return w>=350&&w<448?1536:w>=112&&w<288?3072:w<96?3840:2304;}
 static void cavern_crash(int x,int y){hurt_amount(x,y,0,-1,75,3);int yy=player_y/Q,l=tunnel_left(yy)+12,r=tunnel_right(yy)-12,il,ir;if(tunnel_island(yy,&il,&ir)&&g.px/Q+8>il&&g.px/Q-8<ir)g.px=tunnel_lane(yy,g.px/Q>tunnel_center(yy))*Q;g.px=clamp(g.px,l*Q,r*Q);}
 
@@ -43,7 +45,7 @@ static void storm_step(void){int kind=storm_kind();if(!kind||cavern_turn_pending
 static int enemy_count(void){int count=0;for(int i=0;i<MAXE;i++)count+=g.enemies[i].on;return count;}
 static int route_occupied(void){if(ex.rearWarning)return 1;for(int i=0;i<MAXE;i++)if(g.enemies[i].on)return 1;for(int i=0;i<MAXH;i++)if(ex.obstacles[i].on)return 1;return 0;}
 static int hostile_rounds_remain(void){for(int i=0;i<MAXB;i++)if(g.bullets[i].on)return 1;return 0;}
-static void rear_group(void){for(int n=0;n<3;n++){Obj*o=slot(g.enemies,MAXE);if(o){int x=ex.phase==5?tunnel_lane(288,n&1)+(n-1)*2:clamp((g.px>>8)+(n-1)*62,28,292);*o=(Obj){.on=1,.type=22,.hp=3+enemy_bonus(),.x=x*Q,.y=(288+n*22)*Q,.base=x,.phase=n*35};}}}
+static void rear_group(void){for(int n=0;n<3;n++){Obj*o=slot(g.enemies,MAXE);if(o){int x=ex.phase==5?tunnel_lane(288,n&1)+(n-1)*2:clamp((g.px>>8)+(n-1)*62,28,292);*o=(Obj){.on=1,.type=22,.hp=3+enemy_bonus(),.x=x*Q,.y=(288+n*22)*Q,.base=x,.phase=n*35};cavern_prepare_enemy(o,1);}}}
 static void detonate_charge(Obj*charge){int before=g.kills;int x=charge->x>>8,y=charge->y>>8;charge->on=0;pc_charge_burst(x,y);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&(!enemy_guarded(o)||o->type==4)&&absn((o->x>>8)-x)<25&&absn((o->y>>8)-y)<25){damage_enemy(o,160);if(o->hp<=0)killed(o);}}for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<22&&absn((o->y>>8)-y)<22)o->on=0;}aoe_combo(g.kills-before,0);}
 static void detonate_torpedo(Obj*shot){int before=g.kills;int x=shot->x/Q,y=shot->y/Q,radius=48;shot->on=0;ex.torpedoBlasts++;g.shake=4;pc_torpedo_blast(x,y);pc_torpedo_sound(1,x);ex.soundTick=g.tick;
  for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;int dx=o->x/Q-x,dy=o->y/Q-y,d=dx*dx+dy*dy;if(o->on&&d<radius*radius&&(!enemy_guarded(o)||o->type==4)){weapon_damage_enemy(o,800-500*d/(radius*radius),9);if(o->hp<=0)killed(o);}}
@@ -76,7 +78,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
  if(ex.scrollSpeed<targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed+(ex.travel||cavern_phase(phase)?64:16),0,targetScroll);else if(ex.scrollSpeed>targetScroll)ex.scrollSpeed=clamp(ex.scrollSpeed-(ex.travel||cavern_phase(phase)?64:16),targetScroll,8192);
  if(ex.enemySpeed<targetEnemy)ex.enemySpeed+=4;else if(ex.enemySpeed>targetEnemy)ex.enemySpeed-=4;
  /* Subtracting world position moves scenery down toward the ship: forward flight. */
- ex.backgroundY=(ex.backgroundY-(ex.scrollSpeed>>2))&262143;ex.landScroll=(ex.landScroll+ex.scrollSpeed/2)&16777215;
+ if(!ex.cavernWorldReady){ex.cavernWorldQ=ex.backgroundY;ex.cavernWorldReady=1;}ex.cavernWorldQ-=ex.scrollSpeed>>2;ex.backgroundY=(ex.backgroundY-(ex.scrollSpeed>>2))&262143;ex.landScroll=(ex.landScroll+ex.scrollSpeed/2)&16777215;
  if(ex.entryY){ex.entryDistance+=clamp(ex.scrollSpeed>>2,512,2048);ex.entryY=24+(ex.entryDistance>>8);if(ex.entryY>=256){ex.entryY=0;ex.oldPhase=ex.phase;}}
  if(!ex.travel&&!ex.intro)ex.phaseAge++;
  if(ex.pickupTicks)ex.pickupTicks--;
@@ -98,7 +100,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
  if(ch=='b'&&ex.bombs&&!ex.bombAge){ex.bombs--;ex.bombSerial++;ex.novaKills=0;ex.bombAge=1;ex.bombX=g.px>>8;ex.bombY=player_y>>8;ex.bombRadius=0;g.shield=80;g.shake=5;pc_bomb_start(ex.bombX,ex.bombY);sound(3,2,127,0x2200);sound_slide(3,1,0x1100,65);sound_slide(3,0,0,110);}
  bomb_step();
  /* Cavern encounters are placed inside the live corridor, not over solid rock. */
- if(!custom_environment()&&!environment_exclusive()&&phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()-40&&ex.phaseAge>75&&remn(ex.phaseAge,110)==0){Obj*o=slot(g.enemies,MAXE);if(o){o->type=(ex.phaseAge&128)?9:8;o->hp=o->type==9?5:3;o->phase=ex.hazardSerial++&1;o->x=tunnel_center(-32)*Q;o->y=-32*Q;o->vy=o->type==9?(ex.scrollSpeed>>2):340;}}
+ if(!custom_environment()&&!environment_exclusive()&&phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()-40&&ex.phaseAge>75&&remn(ex.phaseAge,110)==0){Obj*o=slot(g.enemies,MAXE);if(o){o->type=(ex.phaseAge&128)?9:8;o->hp=o->type==9?5:3;o->phase=ex.hazardSerial++&1;o->x=tunnel_center(-32)*Q;o->y=-32*Q;o->vy=o->type==9?(ex.scrollSpeed>>2):340;cavern_prepare_enemy(o,0);}}
  if(!custom_environment()&&!environment_exclusive()&&phase==5&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()-40&&ex.phaseAge>140&&remn(ex.phaseAge,170)==0&&tunnel_right(-12)-tunnel_left(-12)>128)hazard(0,tunnel_center(-12),-12);
  if(!custom_environment()&&!environment_exclusive()&&phase>=6&&phase<10&&!ex.travel&&!ex.bossSpawned&&g.clock<encounter_deadline()&&g.clock>100&&remn(g.clock,110)==0)hazard(phase==9?3:0,30+remn(ex.hazardSerial*89,260),-18);
  if(!custom_environment()&&!environment_exclusive()&&phase>=12&&!ex.travel&&!ex.bossSpawned&&g.clock>100&&g.clock<encounter_deadline()&&g.clock%65==0){hazard(phase-5,24+remn(ex.hazardSerial*71,272),-26);Obj*ore=0;for(int n=0;n<MAXH;n++)if(ex.obstacles[n].on&&ex.obstacles[n].age==0)ore=ex.obstacles+n;if(ore){ore->base=8+remn(ex.hazardSerial*7,19);ore->hp=storm_hp(phase-8,ore->base);}}
@@ -107,7 +109,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
  /* Telegraph each hazard at the top edge while it enters. Gate gaps stay at least 104 pixels wide. */
  if(!custom_environment()&&!environment_exclusive()&&!ex.travel&&!ex.bossSpawned&&phase==2&&g.clock<encounter_deadline()&&g.clock>60&&remn(g.clock,64)==0)hazard((ex.hazardSerial&3)==0?1:0,26+remn(ex.hazardSerial*79,268),-26);
  if(!ex.travel&&!ex.bossSpawned&&phase==3&&g.clock<encounter_deadline()&&g.clock>80&&remn(g.clock,150)==0)hazard(2,80+remn(ex.hazardSerial*67,160),-16);
- for(i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;o->age++;o->y+=o->vy;o->x+=o->vx;x=o->x>>8;y=o->y>>8;
+ for(i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int x,y;if(!o->on)continue;int caveOldX=o->x,caveOldY=o->y;o->age++;o->y+=o->vy;o->x+=o->vx;cavern_steer_obstacle(o,caveOldX,caveOldY);x=o->x>>8;y=o->y>>8;
   if(y>288){o->on=0;continue;}if((phase==2||phase==15)&&o->type!=2){int l=tunnel_left(y),r=tunnel_right(y),il,ir;if(tunnel_island(y,&il,&ir)){if(o->phase&1)l=ir;else r=il;}o->base=clamp(o->base,6,(r-l)/2-2);o->x=clamp(o->x,(l+o->base)*Q,(r-o->base)*Q);x=o->x/Q;}
   if(o->type==2){if(absn(y-(player_y>>8))<12&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-7,(player_y>>8)+7),0,y<(player_y>>8)?1:-1);continue;}
   for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){if(s->type==4){detonate_heatseeker(s);break;}if(s->type==9){detonate_torpedo(s);break;}s->on=0;o->hp--;if(s->type==7)pc_reflection_sound(hazard_material(o),o->type,x);hit_sparks(s->x>>8,s->y>>8,0,1,1);if(s->type!=8)pc_hit_sound(hazard_material(o),s->type,x);}}
