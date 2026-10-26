@@ -5,6 +5,6 @@ static void sync_terrain_texture(void){if(!wallTexture||!wallFacePixels||!terrai
  SDL_Rect rect={l*2,t*2,(r-l+1)*2,(b-t+1)*2};SDL_UpdateTexture(wallTexture,&rect,wallRGBA+(t*2*TERRAIN_W*2+l*2)*4,TERRAIN_W*8);wallUploads++;}
  wallTextureSerial=terrain.serial;wallTextureRevision=terrain.revision;terrain.dirtyLeft=TERRAIN_W;terrain.dirtyTop=TERRAIN_H;terrain.dirtyRight=terrain.dirtyBottom=-1;
 }
-static void draw_fine_terrain(void){if(!terrain.active)return;sync_terrain_texture();float fraction=fmaxf(0,fminf(1,visualTick-g.tick+1)),y=-462+(terrain.previousScrollQ+(terrain.scrollQ-terrain.previousScrollQ)*fraction)/Q;nquad=0;quad(-24,y*3,TERRAIN_W*3,TERRAIN_H*3,(SDL_FColor){1,1,1,1},0,0,1,1);flush(wallTexture);
+static void draw_fine_terrain(void){if(!terrain.active)return;sync_terrain_texture();float fraction=fmaxf(0,fminf(1,visualTick-g.tick+1)),y=TERRAIN_ORIGIN+(terrain.previousScrollQ+(terrain.scrollQ-terrain.previousScrollQ)*fraction)/Q;nquad=0;quad(-24,y*3,TERRAIN_W*3,TERRAIN_H*3,(SDL_FColor){1,1,1,1},0,0,1,1);flush(wallTexture);
  static const int colours[4][3]={{155,140,123},{150,225,255},{210,184,140},{205,120,255}};SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);for(int n=0;n<TERRAIN_DEBRIS;n++){TerrainChip*c=terrain.chips+n;if(!c->life)continue;const int*rgb=colours[c->material];SDL_SetRenderDrawColor(renderer,rgb[0],rgb[1],rgb[2],(Uint8)clamp(c->life*14,0,240));SDL_FRect box=camera_rect((SDL_FRect){c->x/(float)Q*3,c->y/(float)Q*3,n&1?3:4.5f,2.5f});SDL_RenderFillRect(renderer,&box);}
 }

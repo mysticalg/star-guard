@@ -9,7 +9,7 @@ static int giant_world_y(int y){return 100+(int)((y-100+ex.giant.rootY)*giant_wo
 static int journey_number(void){return clamp(g.wave-1,0,MISSION_COUNT-1);}
 static int journey_kind(void){int m=journey_number();return journeyKinds[m][clamp(ex.section,0,journeyCounts[m]-1)];}
 static int organic_context(void){int k=journey_kind();return k==ENV_ROOT||k==ENV_HIVE||k==ENV_MOUTH||k==ENV_BEAST||k==ENV_TEETH;}
-static int journey_depth(void){int depth=ex.section;for(int m=0;m<journey_number();m++)depth+=journeyCounts[m];return depth;}
+static int journey_depth(void){int depth=0;for(int m=0;m<=journey_number();m++)for(int s=0;s<(m==journey_number()?clamp(ex.section,0,journeyCounts[m]):journeyCounts[m]);s++)depth+=journeyDepthWeight[m][s];return depth;}
 static int mission_phase(int wave){int m=clamp(wave-1,0,5);return journeyPhases[m][clamp(ex.section,0,journeyCounts[m]-1)];}
 static int mission_index(int phase){for(int m=0;m<6;m++)for(int s=0;s<journeyCounts[m];s++)if(journeyPhases[m][s]==phase)return m;return 0;}
 static int section_final(void){return ex.section==journeyCounts[journey_number()]-1;}
@@ -19,7 +19,7 @@ static int custom_environment(void){int k=journey_kind();return k!=ENV_SKY&&k!=E
 /* 150s active progression per mission, never 150s per scenery section. */
 static int finale_progress_pending(void){int m=journey_number();return ex.section==journeyGiantAt[m]&&(ex.miniDone||journeyMinis[m][ex.section]<0)&&ex.progressTicks<7500;}
 static int section_wave_target(void){if(environment_exclusive())return 0;int target=clamp(section_duration()/(formation_interval()+12)+1,4,32);return finale_progress_pending()&&g.clock>=section_duration()?g.groups+1:target;}
-static int section_duration(void){int m=journey_number();static const int duration[6][6]={{2200,1800,1400},{2200,2000,1400},{1800,1300,1800,1400},{2300,1700,2000},{2400,700,2200,1200},{1800,1400,1500,1600,1400,1200}};static const int postMini[6]={1500,1400,1200,1400,2000,0};if(ex.miniDone&&ex.section==journeyGiantAt[m]&&postMini[m])return postMini[m];return duration[m][clamp(ex.section,0,journeyCounts[m]-1)];}
+static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();static const int duration[6][JOURNEY_SECTIONS_MAX]={{2200,1800,1400},{2200,2000,1400},{1800,0,1800,0,1400},{2300,1700,2000},{2400,700,2200,1200},{1800,0,1400,1500,1600,0,1400,1200}};static const int postMini[6]={1500,1400,1200,1400,2000,0};if(ex.miniDone&&ex.section==journeyGiantAt[m]&&postMini[m])return postMini[m];return duration[m][clamp(ex.section,0,journeyCounts[m]-1)];}
 static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[clamp(g.chassis,0,2)];}
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}
