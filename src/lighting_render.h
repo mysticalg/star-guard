@@ -4,7 +4,7 @@
 static SDL_Texture *worldLightMasks[3];
 static int worldLightCount,worldLightDropped;
 static float worldLampStrength;
-typedef struct {float x,y,r;SDL_FColor colour;} WorldLight;
+typedef struct {float x,y,r;SDL_FColor colour;float outerRadius,outerAlpha;} WorldLight;
 static WorldLight worldLights[WORLD_LIGHT_MAX];
 static void lighting_init(void){for(int i=0;i<3;i++){worldLightMasks[i]=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_TARGET,120+60*i,100+50*i);if(worldLightMasks[i]){SDL_SetTextureScaleMode(worldLightMasks[i],SDL_SCALEMODE_LINEAR);SDL_SetTextureBlendMode(worldLightMasks[i],SDL_BLENDMODE_MOD);}}}
 static void world_light(float x,float y,float r,SDL_FColor c){if(worldLightCount==WORLD_LIGHT_MAX){worldLightDropped++;return;}worldLights[worldLightCount++]=(WorldLight){x,y,r,c};}
@@ -16,7 +16,9 @@ static void lighting_sources(void){
  static const float ahead[5]={0,18,50,90,140},radius[5]={24,18,25,32,40},strength[5]={1.8f,1.7f,1.6f,1.4f,1.1f};
  for(int i=0;i<5;i++)world_light(x,y-ahead[i],radius[i],(SDL_FColor){.88f,.95f,1,strength[i]*worldLampStrength});
  /* Critical hostile/player visibility has priority over optional explosions. */
- for(int i=0;i<MAXB+MAXS;i++){Obj *o=i<MAXB?g.bullets+i:g.shots+i-MAXB;if(!o->on)continue;SDL_FColor c=projectile_colour(o,i<MAXB);c.r=.45f+.55f*c.r;c.g=.45f+.55f*c.g;c.b=.45f+.55f*c.b;c.a=2.3f;world_light(o->x/(float)Q,o->y/(float)Q,i<MAXB?18:28,c);}
+ int projectileCount=0;for(int i=0;i<MAXB+MAXS;i++)projectileCount+=(i<MAXB?g.bullets[i].on:g.shots[i-MAXB].on)!=0;float outerAlpha=.55f/sqrtf(1+projectileCount/32.0f);
+ for(int i=0;i<MAXB+MAXS;i++){Obj*o=i<MAXB?g.bullets+i:g.shots+i-MAXB;if(!o->on||illuminationProbe73==3)continue;int hostile=i<MAXB,old=illuminationProbe73==2;SDL_FColor c=projectile_colour(o,hostile);c.r=.45f+.55f*c.r;c.g=.45f+.55f*c.g;c.b=.45f+.55f*c.b;c.a=old?2.3f:1.9f;int first=worldLightCount;world_light(o->x/(float)Q,o->y/(float)Q,old?(hostile?18:28):(hostile?20:30),c);if(!old&&worldLightCount>first){worldLights[first].outerRadius=hostile?55:78;worldLights[first].outerAlpha=outerAlpha;}}
+
  if(g.beam){SDL_FColor c=player_beam_colour();c.r=.5f+.5f*c.r;c.g=.5f+.5f*c.g;c.b=.5f+.5f*c.b;c.a=1.8f;for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float tip=terrain_beam_tip(lane),end=y-8;for(int i=0;i<6;i++){float yy=tip+(end-tip)*(i+.5f)/6;world_light(beam_center(lane,(int)yy),yy,fmaxf(26,(end-tip)/6),c);}}}
 
  /* Actual Nova/EMP expansion also reveals surfaces at its moving blast front. */
@@ -33,7 +35,8 @@ static void lighting_apply(int cameraActive){
  SDL_Texture *target=SDL_GetRenderTarget(renderer);SDL_SetRenderTarget(renderer,mask);SDL_SetRenderLogicalPresentation(renderer,960,800,SDL_LOGICAL_PRESENTATION_STRETCH);
  float ambient=ex.lightReady?ex.lightAmbient:lighting_target();int a=(int)(255*ambient);SDL_SetRenderDrawColor(renderer,a,a,a,255);SDL_RenderClear(renderer);
  SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_ADD);nquad=0;
- for(int i=0;i<worldLightCount;i++){WorldLight *l=worldLights+i;if(l->colour.a<=0)continue;int first=nquad;quad(0,0,1,1,l->colour,0,0,1,1);float xx[4]={l->x-l->r,l->x+l->r,l->x+l->r,l->x-l->r},yy[4]={l->y-l->r,l->y-l->r,l->y+l->r,l->y+l->r};for(int j=0;j<4;j++){world_light_point(xx+j,yy+j);vertices[first*4+j].position=(SDL_FPoint){xx[j],yy[j]};}}
+ for(int i=0;i<worldLightCount;i++){WorldLight*l=worldLights+i;if(l->colour.a<=0)continue;for(int pass=l->outerRadius>0?0:1;pass<2;pass++){float radius=pass?l->r:l->outerRadius;SDL_FColor colour=l->colour;if(!pass){colour.r=.7f+.3f*colour.r;colour.g=.7f+.3f*colour.g;colour.b=.7f+.3f*colour.b;colour.a=l->outerAlpha;}int first=nquad;quad(0,0,1,1,colour,0,0,1,1);float xx[4]={l->x-radius,l->x+radius,l->x+radius,l->x-radius},yy[4]={l->y-radius,l->y-radius,l->y+radius,l->y+radius};for(int j=0;j<4;j++){world_light_point(xx+j,yy+j);vertices[first*4+j].position=(SDL_FPoint){xx[j],yy[j]};}}}
+
  flush(halo);SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_ADD);SDL_SetRenderTarget(renderer,target);SDL_SetRenderLogicalPresentation(renderer,960,800,cameraActive?SDL_LOGICAL_PRESENTATION_STRETCH:SDL_LOGICAL_PRESENTATION_LETTERBOX);
  SDL_Rect clip={0,72,960,696};SDL_SetRenderClipRect(renderer,&clip);SDL_RenderTexture(renderer,mask,0,0);SDL_SetRenderClipRect(renderer,0);
 }

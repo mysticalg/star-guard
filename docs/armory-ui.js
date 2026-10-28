@@ -17,7 +17,7 @@ window.Armory=(()=>{
   drawLoadout(preflightLoadout,false);document.querySelector('#start').addEventListener('click',()=>dispose());show('intro');
  }
  function show(tab){dispose();if(hangar)hangar.hidden=tab!=='intro';document.querySelector('#cover').dataset.view=tab;refreshHangar();}
- function engine(){return enginePromise??=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='armory-range.js?v=72';script.onload=()=>StarGuardRange({locateFile:p=>p+'?v=72'}).then(resolve,reject);script.onerror=reject;document.head.append(script);});}
+ function engine(){return enginePromise??=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='armory-range.js?v=73';script.onload=()=>StarGuardRange({locateFile:p=>p+'?v=73'}).then(resolve,reject);script.onerror=reject;document.head.append(script);});}
  async function preview(host,s,w,v,q,armour){
   dispose();let dead=false,raf=0,visible=false,playing=!reduced.matches,last=0,acc=0,ticks=0,range;
   const canvas=document.createElement('canvas');canvas.width=640;canvas.height=420;canvas.setAttribute('aria-label',WeaponVariants[s][w][v].name+' firing demonstration');host.append(canvas);
