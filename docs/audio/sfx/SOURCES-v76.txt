@@ -1,0 +1,36 @@
+Recorded audio76 sources and edits.
+Original downloads, license pages and exact SHA256 preserved in art-source/audio-v76/.
+These source downloads are official public HQ compressed MP3 previews, not original author WAV/FLAC.
+Adaptations: timed excerpts, mono downmix, high/low-pass filters, gain normalization, short fades,100ms recorded tail/head seam crossfades for loops. No synthesized tones replace these recordings.
+
+mechanical gun burst by qubodup
+https://freesound.org/people/qubodup/sounds/239138/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+recorded J79 military jet start-cart by C-V
+https://freesound.org/people/C-V/sounds/704945/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+physical metal crash by moxobna
+https://freesound.org/people/moxobna/sounds/40158/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+recorded monster vocal growl by Joao_Janz
+https://freesound.org/people/Joao_Janz/sounds/483782/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+recorded varied monster vocals by Kodack
+https://freesound.org/people/Kodack/sounds/256602/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+recorded lotion squelches by decadylan
+https://freesound.org/people/decadylan/sounds/825806/
+CC0 1.0 https://creativecommons.org/publicdomain/zero/1.0/
+
+Tesla Coil - Electricity by Why_O
+https://freesound.org/people/Why_O/sounds/633172/
+CC BY 4.0 https://creativecommons.org/licenses/by/4.0/
+
+Existing Tabasco recorded gunfire, rubberduck explosions/rock, BMacZero metal, ecfike/giwake ice and approved thunder/rain retain their original sources/credits in SOURCES.txt and ../weather-credits.txt.
+
+Pickup speech:19short item/weapon names, locally synthesized with Microsoft Zira Desktop via Windows SAPI. Exact text/source WAVs and processing in art-source/voice-v76/. Existing announcements retained; verbose old pickup clips are not used for the new name-only pickup path.

@@ -1,0 +1,23 @@
+/* Recorded propulsion/beam beds share the game's master and limiter.
+ * Eight live/fading sources total; scene IDs and actual movement own lifetime. */
+window.RecordedDrive76=(()=>{
+ function create(context,master,buffers,tail){
+  const engines=new Map(),beams=new Map(),all=new Set();let scene=null,starts=0,stops=0,evicted=0,peak=0;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  function dispose(t){if(t.disposed)return;t.disposed=true;all.delete(t);if(engines.get(t.id)===t)engines.delete(t.id);if(beams.get(t.id)===t)beams.delete(t.id);for(const n of t.nodes)n.disconnect();}
+  function halt(t,fade=.035){if(t.disposed)return;if(!t.stopping){t.stopping=true;t.endsAt=context.currentTime+fade;t.g.gain.cancelScheduledValues(context.currentTime);t.g.gain.setTargetAtTime(0,context.currentTime,.009);try{t.s.stop(t.endsAt);}catch{}stops++;}else if(!fade){try{t.s.stop(context.currentTime);}catch{}}if(!fade)dispose(t);}
+  function sweep(){for(const t of all)if(t.stopping&&t.endsAt<=context.currentTime)dispose(t);}
+  function room(){sweep();while(all.size>=8){const oldest=[...all].find(t=>t.stopping)||[...engines.values()].sort((a,b)=>a.target-b.target)[0];if(!oldest)return false;halt(oldest,0);evicted++;}return true;}
+  function bed(id,key,isBeam){const buffer=buffers[key];if(!buffer||!room())return null;const s=context.createBufferSource(),g=context.createGain(),pan=context.createStereoPanner(),filter=context.createBiquadFilter();s.buffer=buffer;s.loop=true;s.loopStart=0;s.loopEnd=buffer.duration;g.gain.value=0;filter.type='lowpass';filter.frequency.value=isBeam?8500:7200;filter.Q.value=.35;s.connect(filter);filter.connect(g);g.connect(pan);pan.connect(master);const t={id,key,s,g,pan,filter,nodes:[s,g,pan,filter],target:0,rate:1,position:0,isBeam,stopping:false,disposed:false};s.onended=()=>dispose(t);all.add(t);s.start(context.currentTime,isBeam?0:((Number(id)*.61803398875)%1)*buffer.duration);starts++;peak=Math.max(peak,all.size);return t;}
+  function parameter(t,name,value,time){const prop=name==='target'?'gain':name==='position'?'pan':'playbackRate',node=name==='target'?t.g:name==='position'?t.pan:t.s;if(Math.abs(t[name]-value)>.001){node[prop].setTargetAtTime(value,context.currentTime,time);t[name]=value;}}
+  function stopAll(){for(const t of all)halt(t,0);engines.clear();beams.clear();}
+  function leaseBeam(id,pan,volume,triple=false,seconds=.18){let t=beams.get(id);const signature=triple?'triple':'single';let fresh=false;if(t&&(t.stopping||t.signature!==signature)){halt(t);beams.delete(id);t=null;}if(!t){if(beams.size>=2)return false;t=bed(id,'laser-sustain-v76',true);if(!t)return false;t.signature=signature;beams.set(id,t);fresh=true;}t.lease=context.currentTime+seconds;parameter(t,'target',clamp(volume/100,0,1.1)*(triple?.16:.13),.025);parameter(t,'position',clamp(pan,-.85,.85),.035);parameter(t,'rate',triple?.88:1,.04);return fresh;}
+  function observe(frame){sweep();if(frame.quiet){stopAll();scene=frame.scene;return;}if(scene!==frame.scene){if(scene!==null)stopAll();scene=frame.scene;}
+   const seen=new Set();for(const e of frame.sources.slice(0,6)){if(!e.id||e.drive<=0)continue;seen.add(e.id);const key=e.kind===2?'machine-energy-loop-v76':'engine-jet-loop-v76';let t=engines.get(e.id);if(t&&(t.key!==key||t.stopping)){halt(t);engines.delete(e.id);t=null;}if(!t){if(engines.size>=6)continue;t=bed(e.id,key,false);if(!t)continue;engines.set(e.id,t);}const gain=(e.kind===2?.105:.15)*clamp(e.drive,0,1.4)*clamp(e.near,0,1);parameter(t,'target',gain,.065);parameter(t,'position',clamp(e.pan,-.85,.85),.07);parameter(t,'rate',e.kind===2?.8+clamp(e.drive,0,1.4)*.12:.74+clamp(e.drive,0,1.4)*.36,.08);}
+   for(const [id,t]of engines)if(!seen.has(id)){engines.delete(id);halt(t);}
+   for(const [id,t]of beams)if((t.lease<=context.currentTime&&!(id==='player'&&frame.playerBeam===true))||(id==='player'&&frame.playerBeam===false)||(id==='hostile'&&frame.hostileBeam===false)){beams.delete(id);halt(t);if(tail)tail(id,t.position,t.signature);}
+  }
+  return{observe,leaseBeam,stopAll,get state(){return{recorded:true,engines:engines.size,beams:beams.size,sources:all.size,limit:8,peak,starts,stops,evicted,active:[...engines.values()].map(t=>({id:t.id,sample:t.key,driveRate:t.rate,gain:t.target,pan:t.position})),fading:[...all].filter(t=>t.stopping).length};}};
+ }
+ return{create};
+})();

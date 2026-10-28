@@ -1,37 +1,39 @@
 /* One small audio sprite and one decoded buffer; warnings outrank pickup chatter. */
 window.ShipVoice=(()=>{
-  let context,gain,buffer,clips,source,current,queue=[],enabled=true,paused=false,muted=false,previous=null,played=0;
+  let context,gain,buffer,clips,nameBuffer,nameClips,loading,source,current,pickupPlayed=0,queue=[],enabled=true,paused=false,muted=false,previous=null,played=0;
   const recent=new Map();
   async function load(){
-    if(context)return;
-    context=new (window.AudioContext||window.webkitAudioContext)();
-    gain=context.createGain();gain.gain.value=.8;gain.connect(context.destination);
-    await context.resume();
-    const [meta,data]=await Promise.all([fetch('vo/announcements.json?v=30').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=30').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();})]);
-    clips=meta.clips;buffer=await context.decodeAudioData(data);pump();
+    if(loading)return loading;
+    loading=(async()=>{
+      if(!context){context=window.GameAudio76?.get().context||new (window.AudioContext||window.webkitAudioContext)();gain=context.createGain();gain.gain.value=.8;gain.connect(window.GameAudio76?.get().input||context.destination);}
+      await context.resume();
+      const [meta,data,names,nameData]=await Promise.all([fetch('vo/announcements.json?v=30').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=30').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();}),fetch('vo/pickup-names-v76.json').then(r=>{if(!r.ok)throw Error('Pickup voice metadata');return r.json();}),fetch('vo/pickup-names-v76.mp3').then(r=>{if(!r.ok)throw Error('Pickup voice audio');return r.arrayBuffer();})]);
+      const decoded=await Promise.all([context.decodeAudioData(data),context.decodeAudioData(nameData)]);clips=meta.clips;nameClips=names.clips;buffer=decoded[0];nameBuffer=decoded[1];pump();
+    })();return loading;
   }
   function stop(){if(source){source.onended=null;try{source.stop();}catch{}source=null;}current=null;}
   function pump(){
     if(!buffer||!enabled||paused||muted||source||!queue.length)return;
-    const item=queue.shift(),clip=clips[item.key];if(!clip){pump();return;}
-    current=item;source=context.createBufferSource();source.buffer=buffer;source.connect(gain);source.onended=()=>{source=null;current=null;pump();};
-    source.start(0,clip.start,clip.duration);played++;
+    const item=queue.shift(),pickup=item.key.startsWith("pickup-")||item.key.startsWith("family-"),clip=(pickup?nameClips:clips)?.[item.key];if(!clip){pump();return;}
+    current=item;source=context.createBufferSource();source.buffer=pickup?nameBuffer:buffer;source.connect(gain);source.onended=()=>{source=null;current=null;pump();};
+    source.start(0,clip.start,clip.duration);played++;if(pickup)pickupPlayed++;
   }
   function say(key,priority=1){
     if(!enabled||muted)return;
-    const now=performance.now(),cooldown=key==='energy-low'?30000:key==='hull-critical'?15000:1500;if(now-(recent.get(key)||-100000)<cooldown)return;
+    const now=performance.now(),cooldown=key.startsWith('pickup-')||key.startsWith('family-')?600:key==='energy-low'?30000:key==='hull-critical'?15000:1500;if(now-(recent.get(key)??-100000)<cooldown)return;
     recent.set(key,now);
     if(priority>=3){queue=queue.filter(x=>x.priority>=priority);if(current&&current.priority<priority)stop();}
     queue.push({key,priority});queue.sort((a,b)=>b.priority-a.priority);if(queue.length>4)queue.length=4;pump();
   }
   function start(){queue=[];stop();previous=null;recent.clear();load().then(()=>{context.resume();if(!queue.length&&!source)say("mission-start",2);pump();}).catch(()=>{const button=document.querySelector('#voice-toggle');if(button)button.textContent='Ship voice unavailable';});}
   function observe(stat){
-    const s={mode:stat(1),sector:stat(15),tick:stat(55),pickup:stat(40),pickupTicks:stat(41),weapon:stat(2),ship:stat(56),warning:stat(33),morph:stat(46),form:stat(45),laser:stat(52),rear:stat(42),storm:stat(48),clear:stat(34),travel:stat(16),hull:stat(21),energy:stat(22)};
+    const s={mode:stat(1),sector:stat(15),tick:stat(55),pickup:stat(40),pickupTicks:stat(41),pickupSerial:stat(12280),pickupKind76:stat(12281),pickupFamily:stat(12282),weapon:stat(2),ship:stat(56),warning:stat(33),morph:stat(46),form:stat(45),laser:stat(52),rear:stat(42),storm:stat(48),clear:stat(34),travel:stat(16),hull:stat(21),energy:stat(22)};
     muted=!!stat(18);const pause=!!stat(6)||document.hidden||!document.hasFocus();
     if(muted){queue=[];stop();}gain&&(gain.gain.value=muted?0:.8);
     if(pause!==paused){paused=pause;if(context){if(paused)context.suspend();else context.resume().then(pump);}}
     const p=previous;if(p&&s.tick<p.tick){previous=null;start();return;}
     if(!p){if(s.sector>=0)say('sector-'+s.sector,1);previous=s;return;}
+    if(s.mode===1&&s.pickupSerial>0&&s.pickupSerial!==p.pickupSerial){const key=s.pickupKind76===10?(s.pickupFamily>=0&&s.pickupFamily<9?'family-'+s.pickupFamily:null):[2,4,5,6,7,8,9,11,12,13].includes(s.pickupKind76)?'pickup-'+s.pickupKind76:null;if(key)say(key,1);}
     if(s.mode===2&&p.mode!==2)say('game-over',4);
     if(s.sector!==p.sector&&s.sector>=0)say('sector-'+s.sector,2);
     if(s.warning&&!p.warning)say('boss-approach',3);
@@ -46,5 +48,5 @@ window.ShipVoice=(()=>{
     previous=s;
   }
   document.addEventListener('visibilitychange',()=>{if(context&&document.hidden){paused=true;context.suspend();}});
-  return {start,observe,get speaking(){return !!source&&!paused&&!muted&&enabled;},toggle(){enabled=!enabled;if(!enabled){queue=[];stop();}return enabled;},get state(){return {enabled,ready:!!buffer,current:current?.key||null,queued:queue.length,played,paused,muted};}};
+  return {start,observe,get speaking(){return !!source&&!paused&&!muted&&enabled;},toggle(){enabled=!enabled;if(!enabled){queue=[];stop();}return enabled;},get state(){return {enabled,ready:!!buffer,pickupReady:!!nameBuffer,pickupPlayed,current:current?.key||null,queued:queue.length,played,paused,muted};}};
 })();

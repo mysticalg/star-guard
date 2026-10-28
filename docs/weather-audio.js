@@ -8,11 +8,11 @@ window.WeatherAudio=(()=>{
  function silence(){if(!context)return;gain.gain.setTargetAtTime(0,context.currentTime,.025);rainGain.gain.setTargetAtTime(0,context.currentTime,.025);stopBooms();}
  function unlock(){
   if(!context){
-   context=new AudioContext();const noise=context.createBuffer(1,context.sampleRate*2,context.sampleRate),data=noise.getChannelData(0);let seed=621017;
+   context=window.GameAudio76?.get().context||new AudioContext();const noise=context.createBuffer(1,context.sampleRate*2,context.sampleRate),data=noise.getChannelData(0);let seed=621017;
    for(let i=0;i<data.length;i++){seed=(Math.imul(seed,1664525)+1013904223)|0;data[i]=(seed>>>0)/2147483648-1;}
-   bed=context.createBufferSource();bed.buffer=noise;bed.loop=true;filter=context.createBiquadFilter();filter.type='lowpass';gain=context.createGain();gain.gain.value=0;bed.connect(filter).connect(gain).connect(context.destination);bed.start();
-   rainGain=context.createGain();rainGain.gain.value=0;rainGain.connect(context.destination);
-   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=3;limiter.ratio.value=20;limiter.attack.value=.003;limiter.release.value=.3;thunderBus=context.createGain();thunderBus.gain.value=.7;thunderBus.connect(limiter).connect(context.destination);
+   bed=context.createBufferSource();bed.buffer=noise;bed.loop=true;filter=context.createBiquadFilter();filter.type='lowpass';gain=context.createGain();gain.gain.value=0;bed.connect(filter).connect(gain).connect(window.GameAudio76?.get().input||context.destination);bed.start();
+   rainGain=context.createGain();rainGain.gain.value=0;rainGain.connect(window.GameAudio76?.get().input||context.destination);
+   const limiter=context.createDynamicsCompressor();limiter.threshold.value=-8;limiter.knee.value=3;limiter.ratio.value=20;limiter.attack.value=.003;limiter.release.value=.3;thunderBus=context.createGain();thunderBus.gain.value=.7;thunderBus.connect(limiter).connect(window.GameAudio76?.get().input||context.destination);
    const load=async file=>{const r=await fetch(new URL('audio/'+file,document.baseURI));if(!r.ok)throw Error(file+' '+r.status);return context.decodeAudioData(await r.arrayBuffer());};
    loading=Promise.all([Promise.all(files.map(load)).then(a=>buffers=a),load('weather-rain-v65.ogg').then(buffer=>{rainSource=context.createBufferSource();rainSource.buffer=buffer;rainSource.loop=true;rainSource.connect(rainGain);rainSource.start();rainReady=true;})]).catch(e=>{error=e.message;console.error(e)});
   }

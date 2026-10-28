@@ -1,0 +1,80 @@
+[
+  {
+    "author": "qubodup",
+    "id": 239138,
+    "role": "mechanical gun burst",
+    "source": "https://freesound.org/people/qubodup/sounds/239138/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/239/239138_71257-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 65760,
+    "sha256": "80d46f0efe1e8f1cafdbc64cec2b4c2918ed25947f49bf6a494de22ca7a61489",
+    "originalFile": "qubodup-239138-public-hq-original.mp3"
+  },
+  {
+    "author": "C-V",
+    "id": 704945,
+    "role": "recorded J79 military jet start-cart",
+    "source": "https://freesound.org/people/C-V/sounds/704945/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/704/704945_8956746-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 3735168,
+    "sha256": "f8d7cb2fb0752ca3c371d60fbef12f9f3520263a5826b40c8573990cd8aae455",
+    "originalFile": "C-V-704945-public-hq-original.mp3"
+  },
+  {
+    "author": "moxobna",
+    "id": 40158,
+    "role": "physical metal crash",
+    "source": "https://freesound.org/people/moxobna/sounds/40158/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/40/40158_43834-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 105820,
+    "sha256": "bca4ff755425d5201a69b8562020e059251af19426906a56870a64105da2e254",
+    "originalFile": "moxobna-40158-public-hq-original.mp3"
+  },
+  {
+    "author": "Joao_Janz",
+    "id": 483782,
+    "role": "recorded monster vocal growl",
+    "source": "https://freesound.org/people/Joao_Janz/sounds/483782/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/483/483782_9961300-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 68208,
+    "sha256": "31a3a0bf047b1f1b4670469975a5046082fd42c17e7180a7ca69b593adfa5ba4",
+    "originalFile": "Joao_Janz-483782-public-hq-original.mp3"
+  },
+  {
+    "author": "Kodack",
+    "id": 256602,
+    "role": "recorded varied monster vocals",
+    "source": "https://freesound.org/people/Kodack/sounds/256602/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/256/256602_2276808-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 547932,
+    "sha256": "739c24fba6cb6117c78544a4518ef93d15ed60112bf1d6e0ba26388ccea487c6",
+    "originalFile": "Kodack-256602-public-hq-original.mp3"
+  },
+  {
+    "author": "decadylan",
+    "id": 825806,
+    "role": "recorded lotion squelches",
+    "source": "https://freesound.org/people/decadylan/sounds/825806/",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/825/825806_17840216-hq.mp3",
+    "downloadKind": "Highest public HQ MP3 preview; compressed licensed source, not raw author WAV/FLAC",
+    "bytes": 217969,
+    "sha256": "c622d1a64bdadab91b8bbfa16dcef145306d0048cc0b99a205faad14737ef8e2",
+    "originalFile": "decadylan-825806-public-hq-original.mp3"
+  }
+]

@@ -1,0 +1,102 @@
+{
+  "voice": "Microsoft Zira Desktop",
+  "origin": "Locally synthesized with Windows SAPI; original full utterances preserved in art-source/voice-v76",
+  "nameOnly": true,
+  "clips": {
+    "family-0": {
+      "start": 0.0,
+      "duration": 0.579092970521542,
+      "text": "Pulse"
+    },
+    "family-1": {
+      "start": 0.699092970521542,
+      "duration": 0.7491609977324263,
+      "text": "Spread"
+    },
+    "family-2": {
+      "start": 1.5682539682539682,
+      "duration": 0.6400907029478458,
+      "text": "Rapid"
+    },
+    "family-3": {
+      "start": 2.328344671201814,
+      "duration": 0.6006575963718821,
+      "text": "Laser"
+    },
+    "family-4": {
+      "start": 3.0490022675736963,
+      "duration": 0.6386848072562358,
+      "text": "Seeker"
+    },
+    "family-5": {
+      "start": 3.807687074829932,
+      "duration": 0.7710204081632653,
+      "text": "Death Laser"
+    },
+    "family-6": {
+      "start": 4.698707482993197,
+      "duration": 0.6101587301587301,
+      "text": "Ricochet"
+    },
+    "family-7": {
+      "start": 5.428866213151927,
+      "duration": 0.8611111111111112,
+      "text": "Bounce Laser"
+    },
+    "family-8": {
+      "start": 6.409977324263038,
+      "duration": 0.6639229024943311,
+      "text": "Tesla"
+    },
+    "pickup-2": {
+      "start": 7.1939002267573695,
+      "duration": 0.5884126984126984,
+      "text": "Shield"
+    },
+    "pickup-4": {
+      "start": 7.902312925170068,
+      "duration": 0.5892517006802721,
+      "text": "Ship"
+    },
+    "pickup-5": {
+      "start": 8.61156462585034,
+      "duration": 0.513718820861678,
+      "text": "Bomb"
+    },
+    "pickup-6": {
+      "start": 9.245283446712017,
+      "duration": 0.7947392290249433,
+      "text": "Option"
+    },
+    "pickup-7": {
+      "start": 10.160022675736961,
+      "duration": 0.5538321995464852,
+      "text": "Power"
+    },
+    "pickup-8": {
+      "start": 10.833854875283446,
+      "duration": 0.7894331065759638,
+      "text": "Satellite"
+    },
+    "pickup-9": {
+      "start": 11.74328798185941,
+      "duration": 0.6078684807256236,
+      "text": "Dropper"
+    },
+    "pickup-11": {
+      "start": 12.471156462585034,
+      "duration": 0.8654421768707483,
+      "text": "Salvage"
+    },
+    "pickup-12": {
+      "start": 13.456598639455782,
+      "duration": 0.5845578231292518,
+      "text": "Energy"
+    },
+    "pickup-13": {
+      "start": 14.161156462585033,
+      "duration": 0.6494784580498866,
+      "text": "Chaff"
+    }
+  }
+}
