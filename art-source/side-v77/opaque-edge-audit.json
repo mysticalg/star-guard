@@ -1,0 +1,107 @@
+[
+  {
+    "file": "mini07-scorpion-phase1-original.png",
+    "opaqueBBox": [
+      68,
+      4,
+      1671,
+      862
+    ],
+    "edgeMax": [
+      7,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "file": "mini07-scorpion-phase2-original.png",
+    "opaqueBBox": [
+      62,
+      17,
+      1716,
+      871
+    ],
+    "edgeMax": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "file": "mini07-scorpion-phase3-original.png",
+    "opaqueBBox": [
+      39,
+      9,
+      1751,
+      870
+    ],
+    "edgeMax": [
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "file": "type07-minelayer-original.png",
+    "opaqueBBox": [
+      59,
+      53,
+      1998,
+      687
+    ],
+    "edgeMax": [
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "file": "type13-amber-wasp-original.png",
+    "opaqueBBox": [
+      39,
+      39,
+      1815,
+      776
+    ],
+    "edgeMax": [
+      0,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "file": "type16-segmented-bomber-original.png",
+    "opaqueBBox": [
+      121,
+      121,
+      2042,
+      597
+    ],
+    "edgeMax": [
+      0,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "file": "type21-rail-sniper-original.png",
+    "opaqueBBox": [
+      168,
+      100,
+      2004,
+      621
+    ],
+    "edgeMax": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]

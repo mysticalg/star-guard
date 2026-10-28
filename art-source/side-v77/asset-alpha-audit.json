@@ -1,0 +1,164 @@
+[
+  {
+    "file": "mini07-scorpion-phase1-final.png",
+    "size": [
+      1774,
+      887
+    ],
+    "alpha": [
+      31,
+      17,
+      1734,
+      871
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "563598ef395c4057eaa74b7464c245b83ebc3383e7f6a1fa9e38cafff1be5bdc"
+  },
+  {
+    "file": "mini07-scorpion-phase1-original.png",
+    "size": [
+      1774,
+      887
+    ],
+    "alpha": [
+      33,
+      0,
+      1750,
+      865
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "682cbfe3db06393c216e0181d65688dc00e51adf5e1733802f2e952f3e23d215"
+  },
+  {
+    "file": "mini07-scorpion-phase2-original.png",
+    "size": [
+      1774,
+      887
+    ],
+    "alpha": [
+      49,
+      14,
+      1746,
+      873
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "54d81ed63d88dd0a5a55d61b56e1498ae7119b19ba1012e1d2a2fef0711aa8f2"
+  },
+  {
+    "file": "mini07-scorpion-phase3-original.png",
+    "size": [
+      1774,
+      887
+    ],
+    "alpha": [
+      0,
+      0,
+      1756,
+      872
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "eb6f205c6a12ebcd7a6ec5a8087df855dfcd0ef986c441f0f4b21288ddd41dec"
+  },
+  {
+    "file": "type07-minelayer-original.png",
+    "size": [
+      2060,
+      763
+    ],
+    "alpha": [
+      0,
+      0,
+      2054,
+      747
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "a53ee57d67c49a13dda3ab338da3c2715f26df9001bba3d5981b89782f735d71"
+  },
+  {
+    "file": "type13-amber-wasp-original.png",
+    "size": [
+      1942,
+      809
+    ],
+    "alpha": [
+      35,
+      31,
+      1922,
+      809
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "6a334339ac8dcaf12383e0ca0f777360a801d39830f95e83493fe5ea09d4635e"
+  },
+  {
+    "file": "type16-segmented-bomber-original.png",
+    "size": [
+      2161,
+      728
+    ],
+    "alpha": [
+      25,
+      22,
+      2085,
+      728
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "fb49594f53a67d239305fdb7ae965c797d7f3fab8c7728f6607e6d4ef5fbadf3"
+  },
+  {
+    "file": "type21-rail-sniper-original.png",
+    "size": [
+      2172,
+      724
+    ],
+    "alpha": [
+      41,
+      69,
+      2132,
+      700
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "4788fcab3af6096c5662b132d6fcbc14116ffbfc05de4f38061db150eeb617ab"
+  },
+  {
+    "file": "type21-rail-sniper-photoreal-preview.png",
+    "size": [
+      2172,
+      724
+    ],
+    "alpha": [
+      106,
+      19,
+      2136,
+      724
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "sha256": "9594d5558f24d656f62c8b97c5d7bfc575df9ba159af1204843bef0e8c1584c5"
+  }
+]

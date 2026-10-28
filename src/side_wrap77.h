@@ -1,0 +1,2 @@
+/* Keep vertical art and ordinary main-sprite identities; blend whole views. */
+void pc_enemy_sprite(int n,Obj*o,float x,float y){int begin=ndraw;pc_enemy_sprite_vertical77(n,o,x,y);if(sideBlend<.0001f)return;int count=ndraw-begin;for(int i=0;i<count;i++){Draw*d=draws+begin+i;int id=side_index77(o,d->n);if(!id)continue;if(sideBlend>.9999f){d->sideArt77=id;continue;}Draw side=*d;side.sideArt77=id;side.opacity*=sideBlend;if(ndraw<256){d->opacity*=1-sideBlend;draws[ndraw++]=side;}else if(sideBlend>=.5f)d->sideArt77=id;}}

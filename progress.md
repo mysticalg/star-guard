@@ -50,3 +50,9 @@ Release72 hotfix: reproduced independent all-clear gate at cavern group4/8; remo
 Release76 follow-up: corrected mini charge/fire timing, real aircraft and giant beam phases now own recorded sustain lifetime; quiet boss organic fire uses sparse growls, engine loops use identity-dependent recorded offsets. Attack/damage durations unchanged. Final PCM/mix and native/browser checks pending.
 
 76 final:11 native affected suites and latest5 retests passed; old giant-tactics line17 repeats on pristine75. Shared final output removes real captured default-mix clipping;11 actual PCM cases/voice/beam lifetimes/mute/pause pass. Bundled client screenshot/state inspected, known localhost scoreCORS only. Publication/liveverification next; entire expansion incomplete.
+
+77 local candidate: first ocean4types andscorpion3forms side-profile sources with realalpha masks; single boundedstartupatlas. Verticaloriginals retained; sharedcamera-sideblend, strength/damage/shadows/blur route. Actualcontact alpha and actualmuzzle/beam anchors being aligned/tested. NOT built/published yet. Humanfavorsrealisticrail counterpart; standalonecomparisonpreserved.
+
+77 renderedfirst4/3scorpionprofiles inspected: properlateral silhouettes; actualclaw/mouthpoints, nofalsejetsonscorpion. Native planes75 found type13caveclearance afterheadingupdates; fixing tofixedall-headingconservativesilhouettebounds, preservingfinehitmasks. Candidate remainslocal andnotreadytopublish.
+
+77 final verification: all3 rendered normalM1 routes pass firstmini->ocean4roster->scorpion->verticalwreck; all12affectednative3,164,184checks plus3shipnormal51,846. Final alpha/damage/broadphase targeted198,753 +2,015,799flight +57,163protection pass. Six final camera cases inclrealHP-hit/pause/mobile/halfblend/reducedmotion pass; pausedROI pixel-identical350ms after160msGPUsettle. Source-specific shadow candidate bounds added to match newprofiles; finalbuild/bundledclient/publication stillpending.

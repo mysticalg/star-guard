@@ -1,0 +1,149 @@
+[
+  {
+    "source": "type21-rail-sniper-photoreal-preview.png",
+    "runtime": "Assets\\modern\\side-v77\\rail-sniper.png",
+    "visibleBBox": [
+      108,
+      98,
+      2055,
+      641
+    ],
+    "width": 36,
+    "height": 10.040061633281972,
+    "bodyAnchor": [
+      0.56,
+      0.58
+    ],
+    "muzzle": [
+      0.02,
+      0.62
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "type07-minelayer-original.png",
+    "runtime": "Assets\\modern\\side-v77\\minelayer.png",
+    "visibleBBox": [
+      59,
+      53,
+      1998,
+      687
+    ],
+    "width": 36,
+    "height": 11.771015987622485,
+    "bodyAnchor": [
+      0.5,
+      0.6
+    ],
+    "muzzle": [
+      0.06,
+      0.54
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "type13-amber-wasp-original.png",
+    "runtime": "Assets\\modern\\side-v77\\amber-wasp.png",
+    "visibleBBox": [
+      39,
+      39,
+      1815,
+      776
+    ],
+    "width": 28,
+    "height": 11.61936936936937,
+    "bodyAnchor": [
+      0.48,
+      0.55
+    ],
+    "muzzle": [
+      0.25,
+      0.53
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "type16-segmented-bomber-original.png",
+    "runtime": "Assets\\modern\\side-v77\\segmented-bomber.png",
+    "visibleBBox": [
+      121,
+      121,
+      2042,
+      597
+    ],
+    "width": 38,
+    "height": 9.415929203539823,
+    "bodyAnchor": [
+      0.5,
+      0.56
+    ],
+    "muzzle": [
+      0.06,
+      0.53
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "mini07-scorpion-phase1-final.png",
+    "runtime": "Assets\\modern\\side-v77\\scorpion-1.png",
+    "visibleBBox": [
+      88,
+      23,
+      1695,
+      868
+    ],
+    "width": 75,
+    "height": 39.43683883011823,
+    "bodyAnchor": [
+      0.55,
+      0.66
+    ],
+    "muzzle": [
+      0.34,
+      0.68
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "mini07-scorpion-phase2-original.png",
+    "runtime": "Assets\\modern\\side-v77\\scorpion-2.png",
+    "visibleBBox": [
+      62,
+      17,
+      1716,
+      871
+    ],
+    "width": 75,
+    "height": 38.72430471584039,
+    "bodyAnchor": [
+      0.55,
+      0.66
+    ],
+    "muzzle": [
+      0.34,
+      0.68
+    ],
+    "alphaThreshold": 32
+  },
+  {
+    "source": "mini07-scorpion-phase3-original.png",
+    "runtime": "Assets\\modern\\side-v77\\scorpion-3.png",
+    "visibleBBox": [
+      39,
+      9,
+      1751,
+      870
+    ],
+    "width": 75,
+    "height": 37.71904205607477,
+    "bodyAnchor": [
+      0.55,
+      0.66
+    ],
+    "muzzle": [
+      0.34,
+      0.68
+    ],
+    "alphaThreshold": 32
+  }
+]
