@@ -31,7 +31,7 @@ static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->par
 static int giant_resist_mask(int n){return n<2?1<<7:n==4||n==5?1<<8:n==6?(1<<4)|(1<<9):0;}
 static void giant_hit_family(int n,int damage,int weapon){if(!giant_open(n))return;damage=player_enemy_damage(damage);GiantPart*p=ex.giant.parts+n;damage=family_resistance(damage,giant_resist_mask(n),weapon,p->x,p->y);giant_raw_hit(n,player_hit_roll(damage*(weapon>=0&&weapon<9?variant_damage_scale(weapon):100)/100,p->x,p->y));}
 static void giant_hit(int n,int damage){giant_hit_family(n,damage,g.weapon);}
-static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;damage=player_enemy_damage(tesla_damage(damage));GiantPart*p=ex.giant.parts+n;damage=family_resistance(damage,giant_resist_mask(n),8,p->x,p->y);int rolled=player_hit_roll(damage*variant_damage_scale(8)/100,p->x,p->y);p->dotTicks=150;p->dotDamage=rolled/10;if(!p->dotClock)p->dotClock=50;giant_raw_hit(n,rolled*70/100);}
+static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;damage=player_enemy_damage(tesla_damage(damage));GiantPart*p=ex.giant.parts+n;damage=family_resistance(damage,giant_resist_mask(n),8,p->x,p->y);int rolled=player_hit_roll(damage*variant_damage_scale(8)/100,p->x,p->y);p->dotTicks=150;p->dotDamage=rolled/10;if(!p->dotClock)p->dotClock=50;giant_raw_hit(n,rolled*90/100);}
 static void giant_fan(int x,int y,int speed,int spread){for(int n=-1;n<=1;n++)bullet(x*Q,y*Q,n*spread,speed);}
 #include "worm_long.h"
 #include "giant_attacks.h"

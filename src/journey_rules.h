@@ -32,13 +32,13 @@ static int custom_environment(void){int k=journey_kind();return k!=ENV_SKY&&k!=E
 /* Active time belongs to the whole mission; the escape budget remains after the finale. */
 static int mission_active_target(void){return missionActiveSeconds[journey_number()]*50;}
 static int mission_escape_budget(void){int m=journey_number(),ticks=0;for(int s=journeyGiantAt[m]+1;s<journeyCounts[m];s++)ticks+=journeySeconds[m][s]*50;return ticks;}
-static int finale_progress_pending(void){int m=journey_number();return ex.section==journeyGiantAt[m]&&(ex.miniDone||journeyMinis[m][ex.section]<0)&&ex.progressTicks<mission_active_target()-mission_escape_budget();}
+static int finale_progress_pending(void){return 0;}
 static int asteroid_combat_delay(int ticks){return weather_profile()==WEATHER_ASTEROID?ticks/2500*500+clamp(ticks%2500-600,0,500):0;}
 static int section_formation_clock(void){return g.clock-asteroid_combat_delay(ex.env.timer);}
-static int section_wave_target(void){if(journey_kind()==ENV_WALL)return 0;int duration=section_duration();if(!duration)return finale_progress_pending()?g.groups+1:0;int combat=duration-asteroid_combat_delay(duration),target=clamp(combat/(formation_interval()+12)+1,4,64);return finale_progress_pending()&&g.clock>=duration?g.groups+1:target;}
+static int section_wave_target(void){if(journey_kind()==ENV_WALL)return 0;int duration=section_duration();if(!duration)return 0;int combat=duration-asteroid_combat_delay(duration);return clamp(combat/500,4,10);}
 static int section_duration(void){if(journey_kind()==ENV_WALL)return 0;int m=journey_number();if(ex.miniDone&&ex.section==journeyGiantAt[m]&&journeyMinis[m][ex.section]>=0)return 0;return journeySeconds[m][ex.section]*50;}
 static int journey_exit_gate(int timer){int start=section_duration()-500;if(start<400)start=400;return (timer-start)*3/5-40;}
-static int mission_progress_ready(void){return !section_final()||ex.progressTicks>=mission_active_target();}
+static int mission_progress_ready(void){return 1;}
 static int ship_endurance(void){static const int pct[3]={100,120,85};return pct[clamp(g.chassis,0,2)];}
 static int ship_armour_damage(int damage){static const int armour[3]={100,80,130};static const int gear[4]={100,110,125,115};int effective=armour[g.chassis]*gear[clamp(g.armourGear,0,3)];return (damage*10000+effective-1)/effective;}
 static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weapon,0,8)]-150)*10/150,0,10);return (100-warm)*(ex.env.empActive?80:100)/100;}
@@ -49,11 +49,11 @@ static void journey_advance(void){
  if(!section_final()){ex.section++;ex.sectionHandover=1;}
  else if(g.wave<MISSION_COUNT){ex.refit=1;ex.refitNext=g.wave+1;ex.victory=ex.bossSpawned=ex.clearTicks=0;return;}
  else{ex.campaignWon=1;g.mode=2;g.score+=10000;return;}
- g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;
+ ex.waveActive=ex.waveAge=ex.waveRest=0;g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;
  ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;
 }
 static void journey_after_encounter(void){
- if(ex.encounterTier==1){ex.miniDone=1;ex.encounterTier=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;if(journeyGiantAt[journey_number()]==ex.section){g.clock=g.groups=0;return;}}
+ if(ex.encounterTier==1){ex.miniDone=1;ex.encounterTier=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;if(journeyGiantAt[journey_number()]==ex.section){ex.waveActive=ex.waveAge=ex.waveRest=0;g.clock=g.groups=0;return;}}
  journey_advance();
 }
 static void giant_start(void);
@@ -61,4 +61,4 @@ static void environment_step(int);
 
 static int giant_add_count(void){int n=0;for(int i=0;i<32;i++)n+=ex.env.hazards[i].on&&ex.env.hazards[i].type>=20&&ex.env.hazards[i].type<=25;return n;}
 
-static void journey_commit_refit(void){if(!ex.refit)return;g.wave=ex.refitNext;ex.section=0;ex.refit=ex.refitNext=0;ex.missionTicks=ex.progressTicks=0;ex.missionHandover=1;ex.sectionHandover=1;g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;}
+static void journey_commit_refit(void){if(!ex.refit)return;g.wave=ex.refitNext;ex.section=0;ex.refit=ex.refitNext=0;ex.missionTicks=ex.progressTicks=0;ex.missionHandover=1;ex.sectionHandover=1;ex.waveActive=ex.waveAge=ex.waveRest=0;g.clock=g.groups=0;ex.bossSpawned=ex.bossWarning=ex.clearTicks=ex.victory=0;ex.miniDone=ex.encounterTier=0;ex.giant=(Giant){0};ex.env=(Environment){.kind=-1};g.shield=120;}
