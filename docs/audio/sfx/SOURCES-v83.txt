@@ -1,0 +1,3 @@
+Ice83 reuses preserved licensed buffers; no new download or generated tones.
+Cryo stream: engine-jet-loop-v76.ogg from C-V recorded J79 jet start-cart, CC0, https://freesound.org/people/C-V/sounds/704945/ . Bandpass3600Hz/Q0.55, playback1.3, quiet sustained lease. Original SHA256/license/edits in art-source/audio-v76 and SOURCES-v76.txt.
+Encasing/shatter/thaw: existing glass/glass-alt1/glass-alt2 Kenney CC0 impact recordings, https://kenney.nl/assets/impact-sounds . Original source mappings/edits in SOURCES.txt; bounded pitch/gain/cooldown and shared audio budget.

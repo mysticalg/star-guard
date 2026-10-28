@@ -129,39 +129,39 @@
         "ship": 0,
         "slot": 3,
         "variant": 0,
-        "family": "Death Laser",
-        "name": "Vector Focus Death Laser",
-        "colour": "#78baff",
+        "family": "Ice",
+        "name": "Vector Focus Ice Stream",
+        "colour": "#8cddff",
         "damage": 100,
         "energy": 100,
         "speed": 100,
-        "description": "Standard calibrated pattern."
+        "description": "Accumulate cold to encase enemies; sustain fire to crack and shatter. Boss chills are brief with recovery."
       },
       {
         "id": 10,
         "ship": 0,
         "slot": 3,
         "variant": 1,
-        "family": "Death Laser",
-        "name": "Vector Flow Death Laser",
-        "colour": "#83fff1",
+        "family": "Ice",
+        "name": "Vector Flow Ice Stream",
+        "colour": "#c1f4ff",
         "damage": 94,
         "energy": 92,
-        "speed": 108,
-        "description": "6% lighter impact; 8% less energy and 8% faster projectiles."
+        "speed": 100,
+        "description": "6% lighter shatter impact; 8% less energy. Accumulate cold, encase, then shatter."
       },
       {
         "id": 11,
         "ship": 0,
         "slot": 3,
         "variant": 2,
-        "family": "Death Laser",
-        "name": "Vector Breaker Death Laser",
-        "colour": "#ffc477",
+        "family": "Ice",
+        "name": "Vector Breaker Ice Stream",
+        "colour": "#61b8ff",
         "damage": 108,
         "energy": 106,
-        "speed": 94,
-        "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+        "speed": 100,
+        "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
       }
     ],
     [
@@ -500,39 +500,39 @@
         "ship": 1,
         "slot": 3,
         "variant": 0,
-        "family": "Death Laser",
-        "name": "Jade Focus Death Laser",
-        "colour": "#55f0a0",
+        "family": "Ice",
+        "name": "Jade Focus Ice Stream",
+        "colour": "#8cddff",
         "damage": 100,
         "energy": 100,
         "speed": 100,
-        "description": "Standard calibrated pattern."
+        "description": "Accumulate cold to encase enemies; sustain fire to crack and shatter. Boss chills are brief with recovery."
       },
       {
         "id": 37,
         "ship": 1,
         "slot": 3,
         "variant": 1,
-        "family": "Death Laser",
-        "name": "Jade Flow Death Laser",
-        "colour": "#c6ff66",
+        "family": "Ice",
+        "name": "Jade Flow Ice Stream",
+        "colour": "#c1f4ff",
         "damage": 94,
         "energy": 92,
-        "speed": 108,
-        "description": "6% lighter impact; 8% less energy and 8% faster projectiles."
+        "speed": 100,
+        "description": "6% lighter shatter impact; 8% less energy. Accumulate cold, encase, then shatter."
       },
       {
         "id": 38,
         "ship": 1,
         "slot": 3,
         "variant": 2,
-        "family": "Death Laser",
-        "name": "Jade Breaker Death Laser",
-        "colour": "#70c8ff",
+        "family": "Ice",
+        "name": "Jade Breaker Ice Stream",
+        "colour": "#61b8ff",
         "damage": 108,
         "energy": 106,
-        "speed": 94,
-        "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+        "speed": 100,
+        "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
       }
     ],
     [
@@ -871,39 +871,39 @@
         "ship": 2,
         "slot": 3,
         "variant": 0,
-        "family": "Death Laser",
-        "name": "Crimson Focus Death Laser",
-        "colour": "#ff776b",
+        "family": "Ice",
+        "name": "Crimson Focus Ice Stream",
+        "colour": "#8cddff",
         "damage": 100,
         "energy": 100,
         "speed": 100,
-        "description": "Standard calibrated pattern."
+        "description": "Accumulate cold to encase enemies; sustain fire to crack and shatter. Boss chills are brief with recovery."
       },
       {
         "id": 64,
         "ship": 2,
         "slot": 3,
         "variant": 1,
-        "family": "Death Laser",
-        "name": "Crimson Flow Death Laser",
-        "colour": "#ffc05c",
+        "family": "Ice",
+        "name": "Crimson Flow Ice Stream",
+        "colour": "#c1f4ff",
         "damage": 94,
         "energy": 92,
-        "speed": 108,
-        "description": "6% lighter impact; 8% less energy and 8% faster projectiles."
+        "speed": 100,
+        "description": "6% lighter shatter impact; 8% less energy. Accumulate cold, encase, then shatter."
       },
       {
         "id": 65,
         "ship": 2,
         "slot": 3,
         "variant": 2,
-        "family": "Death Laser",
-        "name": "Crimson Breaker Death Laser",
-        "colour": "#ff78d0",
+        "family": "Ice",
+        "name": "Crimson Breaker Ice Stream",
+        "colour": "#61b8ff",
         "damage": 108,
         "energy": 106,
-        "speed": 94,
-        "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+        "speed": 100,
+        "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
       }
     ],
     [

@@ -29,5 +29,5 @@ for(int rank=1;rank<=4;rank++)for(int pods=0;pods<2;pods++){
  // The regular environment damage wrapper still applies resistance and fractional damage.
  EnvironmentHazard h={.on=1,.type=8,.x=160*Q,.y=120*Q,.hp=10000};int hp=h.hp*100;environment_weapon_hit(&h,beam_target_damage81(120,5),5);V(h.hp*100-h.wound<hp);V(h.hp*100-h.wound>hp-beam_target_damage81(120,5));
 }
-for(int rank=1;rank<=4;rank++){arena81(0,5,rank,0);int widths[4]={3,8,16,25},damage[4]={110,155,215,290};ex.multi=1;V(beam_half_width()==widths[rank-1]);V(beam_damage81(5)==damage[rank-1]);V(beam_target_damage81(120,5)==120*damage[rank-1]/110);g.weapon=3;ex.multi=0;g.weaponLevel[3]=rank;V(beam_damage81(3)==130+35*(rank-1));}
+for(int rank=1;rank<=4;rank++){arena81(0,5,rank,0);int widths[4]={3,8,16,25},damage[4]={110,155,215,290};ex.multi=1;V(beam_half_width()==widths[rank-1]);V(beam_damage81(5)==damage[rank-1]);V(beam_target_damage81(120,5)==120*damage[rank-1]/110);g.weapon=3;ex.multi=0;g.weaponLevel[3]=rank;V(beam_damage81(3)==ice_base83(rank));}
 printf("PASS %d Weapons81 checks: %d Spread shape/variant/muzzle/forward-pool/finitelife cases; %d full-aperture wall/pod/scroll/cache/cutting cases; actual Triple width/damage ranks.\n",checks,spreadCases,geometryCases);return 0;}

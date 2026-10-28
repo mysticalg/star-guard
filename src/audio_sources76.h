@@ -1,7 +1,7 @@
 /* Passive, fixed-tick audio selection. No gameplay state or RNG is changed. */
 typedef struct{u32 id;int kind,type;float drive,pan,near,priority;} AudioSource76;
 static AudioSource76 audioSources76[6];static int audioSourceCount76,audioSourceTick76=-1;
-void pc_audio_reset76(void){pc_audio_events_reset76();audioSourceCount76=0;audioSourceTick76=-1;}
+void pc_audio_reset76(void){pc_audio_events_reset76();pc_ice_reset83();audioSourceCount76=0;audioSourceTick76=-1;}
 static void audio_point76(float*x,float*y){*x=480+(*x*3-480)*journeyZoom;*y=420+(*y*3-420)*journeyZoom;flight_screen_point(x,y);}
 static float audio_effect_pan76(float x,float y){audio_point76(&x,&y);return fmaxf(-.85f,fminf(.85f,(x-480)/560));}
 static void audio_offer76(AudioSource76 a){int at=audioSourceCount76;for(int i=0;i<audioSourceCount76;i++)if(a.priority>audioSources76[i].priority){at=i;break;}if(at>=6)return;for(int i=clamp(audioSourceCount76,0,5);i>at;i--)audioSources76[i]=audioSources76[i-1];audioSources76[at]=a;audioSourceCount76=clamp(audioSourceCount76+1,0,6);}
@@ -14,7 +14,7 @@ static void audio_sources_step76(void){
   int hum=o->type==18||o->type==21||(o->type==15&&enemy_guarded(o))||(o->type==4&&(o->variant==8||o->variant==12||o->variant==14||o->variant==15||o->variant==16));
   audio_offer76((AudioSource76){o->serial,hum?2:1,o->type,drive,fmaxf(-.85f,fminf(.85f,(x-480)/560)),near*near,priority});
  }
- if(ex.giant.active&&!organic_context()){
+ if(ex.giant.active&&!ex.giant.ice83.frozen&&!organic_context()){
   Giant*b=&ex.giant;float x=b->parts[6].x,y=b->parts[6].y;audio_point76(&x,&y);float speed=hypotf(b->rootX-b->previousRootX,b->rootY-b->previousRootY),drive=fminf(1.25f,.35f+speed*.25f);
   audio_offer76((AudioSource76){0x40000000u+(u32)g.wave,b->archetype==0?1:2,100+b->archetype,drive,fmaxf(-.8f,fminf(.8f,(x-480)/560)),.85f,2});
  }

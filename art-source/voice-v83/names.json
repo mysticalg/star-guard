@@ -1,0 +1,26 @@
+{
+  "voice": "Microsoft Zira Desktop",
+  "rate": 0,
+  "clips": {
+    "family-0": "Pulse",
+    "family-1": "Spread",
+    "family-2": "Rapid",
+    "family-3": "Ice",
+    "family-4": "Seeker",
+    "family-5": "Death Laser",
+    "family-6": "Ricochet",
+    "family-7": "Bounce Laser",
+    "family-8": "Tesla",
+    "pickup-2": "Shield",
+    "pickup-4": "Ship",
+    "pickup-5": "Bomb",
+    "pickup-6": "Option",
+    "pickup-7": "Power",
+    "pickup-8": "Satellite",
+    "pickup-9": "Dropper",
+    "pickup-11": "Salvage",
+    "pickup-12": "Energy",
+    "pickup-13": "Chaff"
+  },
+  "preserves": "Other18 original full Windows SAPI utterances copied unchanged from voice-v76."
+}

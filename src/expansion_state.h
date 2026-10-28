@@ -1,5 +1,6 @@
 typedef struct {int x,y,life,tint;} Trail;
 typedef struct {
+ int iceFreezes83,iceShatters83,iceThaws83,iceLastTick83;
  Bombing bombing;
  int waveActive,waveAge,waveRest,waveCleared,waveEnrageSerial;
  float lightAmbient,lightTarget;int lightReady;

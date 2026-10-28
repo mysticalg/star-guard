@@ -7,7 +7,7 @@ window.ShipVoice=(()=>{
     loading=(async()=>{
       if(!context){context=window.GameAudio76?.get().context||new (window.AudioContext||window.webkitAudioContext)();gain=context.createGain();gain.gain.value=.8;gain.connect(window.GameAudio76?.get().input||context.destination);}
       await context.resume();
-      const [meta,data,names,nameData]=await Promise.all([fetch('vo/announcements.json?v=30').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=30').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();}),fetch('vo/pickup-names-v76.json').then(r=>{if(!r.ok)throw Error('Pickup voice metadata');return r.json();}),fetch('vo/pickup-names-v76.mp3').then(r=>{if(!r.ok)throw Error('Pickup voice audio');return r.arrayBuffer();})]);
+      const [meta,data,names,nameData]=await Promise.all([fetch('vo/announcements.json?v=30').then(r=>{if(!r.ok)throw Error('Voice metadata');return r.json();}),fetch('vo/announcements.mp3?v=30').then(r=>{if(!r.ok)throw Error('Voice audio');return r.arrayBuffer();}),fetch('vo/pickup-names-v83.json').then(r=>{if(!r.ok)throw Error('Pickup voice metadata');return r.json();}),fetch('vo/pickup-names-v83.mp3').then(r=>{if(!r.ok)throw Error('Pickup voice audio');return r.arrayBuffer();})]);
       const decoded=await Promise.all([context.decodeAudioData(data),context.decodeAudioData(nameData)]);clips=meta.clips;nameClips=names.clips;buffer=decoded[0];nameBuffer=decoded[1];pump();
     })();return loading;
   }

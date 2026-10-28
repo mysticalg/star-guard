@@ -17,3 +17,5 @@
 @media(max-width:600px){#hangar .ship-specs span{position:relative;display:block;min-width:0}#hangar .ship-specs b{position:absolute;right:0;top:15px;background:#0b1926;padding-left:3px;z-index:1}#hangar .ship-specs meter{width:calc(100% - 28px)}}
 
 .menu-open #cover .preflight-nav button{transition:border-color .15s}
+
+#mini-banks .weapon-slot[data-weapon="3"] .ability-art,#weapon-batteries .weapon-slot[data-weapon="3"] .ability-art{background-image:url("images/ice-v83.svg");background-size:cover;background-position:center!important}
