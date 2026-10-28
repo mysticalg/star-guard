@@ -1,7 +1,7 @@
 /* Passive, fixed-tick audio selection. No gameplay state or RNG is changed. */
 typedef struct{u32 id;int kind,type;float drive,pan,near,priority;} AudioSource76;
 static AudioSource76 audioSources76[6];static int audioSourceCount76,audioSourceTick76=-1;
-void pc_audio_reset76(void){pc_audio_events_reset76();pc_ice_reset83();audioSourceCount76=0;audioSourceTick76=-1;}
+void pc_audio_reset76(void){pc_audio_events_reset76();pc_ice_reset83();pc_siphon_reset84();audioSourceCount76=0;audioSourceTick76=-1;}
 static void audio_point76(float*x,float*y){*x=480+(*x*3-480)*journeyZoom;*y=420+(*y*3-420)*journeyZoom;flight_screen_point(x,y);}
 static float audio_effect_pan76(float x,float y){audio_point76(&x,&y);return fmaxf(-.85f,fminf(.85f,(x-480)/560));}
 static void audio_offer76(AudioSource76 a){int at=audioSourceCount76;for(int i=0;i<audioSourceCount76;i++)if(a.priority>audioSources76[i].priority){at=i;break;}if(at>=6)return;for(int i=clamp(audioSourceCount76,0,5);i>at;i--)audioSources76[i]=audioSources76[i-1];audioSources76[at]=a;audioSourceCount76=clamp(audioSourceCount76+1,0,6);}

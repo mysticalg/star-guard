@@ -162,6 +162,20 @@
         "energy": 106,
         "speed": 100,
         "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
+      },
+      {
+        "id": 82,
+        "ship": 0,
+        "slot": 3,
+        "variant": 3,
+        "family": "Siphon",
+        "name": "Vector Siphon Beam",
+        "colour": "#bf7dff",
+        "damage": 100,
+        "energy": 120,
+        "speed": 100,
+        "tag": "S",
+        "description": "The main stream returns limited energy from live hull damage and briefly disables weapons. Enemies keep moving. Shields and frozen targets return no energy; pod and auxiliary echoes deal damage only."
       }
     ],
     [
@@ -533,6 +547,20 @@
         "energy": 106,
         "speed": 100,
         "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
+      },
+      {
+        "id": 86,
+        "ship": 1,
+        "slot": 3,
+        "variant": 3,
+        "family": "Siphon",
+        "name": "Jade Siphon Beam",
+        "colour": "#bf7dff",
+        "damage": 100,
+        "energy": 120,
+        "speed": 100,
+        "tag": "S",
+        "description": "The main stream returns limited energy from live hull damage and briefly disables weapons. Enemies keep moving. Shields and frozen targets return no energy; pod and auxiliary echoes deal damage only."
       }
     ],
     [
@@ -904,6 +932,20 @@
         "energy": 106,
         "speed": 100,
         "description": "8% heavier shatter impact; 6% more energy. Accumulate cold, encase, then shatter."
+      },
+      {
+        "id": 90,
+        "ship": 2,
+        "slot": 3,
+        "variant": 3,
+        "family": "Siphon",
+        "name": "Crimson Siphon Beam",
+        "colour": "#bf7dff",
+        "damage": 100,
+        "energy": 120,
+        "speed": 100,
+        "tag": "S",
+        "description": "The main stream returns limited energy from live hull damage and briefly disables weapons. Enemies keep moving. Shields and frozen targets return no energy; pod and auxiliary echoes deal damage only."
       }
     ],
     [

@@ -1,0 +1,3 @@
+Siphon84 reuses preserved real recordings; no new oscillator/noise placeholders.
+Sustained Siphon: machine-energy-loop-v76.ogg, original Why_O Tesla Coil recording https://freesound.org/people/Why_O/sounds/633172/ CC BY4.0 https://creativecommons.org/licenses/by/4.0/ . Existing1.2s/2.2s excerpt,90..1800Hz filtering,seam loop; Siphon adds900Hz bandpassQ.7/playback1.04/quiet gain.14.
+Actual energy-return transient: existing laser-tail-v76 alias to laser-discharge-v76.ogg, sameWhy_O recorded Tesla source3.2s/.42s excerpt, filtered2600Hz/quietgain.08/sharedbus. Only actual credited hull damage triggers it; sourcecount/cooldowns/master limiter unchanged. Original MP3/WAV/licence/provenance retained in art-source/audio-v76 andSOURCES-v76.txt.

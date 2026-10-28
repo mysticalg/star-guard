@@ -1,0 +1,7 @@
+/* Keep the original 27 inventory bits. Four reserved ownership flags use
+ * bits27..30; never shift nine four-bit inventories into a 32-bit argument. */
+static int premium84_index(int w){return w==0?0:w==3?1:w==4?2:w==5?3:-1;}
+static int premium84_enabled(int w){return w==3;}
+static int premium84_variant(int w,int v){return v>=0&&v<3?v:v==3&&premium84_enabled(w)?3:0;}
+static int premium84_inventory(int w,unsigned int packed){int old=(packed>>(w*3))&7,index=premium84_index(w);return old|(index>=0&&premium84_enabled(w)&&((packed>>(27+index))&1)?8:0);}
+static int premium84_owned_variant(int w,int v){v=premium84_variant(w,v);if(v==3&&!(g.inventoryBits[w]&8)){g.equippedMask&=~(1<<w);return 0;}return v;}
