@@ -102,7 +102,8 @@ static void weapon_batteries_reset(void){for(int w=0;w<9;w++){g.weaponEnergy[w]=
 static void weapon_batteries_step(void){for(int w=0;w<9;w++){if(g.weaponHeat[w])g.weaponHeat[w]=clamp(g.weaponHeat[w]-(ex.buffTicks[2]&&g.tick%4==0?2:1),0,300);if(g.weaponFireCool[w])g.weaponFireCool[w]=clamp(g.weaponFireCool[w]-(ex.buffTicks[0]&&g.tick%5==0?2:1),0,30);if(g.weaponEnergy[w]<100&&g.tick%weapon_recharge_period(w)==0)g.weaponEnergy[w]++;}g.cool=g.weaponFireCool[g.weapon];}
 /* Per-bank fractional accounting preserves precise costs across weapon switches. */
 static int weapon_drain_fraction(int w,int numerator,int denominator){if(g.weaponHeat[w])return 0;int scaled=(ex.buffTicks[1]?numerator*4/5:numerator)*variant_energy_scale(w)/100+g.weaponDrainRemainder[w],cost=scaled/denominator;if(g.weaponEnergy[w]<cost){g.weaponEnergy[w]=0;g.weaponHeat[w]=300;g.beam=0;return 0;}g.weaponEnergy[w]-=cost;g.weaponDrainRemainder[w]=scaled%denominator;if(!g.weaponEnergy[w])g.weaponHeat[w]=300;return 1;}
-static int weapon_drain(int w,int base){if(!g.chassis)return weapon_drain_fraction(w,base*9,10);return weapon_drain_fraction(w,base*9*(g.chassis==1?90:110),1000);}
+/* Tesla cast and live network feedback share the same modest energy reduction. */
+static int weapon_drain(int w,int base){int scale=w==8?8:9;if(!g.chassis)return weapon_drain_fraction(w,base*scale,10);return weapon_drain_fraction(w,base*scale*(g.chassis==1?90:110),1000);}
 /* Include passive recharge in the 25s / 12s / 10s sustained-fire targets.
    Cost follows the upgraded firing period so ranks improve DPS, not starvation. */
 static int weapon_spend(int w){if(!(g.equippedMask&(1<<w)))return 0;if(w<3){static const int base[3]={4,6,3},ticks[3]={1250,600,500};int target=ticks[w]*ship_endurance()/100,regen=weapon_recharge_period(w);return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*(100*regen+target),target*regen);}return weapon_drain(w,weapon_cost(w));}
@@ -114,7 +115,7 @@ static int enemy_damageable(const Obj*o){return o->type==4||(enemy_in_view(o)&&o
 static int enemy_hull(int base){return base*2+1;}
 /* Modest68 combat easing; environmental damage and physical wall cutting stay separate. */
 static int player_enemy_damage(int damage){return damage*108/100;}
-static int tesla_damage(int damage){return damage*170/100;}
+static int tesla_damage(int damage){return damage*185/100;}
 static void damage_enemy(Obj*o,int damage){if(!enemy_damageable(o))return;if(o->type==4){if(o->age<=120||o->morph>0||o->openingTicks>0||(o->attack>60&&o->attack<=85))return;if(o->shieldCharge>0){phoenix_charge(clamp(damage,0,o->shieldCharge)/50);o->shieldCharge=clamp(o->shieldCharge-damage,0,BOSS_SHIELD_MAX);if(!o->shieldCharge)o->shieldDelay=BOSS_SHIELD_RECHARGE;return;}}int oldHealth=o->hp*100-o->wound;phoenix_charge(clamp(damage,0,oldHealth)/50);o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;if(o->type==4&&o->phase<3){int floor=o->base*(3-o->phase)/3;if(o->hp<floor)o->hp=floor;}if(o->hp*100-o->wound<oldHealth){o->damageUntil=g.tick+5;pc_combat_hit76(o);}}
 static int boss_weakness(int variant){static const int weapon[17]={5,3,6,0,4,6,1,7,2,3,0,4,2,4,5,7,1};return weapon[clamp(variant,0,16)];}
 static int boss_hull_weakness(int variant){return (boss_weakness(variant)+3)%9;}
