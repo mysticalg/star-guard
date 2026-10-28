@@ -45,7 +45,7 @@ static int player_attack_scale(int weapon){int warm=clamp((ex.fatigue[clamp(weap
 static void journey_advance(void){
  if(!mission_progress_ready())return;
  globules_clear();
- ex.oldKind=journey_kind();ex.missionHandover=0;if(section_final()){ex.completedMissionMask|=1<<(g.wave-1);salvage_flush();}
+ ex.oldKind=journey_kind();ex.oldEnvironmentTick70=ex.env.timer;ex.missionHandover=0;if(section_final()){ex.completedMissionMask|=1<<(g.wave-1);salvage_flush();}
  if(!section_final()){ex.section++;ex.sectionHandover=1;}
  else if(g.wave<MISSION_COUNT){ex.refit=1;ex.refitNext=g.wave+1;ex.victory=ex.bossSpawned=ex.clearTicks=0;return;}
  else{ex.campaignWon=1;g.mode=2;g.score+=10000;return;}

@@ -52,7 +52,8 @@ static void environment_step(int mask){
  if(kind==ENV_WALL)asteroid_wall_step(mask);
 
  if(kind==ENV_EM||kind==ENV_REACTOR){int c=ex.env.timer%1500;if(c>=350&&c<500)ex.env.warning=2;if(c>=500&&c<1000){ex.env.empActive=1;ex.env.warning=3;if(g.tick%25==0){g.energy=clamp(g.energy-2,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-2,0,100);}}if(c==500)pc_emp_sound(1,160);}
- if(kind==ENV_OCEAN){int t=ex.env.timer;if(t==500)ex.env.safeX=64+(g.wave*57)%192;if(t>=500&&t<650)ex.env.warning=7;if(t>=650&&t<1000){int y=t-700;if(absn(y-player_y/Q)<18&&absn(g.px/Q-ex.env.safeX)>44)hurt_at(g.px/Q,player_y/Q,0,-1);}}
+ if(kind==ENV_OCEAN){ex.env.warning=ocean_warning70(ex.env.timer);if(!ex.travel&&!ex.intro&&ex.phaseAge>100&&g.px/(float)Q+player_hull_rx()>ocean_top70(player_y/(float)Q,ex.env.timer))storm_hurt(12);}
+
  if(kind==ENV_TEETH||kind==ENV_ESCAPE){ex.env.warning=kind==ENV_TEETH?8:9;int y=journey_exit_gate(ex.env.timer);if(absn(y-player_y/Q)<18&&absn(g.px/Q-160)>45){hurt_at(g.px/Q,player_y/Q,0,-1);g.px=160*Q;}if(y>player_y/Q+18&&absn(g.px/Q-160)<45)ex.env.escaped=1;}
  if(kind==ENV_REACTOR){if(g.tick%100==0){g.energy=clamp(g.energy-1,0,100);g.weaponEnergy[g.weapon]=clamp(g.weaponEnergy[g.weapon]-1,0,100);}if(!ex.env.warning&&g.tick%100<30)ex.env.warning=18;}
  }

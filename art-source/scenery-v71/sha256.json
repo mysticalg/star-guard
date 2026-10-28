@@ -1,0 +1,32 @@
+[
+  {
+    "file": "art-source/scenery-v71/ocean-rough-frames-v70.png",
+    "sha256": "f6c2a3282e5d9a48e33551b2108bec10ec8b5c2d2aaeda21ca1fac375a0a635c",
+    "bytes": 2135352
+  },
+  {
+    "file": "art-source/scenery-v71/ocean-storm-backdrop-v70.png",
+    "sha256": "bb83abdbb313cbd948c6ec31cf9b99009458c2d1ad041173d655b16b2cc1dd35",
+    "bytes": 2314413
+  },
+  {
+    "file": "art-source/scenery-v71/section-entrances-v70.png",
+    "sha256": "d063e51b79723efca84a80f2f207e45ecaeb0f22c7967dfce318267e8e545d08",
+    "bytes": 2525082
+  },
+  {
+    "file": "Assets/journeys/ocean-rough-atlas-v70.png",
+    "sha256": "5223a3e22f57ef025d1134267b4281ae02ef8f124bbb2507a73c8a1ab93c4c06",
+    "bytes": 2862541
+  },
+  {
+    "file": "Assets/journeys/ocean-storm-backdrop-v70.png",
+    "sha256": "bb83abdbb313cbd948c6ec31cf9b99009458c2d1ad041173d655b16b2cc1dd35",
+    "bytes": 2314413
+  },
+  {
+    "file": "Assets/journeys/section-entrances-v70.png",
+    "sha256": "d063e51b79723efca84a80f2f207e45ecaeb0f22c7967dfce318267e8e545d08",
+    "bytes": 2525082
+  }
+]

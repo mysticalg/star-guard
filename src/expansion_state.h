@@ -4,7 +4,7 @@ typedef struct {
  int waveActive,waveAge,waveRest,waveCleared,waveEnrageSerial;
  float lightAmbient,lightTarget;int lightReady;
  unsigned strengthSerial;
- int sectionHandover;
+ int sectionHandover,oldEnvironmentTick70;
  int cavernWorldQ,cavernWorldReady;
  int floorShotSerial,floorShotX,floorShotY;int lastDamageTick,lastDamageAmount,lastDamageKind,lastDamageSerial,lastDamageFatal,blockedTick,damagePrevX,damagePrevY;int progressTicks,escortClock,escortUsed,escortWarning,escortOwner;int resistTicks,resistFamily,resistX,resistY;
  int miniRewardMask,giantRewardMask,completedMissionMask,pendingParts,partsCollected,partPickupTicks;Obj partBundle;

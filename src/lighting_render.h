@@ -16,7 +16,7 @@ static void lighting_sources(void){
  static const float ahead[5]={0,18,50,90,140},radius[5]={24,18,25,32,40},strength[5]={1.8f,1.7f,1.6f,1.4f,1.1f};
  for(int i=0;i<5;i++)world_light(x,y-ahead[i],radius[i],(SDL_FColor){.88f,.95f,1,strength[i]*worldLampStrength});
  /* Critical hostile/player visibility has priority over optional explosions. */
- for(int i=0;i<MAXB+MAXS;i++){Obj *o=i<MAXB?g.bullets+i:g.shots+i-MAXB;if(!o->on)continue;SDL_FColor c=projectile_colour(o,i<MAXB);c.r=.45f+.55f*c.r;c.g=.45f+.55f*c.g;c.b=.45f+.55f*c.b;c.a=2.6f;world_light(o->x/(float)Q,o->y/(float)Q,i<MAXB?15:23,c);}
+ for(int i=0;i<MAXB+MAXS;i++){Obj *o=i<MAXB?g.bullets+i:g.shots+i-MAXB;if(!o->on)continue;SDL_FColor c=projectile_colour(o,i<MAXB);c.r=.45f+.55f*c.r;c.g=.45f+.55f*c.g;c.b=.45f+.55f*c.b;c.a=2.3f;world_light(o->x/(float)Q,o->y/(float)Q,i<MAXB?18:28,c);}
  if(g.beam){SDL_FColor c=player_beam_colour();c.r=.5f+.5f*c.r;c.g=.5f+.5f*c.g;c.b=.5f+.5f*c.b;c.a=1.8f;for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float tip=terrain_beam_tip(lane),end=y-8;for(int i=0;i<6;i++){float yy=tip+(end-tip)*(i+.5f)/6;world_light(beam_center(lane,(int)yy),yy,fmaxf(26,(end-tip)/6),c);}}}
 
  /* Actual Nova/EMP expansion also reveals surfaces at its moving blast front. */

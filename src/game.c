@@ -34,8 +34,8 @@ extern int pc_modern;
 int player_y;
 #include "expansion_state.h"
 #include "terrain_state.h"
-static int cavern_phase(int phase){return phase==5||phase==2||phase==15||(phase==ex.phase&&journey_kind()==ENV_WRECK)||(ex.travel&&phase==ex.oldPhase&&ex.oldKind==ENV_WRECK);}
-static int flight_side_mode(void){/* Storm Coast stays vertical across all sections and encounters. */if(g.wave==1)return 0;if(terrain.active&&journey_kind()==ENV_WALL&&terrain.sideOverride>=0)return terrain.sideOverride;if(ex.giant.active||journey_kind()==ENV_BASE)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
+static int cavern_phase(int phase){return phase==5||phase==2||phase==15||(phase==ex.phase&&(ex.travel==1?ex.oldKind:journey_kind())==ENV_WRECK)||(ex.travel&&phase==ex.oldPhase&&ex.oldKind==ENV_WRECK);}
+static int flight_side_mode(void){/* Opening stays vertical; only the ocean section turns sideways. */if(g.wave==1)return journey_kind()==ENV_OCEAN;if(terrain.active&&journey_kind()==ENV_WALL&&terrain.sideOverride>=0)return terrain.sideOverride;if(ex.giant.active||journey_kind()==ENV_BASE)return 0;int phase=ex.phase<0?mission_phase(g.wave):ex.phase;return phase==2||phase==15?ex.cavernSide:phase&1;}
 static int player_hull_rx(void){return ex.cavernTurn?8:flight_side_mode()?6:8;}
 static int player_hull_ry(void){return ex.cavernTurn?12:flight_side_mode()?12:10;}
 static int cavern_turn_pending(void){return !ex.giant.active&&(ex.phase==2||ex.phase==15)&&ex.cavernLeg<2&&g.groups>=4*(ex.cavernLeg+1);}
@@ -68,6 +68,7 @@ static int clamp(int x,int lo,int hi){return x<lo?lo:x>hi?hi:x;}
 static int formation_interval(void);
 static void globules_clear(void);
 #include "journey_rules.h"
+#include "ocean70.h"
 static int enemy_organic(const Obj*o){return organic_context()||o->type==26||(o->type>=10&&o->type<=13);}
 #include "enemy_strength.h"
 static int organic_cell(const Obj*o){return o->type==4?6:(o->type==9||o->type==23||o->type==24)?(o->type==9?2:3):o->type==26?4:o->type>=10&&o->type<=13?0:o->type==15||o->type==19?1:o->type==18||o->type==25?5:o->type==21||o->type==27?7:(o->type+o->phase/23)%2?0:4;}
