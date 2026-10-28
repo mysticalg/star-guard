@@ -14,6 +14,7 @@ typedef struct {
  int empDisable,empGrace,empTicks,empCount,empPulse,empX,empY,empCritical,empNetwork,empFeedbackAge,empCriticalCount;Obj empArcs[96];
  int cavernSide,cavernLeg,cavernTurn;
  int shieldDrops,invincibleTicks,empBombs,empStop;
+ int shieldEligible79[6],shieldUsed79;
  int chaff,chaffDeploy;Obj mines[96];
  int torpedoCool,torpedoSerial,torpedoBlasts;
  int phoenixMeter,phoenixTicks,phoenixSerial,beamAim;
