@@ -241,7 +241,7 @@ void game_step(int mask,int ch){int i,j,alive=0,fired=0,phoenixKills=0;
   if(!ex.bossWarning){ex.bossWarning=100;sound(5,1,90,0x2800);sound_slide(5,1,0x4800,90);}
   else if(--ex.bossWarning==0){boss();ex.bossSpawned=1;}
  }
- if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<section_wave_target()&&!environment_exclusive()&&!cavern_turn_pending()&&!ex.cavernTurn&&!ex.waveRest&&regular_wave_remaining()<40&&(!g.groups||ex.waveAge>=regular_wave_cadence())&&g.clock>=1){
+ if(!ex.travel&&!ex.intro&&!ex.victory&&!ex.bossSpawned&&g.groups<section_wave_target()&&!environment_exclusive()&&!ex.cavernTurn&&!ex.waveRest&&regular_wave_remaining()<40&&(!g.groups||ex.waveAge>=regular_wave_cadence())&&g.clock>=1){
  int budget=clamp(40-regular_wave_remaining(),0,g.wave==1?(g.groups<2?6:g.groups<3?8:10):10+g.wave/2),mixed=!opening_front()||g.groups>=3,first=ex.phase==5?(g.groups&1?9:8):formation_type();
  if(journey_kind()==ENV_BEAST){for(int n=0;n<clamp(budget,0,3);n++){EnvironmentHazard*h=environment_spawn(9+(g.groups+n)%3,100+n*60,-16-n*15,0,250,9,2);if(h)h->waveMember=1;}}
  else{regularSpawnBudget=mixed?(budget+1)/2:budget;group(first,g.groups);if(mixed){regularSpawnBudget=budget/2;int second=organic_context()?10+(g.groups+1)%4:first==0?1:0;group(second,g.groups+3);}regularSpawnBudget=-1;}
