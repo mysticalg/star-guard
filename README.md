@@ -508,3 +508,6 @@ Missions 1-3 retain their original attack pace. Mission-number progression then 
 
 
 Release 81 strengthens upgraded Triple Death Laser levels: beam half-widths are 3/8/16/25 world units and base enemy damage is 110/155/215/290. Target paths and smaller pod echoes share the upgraded power. Fine-wall beams stop and cut across their visible aperture, including thin grains between former sample rays. All weapon-bank costs, recharge and cooldowns remain unchanged.
+
+
+Release 82 gives Heatseekers heavier impacts and a larger real blast, with bounded splash against enemies, environmental targets and exposed giant parts. Tiny red brackets show actual acquired targets; short red trails follow travelled guidance paths. Protected or occluded targets hide their cue, target selection and steering stay unchanged, and reduced motion keeps brackets steady. Costs, deliberate firing cadence and boss gates remain intact.

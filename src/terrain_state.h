@@ -22,3 +22,5 @@ static void terrain_respawn_clear(void);
 
 static int terrain_beam_front81(int,int,int,int,int);
 static int terrain_beam_tip(int);
+
+static int terrain_chip(int,int,int,int);

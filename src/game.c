@@ -21,7 +21,7 @@ static int boss_entrance_ticks(int mission){return (10+5*(mission-1))*50;}
 #define SHIELD_PICKUP_TICKS79 300
 /* Deterministic 11 drops per 80 kills: 10% more than the former 1-in-8 cadence. */
 #define NSTARS 144
-typedef struct {int echo80,echoVariant80;int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide,strength,openingTicks,weatherHitUntil,difficultyReady,waveBorn,flightPattern,flightMember,audioBorn76,audioClass76,audioX76,audioY76;u32 serial;} Obj;
+typedef struct {int missileTarget82,missileDetonated82;u32 missileTargetSerial82;int echo80,echoVariant80;int on,x,y,vx,vy,hp,type,age,base,phase,variant,heading,power,wound,morph,bombHit,attack,shieldCharge,shieldDelay,empFreeze,empLinked,buff,dotTicks,dotClock,dotDamage,damageUntil,entryTicks,sourceFamily,reinforcement,floorY,floorMounted,previousX,previousY,aimX,aimY,weaponClock,weaponShots,caveReady,caveU,caveSide,strength,openingTicks,weatherHitUntil,difficultyReady,waveBorn,flightPattern,flightMember,audioBorn76,audioClass76,audioX76,audioY76;u32 serial;} Obj;
 typedef struct {int on,x,y,vx,vy,life,tint;} Particle;
 typedef struct {int x,y,z;} Star;
 typedef struct {
@@ -54,6 +54,10 @@ extern int pc_enemy_side_hit77(const Obj*,int,int,int),pc_enemy_side_body77(cons
 extern void pc_enemy_side_muzzle77(const Obj*,int*,int*,int);
 extern int pc_enemy_radius(const Obj*);
 extern int pc_enemy_side_beam80(const Obj*,int,int,int,int,int);
+static void environment_heatseeker_blast82(int,int,int,int);
+static void giant_heatseeker_blast82(int,int,int,int);
+static void weather_heatseeker_blast82(int,int,int,int);
+static int missile_line82(int,int,int,int);
 static int cavern_guard_active(void);
 static int cavern_option_x(int,int,int);
 static void cavern_prepare_enemy(Obj*,int);
@@ -110,7 +114,7 @@ static int weapon_drain(int w,int base){int scale=w==8?8:9;if(!g.chassis)return 
 /* Include passive recharge in the 25s / 12s / 10s sustained-fire targets.
    Cost follows the upgraded firing period so ranks improve DPS, not starvation. */
 static int weapon_spend(int w){if(!(g.equippedMask&(1<<w)))return 0;if(w<3){static const int base[3]={4,6,3},ticks[3]={1250,600,500};int target=ticks[w]*ship_endurance()/100,regen=weapon_recharge_period(w);return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*(100*regen+target),target*regen);}return weapon_drain(w,weapon_cost(w));}
-static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2&&!s->echo80?25:s->type==1?70:s->type==2?75:s->type==4?300:s->type==7?60:100;int damage=base*(100+20*(level-1))/100;if(s->variant==102)damage=damage*65/100;return s->echo80?clamp(damage*s->echo80/100,1,damage):damage;}
+static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2&&!s->echo80?25:s->type==1?70:s->type==2?75:s->type==4?500:s->type==7?60:100;int damage=base*(100+20*(level-1))/100;if(s->variant==102)damage=damage*65/100;return s->echo80?clamp(damage*s->echo80/100,1,damage):damage;}
 /* Upgraded Triple power is shared by every real target path and its pod echoes. */
 static int beam_damage81(int family){static const int triple[4]={110,155,215,290};return family==5?triple[power_level(5)-1]:130+35*(power_level(3)-1);}
 static int beam_target_damage81(int base,int family){return family==5?base*beam_damage81(5)/110:base;}

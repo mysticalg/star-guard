@@ -20,6 +20,7 @@ static void weather_lane_damage(int kind){Weather*w=&ex.env.weather;int safe=w->
  for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&absn(o->x/Q-weather_center_at(o->y/Q))>width)weather_enemy_hit(o,kind==WEATHER_ACID?180:220);}
  if(ex.giant.active)for(int n=0;n<9;n++){GiantPart*p=ex.giant.parts+n;if(giant_open(n)&&absn(p->x-weather_center_at(p->y))>width){int before=p->hp;giant_raw_hit(n,120);w->bossHits+=p->hp<before;}}
 }
+static void weather_heatseeker_blast82(int x,int y,int radius,int damage){for(int i=0;i<48;i++){WeatherActor*a=ex.env.weather.actors+i;int dx=a->x/Q-x,dy=a->y/Q-y,d=dx*dx+dy*dy;if(a->on&&a->hp>0&&d<radius*radius&&missile_line82(x,y,a->x/Q,a->y/Q))a->hp-=heatseeker_falloff82(damage,d,radius)*player_attack_scale(4)/100*variant_damage_scale(4)/100;}}
 static void weather_step(void){Weather*w=&ex.env.weather;int kind=weather_profile(),t=ex.env.timer,c=t%2500,start,end;weather_window(&start,&end);int prior=w->stage;w->kind=kind;w->stage=kind?weather_stage():0;w->left=w->stage==1?start-t:w->stage==2?end-t:w->stage==3?end+100-t:0;
  int center=weather_center_at(player_y/Q);w->safeX=center;
  if(w->stage==1&&prior!=1){w->recoveryGiven=0;if(kind&&kind!=WEATHER_STORM)pc_hit_sound(5,0,160);}if(w->stage==2&&prior!=2&&kind==WEATHER_ION)pc_emp_sound(1,160);if(w->stage==1)ex.env.warning=22+kind;if(w->stage==2)ex.env.warning=29+kind;if(w->stage==3)ex.env.warning=36;
@@ -35,7 +36,7 @@ static void weather_step(void){Weather*w=&ex.env.weather;int kind=weather_profil
  }
  if(w->stage==3&&!w->recoveryGiven){w->recoveryGiven=1;drop(center,90,2);/* Real shield/20 armour pickup. H remains free even at zero energy. */}
  for(int i=0;i<48;i++){WeatherActor*a=w->actors+i;if(!a->on)continue;if(a->age<0){a->age++;continue;}a->oldX=a->x;a->oldY=a->y;a->x+=a->vx;a->y+=a->vy;a->age++;weather_cavern(a);if(!a->on)continue;int x=a->x/Q,y=a->y/Q;if(y>play_max_y()+a->r+25||x<play_min_x()-80||x>play_max_x()+80||a->age>800){a->on=0;continue;}
-  for(int s=0;s<MAXS;s++){Obj*p=g.shots+s;if(p->on&&p->base<=0&&weather_sweep(a->oldX/(float)Q-p->previousX/(float)Q,a->oldY/(float)Q-p->previousY/(float)Q,x-p->x/(float)Q,y-p->y/(float)Q,a->r+3)){a->hp-=p->type==9?800:projectile_damage(p);p->on=0;break;}}
+  for(int s=0;s<MAXS;s++){Obj*p=g.shots+s;if(p->on&&p->base<=0&&weather_sweep(a->oldX/(float)Q-p->previousX/(float)Q,a->oldY/(float)Q-p->previousY/(float)Q,x-p->x/(float)Q,y-p->y/(float)Q,a->r+3)){if(p->type==4)detonate_heatseeker(p);else a->hp-=p->type==9?800:projectile_damage(p);p->on=0;break;}}
   if(g.beam&&g.tick%4==0&&y<player_y/Q&&beam_hits(x,y,a->r))a->hp-=ex.phoenixTicks?120:beam_target_damage81(120,ex.multi?5:3);if(ex.bombAge&&bomb_reached(x,y,a->r))a->hp=0;
   if(a->hp<=0){w->interceptions++;a->on=0;weather_blast(x,y,a->r+4);continue;}
   if(terrain.active&&a->age>=150&&terrain_solid(x,y)){a->on=0;weather_blast(x,y,a->r+4);continue;}
