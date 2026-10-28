@@ -47,7 +47,10 @@ static int route_occupied(void){if(ex.rearWarning)return 1;for(int i=0;i<MAXE;i+
 /* All queued formation members occupy live slots before entering view. Carrier children
    are created synchronously. Forecast rear attackers also block the clear gate. */
 static int regular_wave_remaining(void){int n=ex.rearWarning>0;for(int i=0;i<MAXE;i++)n+=g.enemies[i].on;for(int i=0;i<32;i++)n+=ex.env.hazards[i].on&&ex.env.hazards[i].waveMember;return n;}
-static void regular_wave_step(void){if(ex.travel||ex.intro||ex.victory||ex.bossSpawned||ex.sectionHandover)return;if(ex.waveRest)ex.waveRest--;if(!ex.waveActive)return;if(!regular_wave_remaining()){ex.waveActive=ex.waveAge=0;ex.waveRest=40;ex.waveCleared++;return;}ex.waveAge++;if(ex.waveAge==(g.wave==1?600:500))ex.waveEnrageSerial++;}
+static int regular_wave_cadence(void){return g.wave==1?(g.groups<=3?400:300):250;}
+static int regular_wave_oldest_age(void){int age=0;for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&o->waveBorn&&!o->reinforcement&&o->type!=4&&g.tick-o->waveBorn>age)age=g.tick-o->waveBorn;}return age;}
+static void regular_wave_step(void){if(ex.travel||ex.intro||ex.victory||ex.bossSpawned||ex.sectionHandover)return;if(ex.waveRest)ex.waveRest--;ex.waveAge++;if(ex.waveActive&&!regular_wave_remaining()){ex.waveActive=0;ex.waveRest=40;ex.waveCleared++;}if(regular_wave_oldest_age()==(g.wave==1?600:500))ex.waveEnrageSerial++;}
+
 static int hostile_rounds_remain(void){for(int i=0;i<MAXB;i++)if(g.bullets[i].on)return 1;return 0;}
 static void rear_group(void){for(int n=0;n<3;n++){Obj*o=slot(g.enemies,MAXE);if(o){int x=ex.phase==5?tunnel_lane(288,n&1)+(n-1)*2:clamp((g.px>>8)+(n-1)*62,28,292);*o=(Obj){.on=1,.type=22,.hp=3+enemy_bonus(),.x=x*Q,.y=(288+n*22)*Q,.base=x,.phase=n*35};cavern_prepare_enemy(o,1);}}}
 static void detonate_charge(Obj*charge){int before=g.kills;int x=charge->x>>8,y=charge->y>>8;charge->on=0;pc_charge_burst(x,y);for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&(!enemy_guarded(o)||o->type==4)&&absn((o->x>>8)-x)<25&&absn((o->y>>8)-y)<25){damage_enemy(o,160);if(o->hp<=0)killed(o);}}for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;if(o->on&&!o->type&&absn((o->x>>8)-x)<22&&absn((o->y>>8)-y)<22)o->on=0;}aoe_combo(g.kills-before,0);}

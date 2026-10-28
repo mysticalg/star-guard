@@ -1,0 +1,10 @@
+#define main star_guard_main
+#include "../src/pc.c"
+#undef main
+static int checks;
+#define V(x) do{checks++;if(!(x)){fprintf(stderr,"FAIL %d %s M%d S%d god%d respawn%d shield%d\n",__LINE__,#x,g.wave,ex.section,g.devInvincible,g.respawnTicks,g.shield);return 1;}}while(0)
+static void arena(int m,int section){headless=1;pilotConfigured=0;selectedShip=0;configuredLevel=1;game_reset();g.mode=1;g.fx=0;g.wave=m;ex.section=section;ex.phase=ex.oldPhase=mission_phase(m);ex.intro=ex.travel=ex.entryY=0;ex.phaseAge=200;ex.rearSpawned=1;g.clock=-100000;g.shield=0;environment_enter();}
+int main(void){for(int m=1;m<=6;m++)for(int section=0;section<journeyCounts[m-1];section++){arena(m,section);game_step(0,2008);for(int t=0;t<1500;t++){g.shield=ex.invincibleTicks=ex.phoenixTicks=0;hurt_amount(160,230,0,1,1000,1);storm_hurt(1000);wall_ship_lost();worm_ship_lost();game_step(0,0);V(g.devInvincible&&g.lives==3&&g.barrier==100&&g.mode==1);}journey_advance();V(g.devInvincible);for(int t=0;t<300;t++)game_step(0,0);V(g.devInvincible&&g.lives==3);ex.refit=0;g.mode=3;g.continueTicks=400;game_step(0,13);V(g.devInvincible&&g.respawnTicks>=250);game_step(0,2008);V(!g.devInvincible&&g.devUsed);}
+ arena(2,0);hurt_amount(160,230,0,1,1000,1);V(g.lives==2&&g.respawnTicks==250&&g.shield==250);for(int t=0;t<249;t++)game_step(0,0);V(g.respawnTicks==1&&g.shield==1);int hp=g.barrier;hurt_amount(160,230,0,1,1000,1);V(g.barrier==hp&&g.lives==2);game_step(0,0);V(!g.respawnTicks&&!g.shield);hurt_amount(160,230,0,1,20,1);V(g.barrier<hp);
+ arena(3,1);wall_ship_lost();V(g.lives==2&&g.respawnTicks==250);wall_ship_lost();V(g.lives==2);arena(5,7);worm_ship_lost();V(g.lives==2&&g.respawnTicks==250);arena(2,0);ex.refit=0;g.mode=3;g.continueTicks=400;game_step(0,13);V(g.respawnTicks==250&&g.shield>=250);int r=g.respawnTicks;game_step(0,'p');for(int t=0;t<100;t++)game_step(0,0);V(g.respawnTicks==r);game_step(0,'p');V(g.respawnTicks==r-1);
+ printf("PASS %d protection checks: persistent F8 30s in all38sections/all fatal paths/handover/continue, explicit off, exact250tick respawn and pause\n",checks);return 0;}
