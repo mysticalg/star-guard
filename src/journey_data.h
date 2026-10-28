@@ -31,5 +31,5 @@ static void salvage_flush(void);
 
 typedef struct{int hp,maxHp,x,y,role;} GroundTarget;
 typedef struct{int on,x,y,vx,vy,age;} GroundPayload;
-typedef struct{int active,complete,cleared,pass,stage,timer,payload,cool,launchRequested,hits,targetsDestroyed,startX,startY,pathX,pathY,offset;float angle;GroundTarget targets[8];GroundPayload bombs[12];} Bombing;
+typedef struct{int active,complete,cleared,pass,stage,timer,payload,cool,launchRequested,hits,targetsDestroyed,startX,startY,pathX,pathY,offset,manual,worldTick;float angle;GroundTarget targets[8];GroundPayload bombs[12];} Bombing;
 static int bombing_ready(void);

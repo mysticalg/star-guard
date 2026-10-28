@@ -1,0 +1,3 @@
+# Weapons-base ground installations
+
+Generated with the built-in image tool for the authorized Star Guard art pass. Exact call: generation-call.json. The original generated PNG is retained byte-for-byte here and in the project asset path; no pixel editing or alpha replacement was applied. Original dimensions1536x1024, RGBA with44.0% fully transparent pixels. Renderer samples the three columns and two rows directly: shield generator, capacitor bank, ground turret; matching destroyed installations below. These replace reused giant-boss parts in the weapons-base ground objective. They are not enemy robots or floating cores.

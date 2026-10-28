@@ -16,7 +16,9 @@ for name in dict.fromkeys(s['name'] for s in states):
     height,width=luma['after'].shape
     yy,xx=np.indices((height,width));cx=records['after']['x']*width/960;cy=records['after']['y']*height/800
     distance=np.hypot(xx-cx,yy-cy)
-    region=(yy>=72*height/800)&(yy<700*height/800)&(distance>12)
+    # DOM status and energy/ammo overlays extend below the 72px game header.
+    # Exclude their entire upper strip so font timing cannot count as terrain.
+    region=(yy>=120*height/800)&(yy<700*height/800)&(distance>12)
     before=luma['before']-luma['control'];after=luma['after']-luma['control']
     old=(before>3)&region;new=(after>3)&region
     count_before=int(old.sum());count_after=int(new.sum());ratio=count_after/max(1,count_before)

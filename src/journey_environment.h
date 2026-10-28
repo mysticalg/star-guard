@@ -47,7 +47,7 @@ static void environment_step(int mask){
  if(ex.travel||ex.intro||g.mode!=1)return;
  ex.env.timer++;if(ex.env.wallGrace)ex.env.wallGrace--;ex.env.warning=0;ex.env.empActive=0;
  for(int w=0;w<9;w++){int using=w==g.weapon&&(mask&4)&&!g.weaponHeat[w]&&!ex.empDisable;ex.fatigue[w]=clamp(ex.fatigue[w]+(using?1:-3),0,300);}
- pod_contact_step();int kind=journey_kind();if(kind==ENV_BASE)bombing_step();
+ pod_contact_step();int kind=journey_kind();if(kind==ENV_BASE){if(mask&4)bombing_fire74();bombing_step();}
  if(!ex.giant.active){
  if(kind==ENV_WALL)asteroid_wall_step(mask);
 

@@ -1,14 +1,2 @@
-#define main star_guard_main
-#include "../src/pc.c"
-#undef main
-static int checks;
-#define V(x) do{if(!(x)){fprintf(stderr,"FAIL %d %s\n",__LINE__,#x);exit(1);}checks++;}while(0)
-static void arena(void){pilotConfigured=0;configuredLevel=1;configuredArmour=0;configuredMask=511;configuredQualityPack=0;selectedShip=0;game_reset();g.mode=1;g.fx=0;g.wave=6;ex.section=3;ex.phase=ex.oldPhase=mission_phase(6);ex.intro=ex.travel=0;g.clock=0;ex.rearSpawned=1;environment_enter();}
-int main(void){headless=1;arena();Bombing*b=&ex.bombing;V(b->active&&b->payload==6&&environment_exclusive()&&!bombing_ready());GroundTarget*t=b->targets;for(int i=0;i<8;i++)t[i].y=100;int hp=t[2].hp;b->bombs[0]=(GroundPayload){1,t[2].x*Q,130*Q,0,-1000,0};for(int n=0;n<8;n++)bombing_payload_step();V(t[2].hp==hp&&b->hits==1);t[0].hp=t[1].hp=0;b->targetsDestroyed=2;b->bombs[0]=(GroundPayload){1,t[2].x*Q,130*Q,0,-1000,0};for(int n=0;n<8;n++)bombing_payload_step();V(t[2].hp==hp-3);V(b->hits==2);
- arena();b=&ex.bombing;b->payload=0;for(int n=0;n<500;n++)bombing_step();V(b->stage==1);for(int n=0;n<100;n++)bombing_step();V(b->stage==2);float first=b->angle;for(int n=0;n<50;n++)bombing_step();V(b->angle>first+80&&b->angle<first+100&&g.shield==20);for(int n=0;n<50;n++)bombing_step();V(b->stage==3&&b->pass==1&&b->payload==6);for(int n=0;n<75;n++)bombing_step();V(b->stage==0&&b->angle==180);V(absn(g.px/Q-b->pathX)<2&&absn(player_y/Q-220)<2);
- /* Pilot aims within the production +/-45 path envelope; every hit uses actual falling payloads. */
- arena();b=&ex.bombing;int ticks=0,shots=0;while(!b->complete&&ticks++<20000){int best=-1,dist=10000;if(!b->stage){for(int i=0;i<8;i++){GroundTarget*target=b->targets+i;int d=absn(target->x-b->pathX);if(target->hp>0&&!bombing_shielded(i)&&d<=64&&target->y>25&&target->y<player_y/Q-18&&d<dist){best=i;dist=d;}}if(best>=0){g.px=b->targets[best].x*Q;if(!b->cool&&b->payload&&absn(g.px/Q-(b->pathX+b->offset))<18){b->launchRequested=1;shots++;}}}bombing_step();for(int n=0;n<MAXB;n++)g.bullets[n].on=0;V(absn(b->offset)<=45);}
- printf("debug ticks=%d shots=%d pass=%d hits=%d destroyed=%d payload=%d\n",ticks,shots,b->pass,b->hits,b->targetsDestroyed,b->payload);for(int i=0;i<8;i++)printf("target%d hp=%d x=%d y=%d\n",i,b->targets[i].hp,b->targets[i].x,b->targets[i].y);V(b->complete&&b->targetsDestroyed==8&&bombing_ready()&&shots>=18&&b->pass>=2);printf("Production path aim simulation: %d ticks, %d payload releases, %d passes, %d physical impacts\n",ticks,shots,b->pass,b->hits);
- arena();for(int n=0;n<600;n++){g.shield=10000;game_step(0,0);V(enemy_count()==0);}V(ex.bombing.stage==2);int bombs=ex.bombs,payload=ex.bombing.payload;ex.bombing.launchRequested=1;bombing_launch();V(ex.bombs==bombs&&ex.bombing.payload==payload);g.paused=1;int timer=ex.bombing.timer;for(int n=0;n<50;n++)game_step(0,'g');V(ex.bombing.timer==timer);
- printf("PASS %d automated path/payload collision/shield/rearm/repeated-pass/no-softlock/pause checks\n",checks);return 0;
-}
+/* Updated acceptance: held fire, optional guided course, full manual control. */
+#include "bombing74.c"
