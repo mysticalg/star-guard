@@ -2,11 +2,11 @@ static int option_x(int n){int offset=n==4?0:(n&1?1:-1)*(11+(n/2)*11),x=ex.follo
 static int option_y(int n){return clamp((ex.followY[(ex.followHead-1-(n+1)*8)&63]>>8)+10+(n/2)*5,34,247);}
 static int satellite_x(void){return (g.px>>8)+(sn(g.tick*3)*19>>10);}
 static int satellite_y(void){return (player_y>>8)+(sn(g.tick*3+64)*16>>10);}
-static void option_fire(void){if(!ex.optionsOn||ex.empDisable)return;for(int n=0;n<ex.options;n++){Obj*o=slot(g.shots,MAXS);if(o){o->x=option_x(n)*Q;o->y=(option_y(n)-7)*Q;o->vx=(n&1?65:-65)+g.playerVX;o->vy=g.weapon==4?-1300:-2200;o->type=g.weapon==4?4:0;o->phase=-2;o->power=power_level(g.weapon);}}}
 static int beam_half_width(void){if(ex.phoenixTicks)return flight_side_mode()?58:80;static const int single[4]={3,6,11,18},triple[4]={3,5,9,14};return (ex.multi?triple:single)[power_level(ex.multi?5:3)-1];}
 static int beam_slope(int lane){int fan=ex.multi&&!ex.phoenixTicks?lane*(8+4*(power_level(5)-1))*256/100:0;int angle=clamp(ex.beamAim+fan,-256,256);return flight_side_mode()?angle*960*960/(696*696):angle;}
 static int beam_center(int lane,int y){return g.px/Q+lane*6+(player_y/Q-7-y)*beam_slope(lane)/256;}
 static int beam_hits(int x,int y,int radius){for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float slope=beam_slope(lane)/256.0f;if(absn(x-beam_center(lane,y))<(radius+beam_half_width())*sqrtf(1+slope*slope))return 1;}return 0;}
+#include "options80.h"
 static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&enemy_damageable(o)){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
 static void hazard(int,int,int);
 static int tunnel_center(int);
@@ -60,7 +60,7 @@ static void detonate_torpedo(Obj*shot){int before=g.kills;int x=shot->x/Q,y=shot
  for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int dx=o->x/Q-x,dy=o->y/Q-y;if(o->on&&o->type!=2&&dx*dx+dy*dy<radius*radius){o->hp-=8;if(o->hp<=0){o->on=0;g.score+=25;pc_burst(o->x/Q,o->y/Q,0);}}}
  for(int i=0;i<MAXB;i++){Obj*o=g.bullets+i;int dx=o->x/Q-x,dy=o->y/Q-y;if(o->on&&!o->type&&dx*dx+dy*dy<radius*radius)o->on=0;}aoe_combo(g.kills-before,0);}
 /* One missile detonation applies one radial damage event per unit, no direct-hit double dip. */
-static void detonate_heatseeker(Obj*shot){int x=shot->x/Q,y=shot->y/Q,rank=clamp(shot->power,1,4),radius=40+(rank-1)*6,damage=projectile_damage(shot),before=g.kills;shot->on=0;ex.missileBlasts++;pc_heatseeker_blast(x,y,radius);pc_torpedo_sound(1,x);ex.soundTick=g.tick;if(g.shake<3)g.shake=3;
+static void detonate_heatseeker(Obj*shot){int x=shot->x/Q,y=shot->y/Q,rank=clamp(shot->power,1,4),radius=(40+(rank-1)*6)*(shot->echo80?65:100)/100,damage=projectile_damage(shot),before=g.kills;shot->on=0;ex.missileBlasts++;pc_heatseeker_blast(x,y,radius);pc_torpedo_sound(1,x);ex.soundTick=g.tick;if(g.shake<3)g.shake=3;
  for(int i=0;i<MAXE;i++){Obj*o=g.enemies+i;int dx=o->x/Q-x,dy=o->y/Q-y,d=dx*dx+dy*dy;if(o->on&&d<radius*radius&&(!enemy_guarded(o)||o->type==4)){weapon_damage_enemy(o,damage*(100-65*d/(radius*radius))/100,4);if(o->hp<=0)killed(o);}}
  for(int i=0;i<MAXH;i++){Obj*o=ex.obstacles+i;int dx=o->x/Q-x,dy=o->y/Q-y,d=dx*dx+dy*dy;if(o->on&&o->type!=2&&d<radius*radius){int hit=damage*(100-65*d/(radius*radius))/100;o->wound+=hit;o->hp-=o->wound/100;o->wound%=100;if(o->hp<=0){o->on=0;g.score+=25;pc_crush_sound(hazard_material(o),o->base,o->x/Q);pc_burst(o->x/Q,o->y/Q,0);}}}
  aoe_combo(g.kills-before,0);
@@ -104,7 +104,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
  if(phase>=6&&phase<10&&player_y>222*Q)player_y-=Q;
  if(phase==11&&!custom_environment()&&!ex.travel)g.px=clamp(g.px,14*Q,278*Q);
  if(ch=='o')ex.optionsOn=!ex.optionsOn;
- if(ex.optionCool)ex.optionCool--;if(!ex.optionCool&&ex.optionsOn){option_fire();ex.optionCool=14;}
+ /* Pods follow accepted primary firing events; Satellite remains independent. */
  if(ch=='b'&&ex.bombs&&!ex.bombAge){ex.bombs--;ex.bombSerial++;ex.novaKills=0;ex.bombAge=1;ex.bombX=g.px>>8;ex.bombY=player_y>>8;ex.bombRadius=0;g.shield=80;g.shake=5;pc_bomb_start(ex.bombX,ex.bombY);sound(3,2,127,0x2200);sound_slide(3,1,0x1100,65);sound_slide(3,0,0,110);}
  bomb_step();
  /* Cavern encounters are placed inside the live corridor, not over solid rock. */

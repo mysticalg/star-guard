@@ -15,6 +15,7 @@ typedef struct {
  int cavernSide,cavernLeg,cavernTurn;
  int shieldDrops,invincibleTicks,empBombs,empStop;
  int shieldEligible79[6],shieldUsed79;
+ int optionHeld80,optionPaid80,optionBeam80,optionBeamTips80[15];
  int chaff,chaffDeploy;Obj mines[96];
  int torpedoCool,torpedoSerial,torpedoBlasts;
  int phoenixMeter,phoenixTicks,phoenixSerial,beamAim;

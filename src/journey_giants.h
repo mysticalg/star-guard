@@ -31,7 +31,7 @@ static void giant_raw_hit(int n,int damage){Giant*b=&ex.giant;GiantPart*p=b->par
 static int giant_resist_mask(int n){return n<2?1<<7:n==4||n==5?1<<8:n==6?(1<<4)|(1<<9):0;}
 static void giant_hit_family(int n,int damage,int weapon){if(!giant_open(n))return;damage=player_enemy_damage(damage);GiantPart*p=ex.giant.parts+n;damage=family_resistance(damage,giant_resist_mask(n),weapon,p->x,p->y);giant_raw_hit(n,player_hit_roll(damage*(weapon>=0&&weapon<9?variant_damage_scale(weapon):100)/100,p->x,p->y));}
 static void giant_hit(int n,int damage){giant_hit_family(n,damage,g.weapon);}
-static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;damage=player_enemy_damage(tesla_damage(damage));GiantPart*p=ex.giant.parts+n;damage=family_resistance(damage,giant_resist_mask(n),8,p->x,p->y);int rolled=player_hit_roll(damage*variant_damage_scale(8)/100,p->x,p->y);p->dotTicks=150;p->dotDamage=rolled/10;if(!p->dotClock)p->dotClock=50;giant_raw_hit(n,rolled*90/100);}
+static void giant_electric_hit(int n,int damage){if(!giant_open(n))return;GiantPart*p=ex.giant.parts+n;damage=option_emp_damage80(player_enemy_damage(tesla_damage(damage)),p->x,p->y);damage=family_resistance(damage,giant_resist_mask(n),8,p->x,p->y);int rolled=player_hit_roll(damage*variant_damage_scale(8)/100,p->x,p->y);p->dotTicks=150;p->dotDamage=rolled/10;if(!p->dotClock)p->dotClock=50;giant_raw_hit(n,rolled*90/100);}
 static Obj*giant_audio_bullet76(int x,int y,int vx,int vy){Obj*o=bullet(x,y,vx,vy);if(o)o->audioClass76=2|(organic_context()?1:ex.giant.archetype==1||ex.giant.archetype==5?4:0);return o;}
 static void giant_fan(int x,int y,int speed,int spread){for(int n=-1;n<=1;n++)giant_audio_bullet76(x*Q,y*Q,n*spread,speed);}
 #include "worm_long.h"
@@ -48,6 +48,7 @@ static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->previ
   if(g.weapon==8&&(mask&4)&&g.weaponFireCool[8]==weapon_delay(18))giant_electric_hit(i,220*player_attack_scale(8)/100);
   if(!b->active)return;
   if(g.beam&&(g.tick&3)==0&&p->y<player_y/Q&&beam_hits(p->x,p->y,p->w/2))giant_hit_family(i,(ex.phoenixTicks?600:120)*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);
+  if(ex.optionBeam80&&(g.tick&3)==0){int pods=option_beam_count80(p->x,p->y,p->w/2);if(pods)giant_hit_family(i,120*pods/5*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);}
   if(ex.bombAge==25)giant_hit_family(i,1200,-1);
   for(int n=0;n<ex.options&&n<5;n++)if(!ex.podContact[n]&&absn(option_x(n)-p->x)<p->w/2+6&&absn(option_y(n)-p->y)<p->h/2+6){giant_hit_family(i,25,0);ex.podContact[n]=20;}
 

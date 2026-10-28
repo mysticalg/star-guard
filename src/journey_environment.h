@@ -29,8 +29,9 @@ static void environmental_hazards(void){int kind=journey_kind(),t=ex.env.timer,c
   if(h->type==6&&h->age%80==0)aim(h->x,h->y,400);
   int shielded=0;if(h->type==6)for(int j=0;j<32;j++)if(ex.env.hazards[j].on&&ex.env.hazards[j].type==8&&absn(ex.env.hazards[j].y-h->y)<90*Q)shielded=1;
   for(int j=0;j<MAXS;j++){Obj*s=g.shots+j;if(!s->on||s->base>0||absn(s->x/Q-x)>h->r+3||absn(s->y/Q-y)>h->r+3)continue;if(!shielded)environment_weapon_hit(h,s->type==9?800:projectile_damage(s),s->type);if(h->type==5){s->vy=-s->vy;s->vx=-s->vx+120;s->base=4;pc_reflection_sound(3,0,x);}else s->on=0;pc_impact(x,y,h->type==1?3:1);break;}
-  if(!shielded&&g.weapon==8&&g.weaponFireCool[8]==weapon_delay(18))environment_weapon_hit(h,220,8);
+  if(!shielded&&g.weapon==8&&g.weaponFireCool[8]==weapon_delay(18))environment_weapon_hit(h,option_emp_damage80(220,x,y),8);
   if(!shielded&&g.beam&&g.tick%4==0&&y<player_y/Q&&beam_hits(x,y,h->r))environment_weapon_hit(h,120,g.weapon);
+  if(h->hp>0&&!shielded&&ex.optionBeam80&&g.tick%4==0){int pods=option_beam_count80(x,y,h->r);if(pods)environment_weapon_hit(h,120*pods/5,g.weapon);}
   if(h->dotTicks){h->dotTicks--;if(--h->dotClock<=0){h->dotClock=50;if(!shielded){environment_damage(h,h->dotDamage);}}}
   if(ex.bombAge&&bomb_reached(x,y,h->r))h->hp=0;
   if(h->hp<=0){h->on=0;if(h->type==15){pc_organic_burst(x,y,-1,1);continue;}g.score+=h->type>=6&&h->type<=8?250:30;if(organic_context()&&(h->type==1||h->type==3||h->type>=9))burst_kind(x,y,0,(h->type==9||h->type==10||(h->type>=20&&h->type<=25&&h->type!=24))?2:1);else pc_charge_burst(x,y);if(h->type==7||h->type==8)ex.baseDamage++;if(h->type==12){int count=0;for(int z=0;z<32;z++)count+=ex.env.hazards[z].on&&ex.env.hazards[z].type>=9&&ex.env.hazards[z].type<=11;if(count<12)environment_spawn(9,x,y,0,220,9,1);}continue;}
