@@ -23,9 +23,9 @@ static void expansion_render(u8*b){int i;if(g.mode==0)return;if(!pc_modern){draw
   for(j=-r;j<=r;j++){int w=r-(absn(j)>>1)-((j+o->phase)&3);solid_span(b,y+j,x-w,x+w+1,2);solid_span(b,y+j,x-w,x-w+2,7);solid_span(b,y+j,x+w-2,x+w+1,1);}
   stroke(b,x-r+4,y-4,x-2,y-r+3,3);stroke(b,x-3,y+4,x+r-6,y+2,1);
  }
- if(g.mode==1&&ex.optionsOn)for(i=0;i<ex.options;i++){int x=option_x(i),y=option_y(i);if(pc_modern)pc_sprite(58,x,y);else{ring(b,x,y,6,1,g.tick*3+i*80);projectile_bloom(b,x,y,1,1);pixel(b,x,y,255);}}
- if(g.mode==1&&ex.satellite)pc_equipment_sprite(59,satellite_x(),satellite_y(),g.tick*6);
- if(g.mode==1&&ex.dropper)pc_equipment_sprite(60,g.px/256.0f+((ex.phase&1)?8:0),player_y/256.0f+((ex.phase&1)?0:9),(ex.phase&1)?-90:0);
+ if(g.mode==1&&ex.optionsOn)for(i=0;i<ex.options;i++){int x=option_x(i),y=option_y(i);if(pc_modern)pc_mount_sprite75(58,i,x,y,0);else{ring(b,x,y,6,1,g.tick*3+i*80);projectile_bloom(b,x,y,1,1);pixel(b,x,y,255);}}
+ if(g.mode==1&&ex.satellite)pc_mount_sprite75(59,5,satellite_x(),satellite_y(),g.tick*6);
+ if(g.mode==1&&ex.dropper)pc_mount_sprite75(60,6,g.px/256.0f+((ex.phase&1)?8:0),player_y/256.0f+((ex.phase&1)?0:9),(ex.phase&1)?-90:0);
  if(ex.bombFlash){int radius=(38-ex.bombFlash)*7;ring(b,g.px>>8,player_y>>8,radius,3,g.tick);ring(b,g.px>>8,player_y>>8,radius+8,1,-g.tick);if(ex.bombFlash>34){stroke(b,0,25,319,25,255);stroke(b,0,255,319,255,255);}}
  if(pc_modern)return;
  if(g.mode==1&&ex.bossSpawned)for(i=0;i<MAXE;i++)if(g.enemies[i].on&&g.enemies[i].type==4){text(b,8,28,boss_name(g.enemies[i].variant),255,1);break;}

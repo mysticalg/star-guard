@@ -51,7 +51,17 @@ static void draw_weather_combat(void){Weather*w=&ex.env.weather;if(!w->kind)retu
 
  if(w->stage==2&&(w->kind==WEATHER_STORM||w->kind==WEATHER_ION)){int seed=lightning_seed(),side=seed&1,x=w->safeX+(side?100:-100),c=lightning_clock()%lightning_period();if(c>=5&&c<35)draw_storm_bolt(x,seed,1,0);if(c>=35&&c<53)draw_storm_bolt(x,seed,0,c-35);}
 
+ motionWeatherGhosts75=0;
  for(int i=0;i<48;i++){WeatherActor*a=w->actors+i;if(!a->on)continue;float x=a->x/(float)Q,y=a->y/(float)Q,r=a->r;if(a->age<0){float yy=play_min_y()+6,alpha=(25+a->age)/25.0f;nquad=0;beam_ribbon(x-5,yy-4,x,yy+2,.7f,(SDL_FColor){1,.65f,.25f,alpha});beam_ribbon(x,yy+2,x+5,yy-4,.7f,(SDL_FColor){1,.65f,.25f,alpha});flush(halo);continue;}
   if(g.fx){SDL_FColor c=a->type==WEATHER_FIRE?(SDL_FColor){1,.32f,.05f,.35f}:a->type==WEATHER_ICE?(SDL_FColor){.35f,.7f,1,.22f}:a->type==WEATHER_ACID?(SDL_FColor){.45f,1,.12f,.20f}:(SDL_FColor){.75f,.45f,.2f,.12f};float speed=fmaxf(1,hypotf(a->vx,a->vy)),dx=-a->vx/speed,dy=-a->vy/speed;nquad=0;for(int n=0;n<(reducedMotion?1:3);n++){float rr=r*(1.2f-n*.2f),xx=x+dx*n*r*.7f,yy=y+dy*n*r*.7f;c.a*=.7f;quad((xx-rr)*3,(yy-rr)*3,rr*6,rr*6,c,0,0,1,1);}SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_ADD);flush(halo);SDL_SetTextureBlendMode(halo,SDL_BLENDMODE_BLEND);}
+  if(motion_enabled75()&&(a->type==WEATHER_ASTEROID||a->type==WEATHER_ICE||a->type==WEATHER_FIRE)){
+   float vx=(a->x-a->oldX)/(float)Q,vy=(a->y-a->oldY)/(float)Q,speed=hypotf(vx,vy);if(speed>.5f&&speed<16){nquad=0;
+    for(int tap=quality==2?2:1;tap>=1;tap--){float xx=x-vx*tap*1.3f,yy=y-vy*tap*1.3f,l,rr;int side=x>tunnel_center(y);
+     if(cavern_guard_active()&&(!cavern_interval(yy,r*1.42f,side,&l,&rr)||xx<l||xx>rr))continue;
+     int col=a->type==WEATHER_ICE?1:a->type==WEATHER_ASTEROID&&g.wave==6&&(i&1)?2:0,row=a->type==WEATHER_FIRE?1:0;
+     quad((xx-r)*3,(yy-r)*3,r*6,r*6,(SDL_FColor){1,1,1,tap==2?.09f:.22f},col/4.0f,row/2.0f,.25f,.5f);motionWeatherGhosts75++;
+    }flush(worldObjects);
+   }
+  }
   if(a->type==WEATHER_ASTEROID){journey_cell(worldObjects,g.wave==6&&(i&1)?2:0,0,4,2,x,y,r*2,r*2);}else if(a->type==WEATHER_ICE)journey_cell(worldObjects,1,0,4,2,x,y,r*2,r*2);else if(a->type==WEATHER_ACID){EnvironmentHazard h={.x=a->x,.y=a->y};organic_hazard_art(&h,2,r*2,r*2);}else{nquad=0;quad((x-r)*3,(y-r*1.5f)*3,r*6,r*9,(SDL_FColor){1,.45f,.12f,.8f},0,0,1,1);flush(halo);journey_cell(worldObjects,0,1,4,2,x,y,r*2,r*2);}}
 }
