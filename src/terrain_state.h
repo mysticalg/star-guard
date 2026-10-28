@@ -19,3 +19,6 @@ static Terrain terrain;
 static void terrain_enter(void);
 static int terrain_projectile(Obj*,int,int,int);
 static void terrain_respawn_clear(void);
+
+static int terrain_beam_front81(int,int,int,int,int);
+static int terrain_beam_tip(int);

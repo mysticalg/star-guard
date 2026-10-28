@@ -36,7 +36,7 @@ static void weather_step(void){Weather*w=&ex.env.weather;int kind=weather_profil
  if(w->stage==3&&!w->recoveryGiven){w->recoveryGiven=1;drop(center,90,2);/* Real shield/20 armour pickup. H remains free even at zero energy. */}
  for(int i=0;i<48;i++){WeatherActor*a=w->actors+i;if(!a->on)continue;if(a->age<0){a->age++;continue;}a->oldX=a->x;a->oldY=a->y;a->x+=a->vx;a->y+=a->vy;a->age++;weather_cavern(a);if(!a->on)continue;int x=a->x/Q,y=a->y/Q;if(y>play_max_y()+a->r+25||x<play_min_x()-80||x>play_max_x()+80||a->age>800){a->on=0;continue;}
   for(int s=0;s<MAXS;s++){Obj*p=g.shots+s;if(p->on&&p->base<=0&&weather_sweep(a->oldX/(float)Q-p->previousX/(float)Q,a->oldY/(float)Q-p->previousY/(float)Q,x-p->x/(float)Q,y-p->y/(float)Q,a->r+3)){a->hp-=p->type==9?800:projectile_damage(p);p->on=0;break;}}
-  if(g.beam&&g.tick%4==0&&y<player_y/Q&&beam_hits(x,y,a->r))a->hp-=120;if(ex.bombAge&&bomb_reached(x,y,a->r))a->hp=0;
+  if(g.beam&&g.tick%4==0&&y<player_y/Q&&beam_hits(x,y,a->r))a->hp-=ex.phoenixTicks?120:beam_target_damage81(120,ex.multi?5:3);if(ex.bombAge&&bomb_reached(x,y,a->r))a->hp=0;
   if(a->hp<=0){w->interceptions++;a->on=0;weather_blast(x,y,a->r+4);continue;}
   if(terrain.active&&a->age>=150&&terrain_solid(x,y)){a->on=0;weather_blast(x,y,a->r+4);continue;}
   int hit=weather_targets(a->oldX/Q,a->oldY/Q,x,y,a->r,a->type==WEATHER_ASTEROID?500:250);

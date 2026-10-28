@@ -440,7 +440,7 @@ Bomb-dropper charges retain their visual explosions and damage but their own imp
 
 
 
-Each main weapon has a separate 100-unit battery, its own recharge rate and a fire cadence that persists while switching. All banks recharge in the background. Running empty triggers a 150-tick (3-second) overheat lockout; swapping weapons cannot bypass it. The weapon strip shows energy, time to full charge and cooldowns. Spread starts with a five-direction semicircle including left/right shots and gains 7/9/11 projectiles. Other projectile weapons gain extra angled shots as they level; single/triple death lasers become wider, brighter and more damaging, with collision widths matching their visuals.
+Each main weapon has a separate 100-unit battery, its own recharge rate and a fire cadence that persists while switching. All banks recharge in the background. Running empty triggers a 150-tick (3-second) overheat lockout; swapping weapons cannot bypass it. The weapon strip shows energy, time to full charge and cooldowns. Spread starts with a five-direction semicircle including left/right shots and gains 7/9/12 projectiles, progressively adding rear diagonals and a full circle at maximum rank while retaining useful forward fire. Other projectile weapons gain extra angled shots as they level; single/triple death lasers become wider, brighter and more damaging, with collision widths matching their visuals.
 
 
 
@@ -505,3 +505,6 @@ Browser sample voices now leave the admission budget according to AudioContext t
 Weapons 1-3 now sustain approximately 25 / 12 / 10 seconds of uninterrupted firing from a full battery, including passive recharge and no pickups. Game-step tests measured Pulse 24.80-24.82s, Spread 11.78-11.86s, and Rapid 9.92-9.94s across all four ranks. Fractional shot cost follows the upgraded fire interval, retaining damage and rate upgrades without reducing battery duration. Weapons 4-9, recharge periods and overheat cooldown are unchanged.
 
 Missions 1-3 retain their original attack pace. Mission-number progression then reduces formation spacing from 170 to 128 simulation ticks, common enemy firing spacing from 128 to 86 ticks, and boss attack intervals by up to 28%. Late regular/specialist formations gain bounded extra enemies; occasional aimed flanking pairs and at most 14% more hostile projectile speed add pressure. Existing boss tells, scenery/cavern motion and collisions remain intact; no new health inflation is added. Encounter deadlines follow formation spacing to avoid longer empty waits. Drops remain 11 per 80 kills in the same item order. Compile/run tests/balance.c with the same Emscripten Node target to reproduce game-step battery durations and controlled early/middle/late shot counts.
+
+
+Release 81 strengthens upgraded Triple Death Laser levels: beam half-widths are 3/8/16/25 world units and base enemy damage is 110/155/215/290. Target paths and smaller pod echoes share the upgraded power. Fine-wall beams stop and cut across their visible aperture, including thin grains between former sample rays. All weapon-bank costs, recharge and cooldowns remain unchanged.

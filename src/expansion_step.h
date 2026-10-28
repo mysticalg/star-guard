@@ -2,10 +2,10 @@ static int option_x(int n){int offset=n==4?0:(n&1?1:-1)*(11+(n/2)*11),x=ex.follo
 static int option_y(int n){return clamp((ex.followY[(ex.followHead-1-(n+1)*8)&63]>>8)+10+(n/2)*5,34,247);}
 static int satellite_x(void){return (g.px>>8)+(sn(g.tick*3)*19>>10);}
 static int satellite_y(void){return (player_y>>8)+(sn(g.tick*3+64)*16>>10);}
-static int beam_half_width(void){if(ex.phoenixTicks)return flight_side_mode()?58:80;static const int single[4]={3,6,11,18},triple[4]={3,5,9,14};return (ex.multi?triple:single)[power_level(ex.multi?5:3)-1];}
+static int beam_half_width(void){if(ex.phoenixTicks)return flight_side_mode()?58:80;static const int single[4]={3,6,11,18},triple[4]={3,8,16,25};return (ex.multi?triple:single)[power_level(ex.multi?5:3)-1];}
 static int beam_slope(int lane){int fan=ex.multi&&!ex.phoenixTicks?lane*(8+4*(power_level(5)-1))*256/100:0;int angle=clamp(ex.beamAim+fan,-256,256);return flight_side_mode()?angle*960*960/(696*696):angle;}
 static int beam_center(int lane,int y){return g.px/Q+lane*6+(player_y/Q-7-y)*beam_slope(lane)/256;}
-static int beam_hits(int x,int y,int radius){for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float slope=beam_slope(lane)/256.0f;if(absn(x-beam_center(lane,y))<(radius+beam_half_width())*sqrtf(1+slope*slope))return 1;}return 0;}
+static int beam_hits(int x,int y,int radius){for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float slope=beam_slope(lane)/256.0f;if(absn(x-beam_center(lane,y))<(radius+beam_half_width())*sqrtf(1+slope*slope)){if(journey_kind()==ENV_WALL&&terrain.active&&(y+radius<terrain_beam_tip(lane)||y-radius>player_y/Q-7))continue;return 1;}}return 0;}
 #include "options80.h"
 static void home_shot(Obj*s){int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&enemy_damageable(o)){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
 static void hazard(int,int,int);
@@ -122,7 +122,7 @@ static void expansion_step(int mask,int ch){if(ex.phoenixTicks){ex.phoenixTicks-
   if(o->type==2){if(absn(y-(player_y>>8))<12&&absn(x-(g.px>>8))>40)hurt_at(g.px>>8,clamp(y,(player_y>>8)-7,(player_y>>8)+7),0,y<(player_y>>8)?1:-1);continue;}
   for(j=0;j<MAXS;j++){Obj*s=g.shots+j;if(s->on&&absn((s->x>>8)-x)<o->base&&absn((s->y>>8)-y)<o->base){if(s->type==4){detonate_heatseeker(s);break;}if(s->type==9){detonate_torpedo(s);break;}s->on=0;o->hp--;if(s->type==7)pc_reflection_sound(hazard_material(o),o->type,x);hit_sparks(s->x>>8,s->y>>8,0,1,1);if(s->type!=8)pc_hit_sound(hazard_material(o),s->type,x);}}
   if(!o->on)continue;
-  if(g.beam&&beam_hits(x,y,o->base)&&(g.tick&3)==0&&y<(player_y>>8)){o->hp--;pc_hit_sound(hazard_material(o),g.weapon,x);}
+  if((g.tick&3)==0){int damage=0;if(g.beam&&beam_hits(x,y,o->base)&&y<player_y/Q)damage+=ex.phoenixTicks?100:beam_target_damage81(100,ex.multi?5:3);int pods=option_beam_count80(x,y,o->base);if(pods)damage+=beam_target_damage81(100,ex.multi?5:3)*pods/5;if(damage){o->wound+=damage;o->hp-=o->wound/100;o->wound%=100;pc_hit_sound(hazard_material(o),g.weapon,x);}}
   if(o->hp<=0){o->on=0;g.score+=25;if(o->type!=2&&o->type!=3){pc_crush_sound(hazard_material(o),o->base,x);ex.soundTick=g.tick;}burst(x,y,0);if(o->type==9||o->type==11)for(int a=0;a<256;a+=64){Obj*shard=bullet(o->x,o->y,sn(a)*400/1024,sn(a+64)*400/1024);if(shard)shard->variant=2;}continue;}
   if((o->type==9||o->type==11)&&g.tick%35==0&&absn(x-(g.px>>8))<o->base+22&&absn(y-(player_y>>8))<o->base+22)hurt_at(g.px/Q,player_y/Q,0,1);
   if(absn(x-(g.px>>8))<o->base+4&&absn(y-(player_y>>8))<o->base+5){int pt[2];surface_point(g.px>>8,player_y>>8,6,7,x,y,pt);hurt_at(pt[0],pt[1],(g.px>>8)>x?1:-1,0);o->on=0;burst(x,y,0);}

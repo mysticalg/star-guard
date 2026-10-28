@@ -47,8 +47,8 @@ static void giant_step(int mask){Giant*b=&ex.giant;if(!b->active)return;b->previ
  for(int i=0;i<9;i++){GiantPart*p=b->parts+i;if(p->dotTicks){p->dotTicks--;if(--p->dotClock<=0){p->dotClock=50;giant_raw_hit(i,p->dotDamage);}}if(!p->hp||(a==4&&!p->visible))continue;for(int n=0;n<MAXS;n++){Obj*s=g.shots+n;if(!s->on||s->base>0||(a==4?!worm_shot_contact(s,p):!giant_projectile_contact(s,i)))continue;int open=giant_open(i);if(open)giant_hit_family(i,(s->type==9?800:projectile_damage(s))*player_attack_scale(s->sourceFamily?s->sourceFamily-1:s->type)/100,s->sourceFamily?s->sourceFamily-1:s->type);s->on=0;pc_impact(p->x,p->y,open?1:3);break;}
   if(g.weapon==8&&(mask&4)&&g.weaponFireCool[8]==weapon_delay(18))giant_electric_hit(i,220*player_attack_scale(8)/100);
   if(!b->active)return;
-  if(g.beam&&(g.tick&3)==0&&p->y<player_y/Q&&beam_hits(p->x,p->y,p->w/2))giant_hit_family(i,(ex.phoenixTicks?600:120)*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);
-  if(ex.optionBeam80&&(g.tick&3)==0){int pods=option_beam_count80(p->x,p->y,p->w/2);if(pods)giant_hit_family(i,120*pods/5*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);}
+  if(g.beam&&(g.tick&3)==0&&p->y<player_y/Q&&beam_hits(p->x,p->y,p->w/2))giant_hit_family(i,(ex.phoenixTicks?600:beam_target_damage81(120,ex.multi?5:3))*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);
+  if(ex.optionBeam80&&(g.tick&3)==0){int pods=option_beam_count80(p->x,p->y,p->w/2);if(pods)giant_hit_family(i,beam_target_damage81(120,ex.multi?5:3)*pods/5*player_attack_scale(ex.multi?5:3)/100,ex.multi?5:3);}
   if(ex.bombAge==25)giant_hit_family(i,1200,-1);
   for(int n=0;n<ex.options&&n<5;n++)if(!ex.podContact[n]&&absn(option_x(n)-p->x)<p->w/2+6&&absn(option_y(n)-p->y)<p->h/2+6){giant_hit_family(i,25,0);ex.podContact[n]=20;}
 
