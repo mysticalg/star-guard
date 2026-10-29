@@ -16,7 +16,7 @@ static void draw_painted_blur75(void){
 static void draw_projectile_blur75(void){
  motionProjectileGhosts75=0;if(!motion_enabled75())return;
  for(int i=0;i<MAXS+MAXB&&motionProjectileGhosts75<(quality==2?160:64);i++){
-  Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(!o->on)continue;MotionTrack75*t=motion_find75(o->serial);MotionPose75 p;
+  Obj*o=i<MAXS?g.shots+i:g.bullets+i-MAXS;if(!o->on||(i<MAXS&&o->type==10))continue;MotionTrack75*t=motion_find75(o->serial);MotionPose75 p;
   if(!motion_pose75(t,2,motionAlpha75,&p))continue;float x=o->x/(float)Q,y=o->y/(float)Q,distance=hypotf(x-p.x,y-p.y);
   if(distance<.7f||distance>32)continue;SDL_FColor c=projectile_colour(o,i>=MAXS);c.a=.17f;
   float size=o->echo80?.55f:1;beam_ribbon(p.x,p.y,x,y,.55f*size,c);light(p.x,p.y,1.1f*size,c.r,c.g,c.b,.24f);motionProjectileGhosts75++;

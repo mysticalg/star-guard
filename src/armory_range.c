@@ -15,12 +15,12 @@ EMSCRIPTEN_KEEPALIVE void range_init(int ship,int weapon,int variant,int gear,in
 EMSCRIPTEN_KEEPALIVE void range_step(void){
  if(rangeAge++>=300)range_init(rangeShip,rangeWeapon,rangeVariant,rangeQuality,rangeArmour);
  /* Durable range targets: production guidance, hit and chain routines apply. */
- for(int i=0;i<3;i++){Obj *o=g.enemies+i;int linked=o->empLinked;Ice83 cold=o->ice83;Siphon84 siphon=o->siphon84;u32 serial=o->serial;*o=(Obj){.serial=++g.actorSerial,.on=1,.type=0,.strength=1,.hp=100000,.entryTicks=12,.base=130+i*30,.x=(130+i*30)*Q,.y=(120-i*18)*Q,.empLinked=linked};if(rangeWeapon==3){o->ice83=cold;o->siphon84=siphon;if(serial)o->serial=serial;}}
+ for(int i=0;i<3;i++){Obj *o=g.enemies+i;int linked=o->empLinked;Ice83 cold=o->ice83;Siphon84 siphon=o->siphon84;u32 serial=o->serial;*o=(Obj){.serial=++g.actorSerial,.on=1,.type=0,.strength=1,.hp=100000,.entryTicks=12,.base=130+i*30,.x=(130+i*30)*Q,.y=(120-i*18)*Q,.empLinked=linked};if(rangeWeapon==3||(rangeWeapon==0&&rangeVariant==3)){o->ice83=cold;o->siphon84=siphon;if(serial)o->serial=serial;}}
  memset(g.bullets,0,sizeof(g.bullets));g.clock=-100000;ex.torpedoCool=10000;
  game_step(4,0);update_fx(.02f);
 }
 EMSCRIPTEN_KEEPALIVE int range_read(int n,int field){
- if(n<MAXS){Obj *o=g.shots+n;switch(field){case 0:return o->on;case 1:return o->x;case 2:return o->y;case 3:return o->vx;case 4:return o->vy;case 5:return o->type;case 6:{SDL_FColor c=projectile_colour(o,0);return ((int)(c.r*255)<<16)|((int)(c.g*255)<<8)|(int)(c.b*255);}}}
+ if(n<MAXS){Obj *o=g.shots+n;switch(field){case 0:return o->on;case 1:return o->x;case 2:return o->y;case 3:return o->vx;case 4:return o->vy;case 5:return o->type;case 7:return o->type==10?orb87_radius(o):0;case 8:return o->orbCharge87;case 9:return o->orbFull87;case 10:return o->orbFade87;case 6:{SDL_FColor c=projectile_colour(o,0);return ((int)(c.r*255)<<16)|((int)(c.g*255)<<8)|(int)(c.b*255);}}}
  if(n>=100&&n<196){Obj *o=ex.empArcs+n-100;switch(field){case 0:return ex.empTicks&&n-100<ex.empCount;case 1:return o->x;case 2:return o->y;case 3:return o->vx;case 4:return o->vy;}}
  if(n>=300&&n<303){Obj *o=g.enemies+n-300;switch(field){case 1:return o->x;case 2:return o->y;case 3:return o->ice83.frozen;case 4:return o->ice83.charge;case 5:return o->ice83.fracture;case 6:return o->ice83.shell;case 7:return o->serial;case 8:return o->siphon84.disarm;case 9:return o->siphon84.paid;}return o->on;}
  if(n>=400&&n<464){Wave *o=waves+n-400;switch(field){case 0:return o->life>0;case 1:return o->x*256;case 2:return o->y*256;case 3:return o->radius*100;case 4:return o->age*1000;case 5:return o->life*1000;}}

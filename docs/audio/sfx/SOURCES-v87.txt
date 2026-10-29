@@ -1,0 +1,11 @@
+Plasma Orb audio sources and adaptations.
+
+Tesla Coil - Electricity, by Why_O (Freesound633172), CC BY4.0.
+https://freesound.org/people/Why_O/sounds/633172/
+https://creativecommons.org/licenses/by/4.0/
+Retained laser-sustain-v76 and laser-tail-v76 excerpts. Adaptations: one quiet Orb bed, 900Hz low-pass, 0.58x playback, finite leases, shared35-voice budget; quiet tail for the fizzle. Original recording and earlier credits retained.
+
+Launch: Kenney Sci-Fi Sounds, thrusterFire_001, CC0-1.0; retained torpedo-launch excerpt.
+https://kenney.nl/assets/sci-fi-sounds
+https://creativecommons.org/publicdomain/zero/1.0/
+See SOURCES.txt and SOURCES-v76.txt for the retained source catalogue.

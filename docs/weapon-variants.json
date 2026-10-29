@@ -39,6 +39,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 81,
+        "ship": 0,
+        "slot": 0,
+        "variant": 3,
+        "family": "Plasma Orb",
+        "name": "Vector Plasma Orb",
+        "colour": "#69eaff",
+        "damage": 100,
+        "energy": 400,
+        "speed": 100,
+        "tag": "O",
+        "description": "One huge slow orb at a time. Ordinary unguarded contacts spend 3-9 finite charges and shrink it; spent or timed-out orbs visibly fizzle before refire. Pods carry smaller orbs with fewer charges. Shields, rock and boss protections still apply."
       }
     ],
     [
@@ -452,6 +466,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 85,
+        "ship": 1,
+        "slot": 0,
+        "variant": 3,
+        "family": "Plasma Orb",
+        "name": "Jade Plasma Orb",
+        "colour": "#69eaff",
+        "damage": 100,
+        "energy": 400,
+        "speed": 100,
+        "tag": "O",
+        "description": "One huge slow orb at a time. Ordinary unguarded contacts spend 3-9 finite charges and shrink it; spent or timed-out orbs visibly fizzle before refire. Pods carry smaller orbs with fewer charges. Shields, rock and boss protections still apply."
       }
     ],
     [
@@ -865,6 +893,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 89,
+        "ship": 2,
+        "slot": 0,
+        "variant": 3,
+        "family": "Plasma Orb",
+        "name": "Crimson Plasma Orb",
+        "colour": "#69eaff",
+        "damage": 100,
+        "energy": 400,
+        "speed": 100,
+        "tag": "O",
+        "description": "One huge slow orb at a time. Ordinary unguarded contacts spend 3-9 finite charges and shrink it; spent or timed-out orbs visibly fizzle before refire. Pods carry smaller orbs with fewer charges. Shields, rock and boss protections still apply."
       }
     ],
     [
