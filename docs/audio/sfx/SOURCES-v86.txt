@@ -1,0 +1,4 @@
+Super Seekers launch reuses the retained torpedo-launch sample: Kenney Sci-Fi Sounds, thrusterFire_001 (CC0-1.0).
+https://kenney.nl/assets/sci-fi-sounds
+https://creativecommons.org/publicdomain/zero/1.0/
+Adaptation: playback1.35x,quiet gain,75ms event gap,shared35voice budget. Original and full earlier credits retained; see SOURCES.txt. No new generated tones.

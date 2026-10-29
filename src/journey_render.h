@@ -62,7 +62,7 @@ static void draw_journey_combat(void){draw_aircraft_weapons();SDL_SetRenderDrawB
  if(ex.env.weather.strikeSerial&&g.tick-ex.env.weather.strikeTick<8){int age=g.tick-ex.env.weather.strikeTick;SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);SDL_SetRenderDrawColor(renderer,180,205,255,(reducedMotion?4:30)*(8-age)/8);SDL_RenderFillRect(renderer,NULL);}
  if(ex.env.warning==2||ex.env.empActive){journey_rect(0,24,320,232,100,35,150,ex.env.empActive?35:12);for(int y=30;y<256;y+=28)journey_line(0,y,320,y+8,150,110,255,45);}
  if(ex.env.warning==21)journey_rect(ex.env.strikeX-36,24,72,232,255,120,30,35);
- if(ex.env.cutter){int reach=g.weapon==5&&mega85_fitted()?55:100;journey_rect(g.px/Q-1,player_y/Q-reach,2,reach-10,100,255,200,220);}
+ if(ex.env.cutter){int reach=terrain_recovery_wide86()?55:100;journey_rect(g.px/Q-1,player_y/Q-reach,2,reach-10,100,255,200,220);}
  Giant*b=&ex.giant;if(b->active){int a=b->archetype;draw_giant_tactics();
  if(a==5){GiantPart*core=b->parts+6;float pulse=.5f+.5f*sinf(visualTick*.12f);for(int n=0;n<6;n++){float angle=visualTick*.018f+n*PI/3,r=(13+3*pulse)*giant_world_scale(),x=core->x+cosf(angle)*r,y=core->y+sinf(angle)*r;journey_line(x,y,x+cosf(angle+.6f)*6,y+sinf(angle+.6f)*6,255,150+(int)(pulse*80),60,140+(int)(pulse*90));}}
  if(a==4){for(int side=0;side<2;side++){int y=130,x=side?tunnel_right(y)+2:tunnel_left(y)-2;journey_cell(worldObjects,3,1,4,2,x,y,36,52);}for(int i=WORM_SEGMENTS-1;i>0;i--){WormSegment*s=b->worm+i;if(!s->visible)continue;GiantPart body={.x=(int)s->x,.y=(int)s->y,.w=34+b->form*6,.h=42+b->form*6,.angle=(int)s->angle};draw_worm_form(&body,i==WORM_SEGMENTS-1?8:0,b->form,1);}}

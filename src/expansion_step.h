@@ -7,7 +7,7 @@ static int beam_slope(int lane){int fan=beam_split85()&&!ex.phoenixTicks?lane*(8
 static int beam_center(int lane,int y){return g.px/Q+lane*6+(player_y/Q-7-y)*beam_slope(lane)/256;}
 static int beam_hits(int x,int y,int radius){for(int lane=beam_split85()?-1:0;lane<=(beam_split85()?1:0);lane++){float slope=beam_slope(lane)/256.0f;if(absn(x-beam_center(lane,y))<(radius+beam_half_width())*sqrtf(1+slope*slope)){if(journey_kind()==ENV_WALL&&terrain.active&&(y+radius<terrain_beam_tip(lane)||y-radius>player_y/Q-7))continue;return 1;}}return 0;}
 #include "options80.h"
-static void home_shot(Obj*s){s->missileTarget82=0;s->missileTargetSerial82=0;int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&enemy_damageable(o)){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;s->missileTarget82=target+1;s->missileTargetSerial82=o->serial;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}
+static void home_shot(Obj*s){s->missileTarget82=0;s->missileTargetSerial82=0;int i,best=999999,target=-1;for(i=0;i<MAXE;i++){Obj*o=g.enemies+i;if(o->on&&enemy_damageable(o)){int d=absn(o->x-s->x)+absn(o->y-s->y);if(d<best){best=d;target=i;}}}if(target>=0){Obj*o=g.enemies+target;s->missileTarget82=target+1;s->missileTargetSerial82=o->serial;int dx=o->x-s->x,dy=o->y-s->y,dist=absn(dx)+absn(dy);if(dist){if(s->superSeeker86){s->vx+=(divn(dx*2200,dist)-s->vx)/6;s->vy+=(divn(dy*2200,dist)-s->vy)/6;}else{s->vx+=(divn(dx*1800,dist)-s->vx)>>3;s->vy+=(divn(dy*1800,dist)-s->vy)>>3;}}}}
 static void hazard(int,int,int);
 static int tunnel_center(int);
 static int tunnel_lane(int,int);

@@ -1,26 +1,26 @@
 /* Local pilot economy. Pure transactions are shared by the browser and tests. */
 (function(root){
- const KEY='star-guard-pilot-v3',PREVIOUS_KEY='star-guard-pilot-v2',LEGACY_KEY='star-guard-pilot-v1',CAP=10;
- const premium84={3:{name:'Siphon',price:2400,level:6},5:{name:'Mega Death Laser',price:6400,level:10}};
+ const KEY='star-guard-pilot-v4',PREVIOUS_KEY='star-guard-pilot-v3',V2_KEY='star-guard-pilot-v2',LEGACY_KEY='star-guard-pilot-v1',CAP=10;
+ const premium84={3:{name:'Siphon',price:2400,level:6},4:{name:'Super Seekers',price:8800,level:10},5:{name:'Mega Death Laser',price:6400,level:10}};
  const validVariant84=(w,v)=>integer(v,3)&&(v<3||!!premium84[w]);
  const variantCount84=w=>premium84[w]?4:3;
  const clone=x=>JSON.parse(JSON.stringify(x)),integer=(x,max)=>Number.isInteger(x)&&x>=0&&x<=max;
- function fresh(){return {version:3,revision:0,credits:300,parts:0,cores:0,xp:0,selectedShip:0,owned:Array.from({length:3},()=>Array.from({length:9},()=>[0,-1,-1,-1])),loadouts:Array.from({length:3},()=>Array(9).fill(0)),armourOwned:[true,false,false,false],armour:0,skins:[true,false,false],skin:0,rng:0x51a9c3,runSerial:0,rewarded:[],run:null};}
+ function fresh(){return {version:4,revision:0,credits:300,parts:0,cores:0,xp:0,selectedShip:0,owned:Array.from({length:3},()=>Array.from({length:9},()=>[0,-1,-1,-1])),loadouts:Array.from({length:3},()=>Array(9).fill(0)),armourOwned:[true,false,false,false],armour:0,skins:[true,false,false],skin:0,rng:0x51a9c3,runSerial:0,rewarded:[],run:null};}
  function level(p){let xp=p.xp,n=1;while(n<CAP&&xp>=n*200){xp-=n*200;n++;}return n;}
  function validate(p){
-  if(!p||![1,2,3].includes(p.version)||!integer(p.revision,1e9)||!integer(p.credits,1e7)||!integer(p.parts,1e6)||!integer(p.cores,1e4)||!integer(p.xp,1e8)||!integer(p.selectedShip,2)||!integer(p.rng,0xffffffff)||!integer(p.runSerial,1e9))throw Error('Invalid pilot fields');
+  if(!p||![1,2,3,4].includes(p.version)||!integer(p.revision,1e9)||!integer(p.credits,1e7)||!integer(p.parts,1e6)||!integer(p.cores,1e4)||!integer(p.xp,1e8)||!integer(p.selectedShip,2)||!integer(p.rng,0xffffffff)||!integer(p.runSerial,1e9))throw Error('Invalid pilot fields');
   if(!Array.isArray(p.owned)||p.owned.length!==3||!Array.isArray(p.loadouts)||p.loadouts.length!==3)throw Error('Invalid inventory');
-  for(let s=0;s<3;s++){if(p.owned[s].length!==9||p.loadouts[s].length!==9)throw Error('Invalid slot count');for(let w=0;w<9;w++){if(!Array.isArray(p.owned[s][w])||p.owned[s][w].length!==(p.version===1?3:4)||p.owned[s][w].some(q=>!Number.isInteger(q)||q< -1||q>3))throw Error('Invalid gear quality');if(p.version>=2&&p.owned[s][w][3]>=0&&(!premium84[w]||(p.version===2&&w!==3)))throw Error('Unsupported premium item');const v=p.loadouts[s][w];if(v!==null&&(!validVariant84(w,v)||(p.version===1&&v===3)||p.owned[s][w][v]<0))throw Error('Equipped item is not owned');}if(p.owned[s][0][0]<0||p.loadouts[s][0]===null)throw Error('Primary loaner missing');}
+  for(let s=0;s<3;s++){if(p.owned[s].length!==9||p.loadouts[s].length!==9)throw Error('Invalid slot count');for(let w=0;w<9;w++){if(!Array.isArray(p.owned[s][w])||p.owned[s][w].length!==(p.version===1?3:4)||p.owned[s][w].some(q=>!Number.isInteger(q)||q< -1||q>3))throw Error('Invalid gear quality');if(p.version>=2&&p.owned[s][w][3]>=0&&(!premium84[w]||(p.version===2&&w!==3)||(p.version===3&&w===4)))throw Error('Unsupported premium item');const v=p.loadouts[s][w];if(v!==null&&(!validVariant84(w,v)||(p.version===1&&v===3)||p.owned[s][w][v]<0))throw Error('Equipped item is not owned');}if(p.owned[s][0][0]<0||p.loadouts[s][0]===null)throw Error('Primary loaner missing');}
   if(!Array.isArray(p.armourOwned)||p.armourOwned.length!==4||p.armourOwned.some(x=>typeof x!=='boolean')||!p.armourOwned[0]||!integer(p.armour,3)||!p.armourOwned[p.armour])throw Error('Invalid armour');
   if(!Array.isArray(p.skins)||p.skins.length!==3||p.skins.some(x=>typeof x!=='boolean')||!p.skins[0]||!integer(p.skin,2)||!p.skins[p.skin])throw Error('Invalid cosmetic');
   if(!Array.isArray(p.rewarded)||p.rewarded.length>256||p.rewarded.some(x=>typeof x!=='string'||x.length>100))throw Error('Invalid reward ledger');
   if(p.run!==null){const r=p.run;if(!integer(r.id,1e9)||!integer(r.mission,6)||r.mission<1||!integer(r.lastKills,1e7)||!integer(r.lastParts,1e7)||!integer(r.killsPaid,200)||!integer(r.partsPaid,200))throw Error('Invalid sortie counters');}
-  if(p.version===1)for(const ship of p.owned)for(const slot of ship)slot.push(-1);if(p.version<3)p.version=3;return p;
+  if(p.version===1)for(const ship of p.owned)for(const slot of ship)slot.push(-1);if(p.version<4)p.version=4;return p;
  }
  const weaponPrice=(w,v)=>v===3?(premium84[w]?.price??Infinity):v===0?60+w*8:v===1?120+w*10:180+w*12;
  const armourPrices=[0,220,400,1800],armourStats=[{name:'Standard plating',armour:100,energy:100},{name:'Laminate plating',armour:110,energy:103},{name:'Bulwark plating',armour:125,energy:106},{name:'Adaptive plating',armour:115,energy:100}];
  function armourSale(id){return Math.floor(Math.min(armourPrices[id],[0,120,240,400][id])*.4);}
- function recipe(p,s,w,v){const q=p.owned[s][w][v];if(q<0&&v===3)return {credits:premium84[w].price,parts:w===5?160:80,cores:w===5?5:2,level:premium84[w].level,quality:0};if(q<0)return {credits:30+v*50,parts:6+v*3,cores:0,level:1,quality:0};if(q===3)return null;return [{credits:100,parts:10,cores:0,level:3,quality:1},{credits:300,parts:24,cores:1,level:10,quality:2},{credits:700,parts:45,cores:3,level:10,quality:3}][q];}
+ function recipe(p,s,w,v){const q=p.owned[s][w][v];if(q<0&&v===3)return {credits:w===4?6000:premium84[w].price,parts:w===4?200:w===5?160:80,cores:w===4?6:w===5?5:2,level:premium84[w].level,quality:0};if(q<0)return {credits:30+v*50,parts:6+v*3,cores:0,level:1,quality:0};if(q===3)return null;return [{credits:100,parts:10,cores:0,level:3,quality:1},{credits:300,parts:24,cores:1,level:10,quality:2},{credits:700,parts:45,cores:3,level:10,quality:3}][q];}
  function random(p,max){p.rng=(Math.imul(p.rng,1664525)+1013904223)>>>0;return p.rng%max;}
  function spend(p,c){if(p.credits<c.credits||p.parts<c.parts||p.cores<c.cores)throw Error('Insufficient credits or materials');p.credits-=c.credits;p.parts-=c.parts;p.cores-=c.cores;}
  function apply(p,a){
@@ -48,13 +48,14 @@
     else if(roll<2000&&lv>=6){const id=lv===CAP?3:2;if(!p.armourOwned[id]){p.armourOwned[id]=true;message+=' Rare armour unlocked.';}else{p.parts+=8;message+=' Duplicate armour salvaged into 8 parts.';}}
     else if(roll<2400&&lv===CAP){p.cores++;message+=' Rare reactor core +1.';}
     else if(roll<2600&&lv===CAP){const id=1+random(p,2);if(!p.skins[id]){p.skins[id]=true;message+=' Cosmetic ship skin unlocked (no stat bonus).';}else{p.parts+=5;message+=' Duplicate cosmetic salvaged into 5 parts.';}}
+    else if(roll>=9980&&roll<10000&&lv===CAP){if(p.owned[ship][4][3]<0){p.owned[ship][4][3]=0;message+=' Super rare Super Seekers acquired; equip slot 5.';}else{p.parts+=8;message+=' Duplicate Super Seekers salvaged into 8 parts.';}}
    }
   }
   else throw Error('Unknown pilot action');
   p.credits=Math.min(p.credits,1e7);p.parts=Math.min(p.parts,1e6);p.cores=Math.min(p.cores,1e4);p.xp=Math.min(p.xp,1e8);return message;
  }
  function newSeed(){if(globalThis.crypto?.getRandomValues){const n=new Uint32Array(1);globalThis.crypto.getRandomValues(n);return n[0];}return (Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;}
- function create(storage){let state=fresh(),damaged=null,migrated=false;const current=storage.getItem(KEY),previous=current===null?storage.getItem(PREVIOUS_KEY):null,legacy=current===null&&previous===null?storage.getItem(LEGACY_KEY):null,raw=current??previous??legacy,source=previous!==null?'v2':'v1';if(raw===null)state.rng=newSeed();if(raw!==null){try{state=validate(JSON.parse(raw));if(current===null){storage.setItem(KEY+'-migration-'+source,raw);storage.setItem(KEY,JSON.stringify(state));migrated=true;}}catch{damaged=raw;}}
+ function create(storage){let state=fresh(),damaged=null,migrated=false;const current=storage.getItem(KEY),previous=current===null?storage.getItem(PREVIOUS_KEY):null,v2=current===null&&previous===null?storage.getItem(V2_KEY):null,legacy=current===null&&previous===null&&v2===null?storage.getItem(LEGACY_KEY):null,raw=current??previous??v2??legacy,source=previous!==null?'v3':v2!==null?'v2':'v1';if(raw===null)state.rng=newSeed();if(raw!==null){try{state=validate(JSON.parse(raw));if(current===null){storage.setItem(KEY+'-migration-'+source,raw);storage.setItem(KEY,JSON.stringify(state));migrated=true;}}catch{damaged=raw;}}
   function backup(){const old=storage.getItem(KEY);if(old===null)return;let list=[];try{list=JSON.parse(storage.getItem(KEY+'-backups')||'[]');if(!Array.isArray(list))list=[];}catch{}list.push({at:new Date().toISOString(),data:old});storage.setItem(KEY+'-backups',JSON.stringify(list.slice(-3)));}
   function commit(next,makeBackup){validate(next);next.revision=state.revision+1;if(makeBackup)backup();storage.setItem(KEY,JSON.stringify(next));state=next;}
   return {get state(){return clone(state);},get damaged(){return damaged;},get migrated(){return migrated;},get level(){return level(state);},
@@ -64,5 +65,5 @@
    resetWithBackup(){try{backup();const next=fresh();next.rng=newSeed();storage.setItem(KEY,JSON.stringify(next));state=next;damaged=null;return {ok:true,message:'Fresh pilot created; previous raw save retained in backups.'};}catch(e){return {ok:false,message:e.message};}}
   };
  }
- const api={KEY,PREVIOUS_KEY,LEGACY_KEY,CAP,variantCount:variantCount84,premium:premium84,fresh,validate,level,weaponPrice,armourPrices,armourStats,armourSale,recipe,random,apply,create};if(typeof module==='object'&&module.exports)module.exports=api;else root.PilotStore=api;
+ const api={KEY,PREVIOUS_KEY,V2_KEY,LEGACY_KEY,CAP,variantCount:variantCount84,premium:premium84,fresh,validate,level,weaponPrice,armourPrices,armourStats,armourSale,recipe,random,apply,create};if(typeof module==='object'&&module.exports)module.exports=api;else root.PilotStore=api;
 })(typeof window==='object'?window:globalThis);

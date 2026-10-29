@@ -24,3 +24,5 @@
 #mini-banks .weapon-slot[data-weapon="3"][data-variant="3"] .ability-art,#weapon-batteries .weapon-slot[data-weapon="3"][data-variant="3"] .ability-art{background-image:url("images/siphon-v84.svg")}
 
 #mini-banks .weapon-slot[data-weapon="5"][data-variant="3"] .ability-art,#weapon-batteries .weapon-slot[data-weapon="5"][data-variant="3"] .ability-art{background-image:url("images/mega-v85.svg");background-size:cover;background-position:center!important}
+
+#mini-banks .weapon-slot[data-weapon="4"][data-variant="3"] .ability-art,#weapon-batteries .weapon-slot[data-weapon="4"][data-variant="3"] .ability-art{background-image:url("images/super-seekers-v86.svg");background-size:cover;background-position:center!important}

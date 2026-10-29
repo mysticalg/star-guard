@@ -217,6 +217,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 83,
+        "ship": 0,
+        "slot": 4,
+        "variant": 3,
+        "family": "Super Seekers",
+        "name": "Vector Super Seekers",
+        "colour": "#ff76b9",
+        "damage": 100,
+        "energy": 150,
+        "speed": 100,
+        "tag": "S",
+        "description": "Rapid guided missiles with faster steering and 150% energy use. A very rare level 10 boss drop, also sold for 8800 credits. Pods echo smaller paid missiles. Boss protection and terrain still block damage."
       }
     ],
     [
@@ -616,6 +630,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 87,
+        "ship": 1,
+        "slot": 4,
+        "variant": 3,
+        "family": "Super Seekers",
+        "name": "Jade Super Seekers",
+        "colour": "#ff76b9",
+        "damage": 100,
+        "energy": 150,
+        "speed": 100,
+        "tag": "S",
+        "description": "Rapid guided missiles with faster steering and 150% energy use. A very rare level 10 boss drop, also sold for 8800 credits. Pods echo smaller paid missiles. Boss protection and terrain still block damage."
       }
     ],
     [
@@ -1015,6 +1043,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 91,
+        "ship": 2,
+        "slot": 4,
+        "variant": 3,
+        "family": "Super Seekers",
+        "name": "Crimson Super Seekers",
+        "colour": "#ff76b9",
+        "damage": 100,
+        "energy": 150,
+        "speed": 100,
+        "tag": "S",
+        "description": "Rapid guided missiles with faster steering and 150% energy use. A very rare level 10 boss drop, also sold for 8800 credits. Pods echo smaller paid missiles. Boss protection and terrain still block damage."
       }
     ],
     [
