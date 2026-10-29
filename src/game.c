@@ -119,7 +119,7 @@ static int weapon_drain(int w,int base){int scale=w==8?8:9;if(!g.chassis)return 
 static int weapon_spend(int w){if(!(g.equippedMask&(1<<w)))return 0;if(w<3){static const int base[3]={4,6,3},ticks[3]={1250,600,500};int target=ticks[w]*ship_endurance()/100,regen=weapon_recharge_period(w);return weapon_drain_fraction(w,weapon_delay_for(w,base[w])*(100*regen+target),target*regen);}return weapon_drain(w,weapon_cost(w));}
 static int projectile_damage(const Obj*s){int level=clamp(s->power,1,4),base=s->variant==101?10:s->phase==-2&&!s->echo80?25:s->type==1?70:s->type==2?75:s->type==4?500:s->type==7?60:100;int damage=base*(100+20*(level-1))/100;if(s->variant==102)damage=damage*65/100;return s->echo80?clamp(damage*s->echo80/100,1,damage):damage;}
 /* Upgraded Triple power is shared by every real target path and its pod echoes. */
-static int beam_damage81(int family){static const int triple[4]={110,155,215,290};return family==5?triple[power_level(5)-1]:g.variantEquip[3]==3?siphon_damage84(power_level(3)):ice_base83(power_level(3));}
+static int beam_damage81(int family){static const int triple[4]={110,155,215,290};return family==5?(mega85_fitted()?mega85_damage(power_level(5)):triple[power_level(5)-1]):g.variantEquip[3]==3?siphon_damage84(power_level(3)):ice_base83(power_level(3));}
 static int beam_target_damage81(int base,int family){return family==5?base*beam_damage81(5)/110:family==3?base*beam_damage81(3)/130:base;}
 static void phoenix_charge(int amount){if(!ex.phoenixTicks)ex.phoenixMeter=clamp(ex.phoenixMeter+amount,0,PHOENIX_CHARGE_MAX);}
 /* Entry grace is measured in simulation ticks after the whole enemy reaches view. */

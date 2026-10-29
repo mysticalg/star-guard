@@ -19,7 +19,7 @@ static void lighting_sources(void){
  int projectileCount=0;for(int i=0;i<MAXB+MAXS;i++)projectileCount+=(i<MAXB?g.bullets[i].on:g.shots[i-MAXB].on)!=0;float outerAlpha=.55f/sqrtf(1+projectileCount/32.0f);
  for(int i=0;i<MAXB+MAXS;i++){Obj*o=i<MAXB?g.bullets+i:g.shots+i-MAXB;if(!o->on||illuminationProbe73==3)continue;int hostile=i<MAXB,old=illuminationProbe73==2;SDL_FColor c=projectile_colour(o,hostile);c.r=.45f+.55f*c.r;c.g=.45f+.55f*c.g;c.b=.45f+.55f*c.b;c.a=old?2.3f:1.9f;int first=worldLightCount;world_light(o->x/(float)Q,o->y/(float)Q,old?(hostile?18:28):(hostile?20:30),c);if(!old&&worldLightCount>first){worldLights[first].outerRadius=hostile?55:78;worldLights[first].outerAlpha=outerAlpha;}}
 
- if(g.beam){SDL_FColor c=player_beam_colour();c.r=.5f+.5f*c.r;c.g=.5f+.5f*c.g;c.b=.5f+.5f*c.b;c.a=1.8f;for(int lane=ex.multi?-1:0;lane<=(ex.multi?1:0);lane++){float tip=terrain_beam_tip(lane),end=y-8;for(int i=0;i<6;i++){float yy=tip+(end-tip)*(i+.5f)/6;world_light(beam_center(lane,(int)yy),yy,fmaxf(26,(end-tip)/6),c);}}}
+ if(g.beam){SDL_FColor c=player_beam_colour();c.r=.5f+.5f*c.r;c.g=.5f+.5f*c.g;c.b=.5f+.5f*c.b;c.a=1.8f;for(int lane=beam_split85()?-1:0;lane<=(beam_split85()?1:0);lane++){float tip=terrain_beam_tip(lane),end=y-8;for(int i=0;i<6;i++){float yy=tip+(end-tip)*(i+.5f)/6;world_light(beam_center(lane,(int)yy),yy,fmaxf(26,(end-tip)/6),c);}}}
 
  /* Actual Nova/EMP expansion also reveals surfaces at its moving blast front. */
  if(ex.bombAge){float r=ex.bombRadius,fade=fminf(1,(61-ex.bombAge)/10.0f);world_light(ex.bombX,ex.bombY,25+r*.4f,(SDL_FColor){.45f,.75f,1,fade});for(int i=0;i<8;i++){float a=i*PI/4;world_light(ex.bombX+cosf(a)*r,ex.bombY+sinf(a)*r*.8f,27,(SDL_FColor){.4f,.7f,1,fade*(reducedMotion?.8f:1.6f)});}}

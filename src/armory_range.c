@@ -30,7 +30,7 @@ EMSCRIPTEN_KEEPALIVE int range_read(int n,int field){
  if(n==217)return ex.siphonWindowGiven84;
  if(n==214)return field==1?ex.iceShatters83:ex.iceFreezes83;
  if(n==213){SDL_FColor c=player_beam_colour();return ((int)(c.r*255)<<16)|((int)(c.g*255)<<8)|(int)(c.b*255);}
- switch(n){case 200:return g.beam;case 201:return ex.multi;case 202:return beam_half_width();case 203:return beam_center(field,20);case 204:return g.tick;case 205:return g.weaponEnergy[g.weapon];case 206:return g.weaponHeat[g.weapon];case 207:return g.variantEquip[g.weapon];case 208:return g.gearQuality[g.weapon];case 209:return g.armourGear;case 210:return g.chassis;case 211:return power_level(g.weapon);}
+ switch(n){case 200:return g.beam;case 201:return beam_split85();case 202:return beam_half_width();case 203:return beam_center(field,20);case 204:return g.tick;case 205:return g.weaponEnergy[g.weapon];case 206:return g.weaponHeat[g.weapon];case 207:return g.variantEquip[g.weapon];case 208:return g.gearQuality[g.weapon];case 209:return g.armourGear;case 210:return g.chassis;case 211:return power_level(g.weapon);}
  return 0;
 }
 int main(void){return 0;}

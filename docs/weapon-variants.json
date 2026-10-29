@@ -258,6 +258,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 84,
+        "ship": 0,
+        "slot": 5,
+        "variant": 3,
+        "family": "Mega Death Laser",
+        "name": "Vector Mega Death Laser",
+        "colour": "#ffd07b",
+        "damage": 100,
+        "energy": 240,
+        "speed": 100,
+        "tag": "M",
+        "description": "A massive single aperture with heavy hull damage and rapid energy drain. Boss shields, phase gates and rock still block it. Pods echo smaller beams; release or switch to stop."
       }
     ],
     [
@@ -643,6 +657,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 88,
+        "ship": 1,
+        "slot": 5,
+        "variant": 3,
+        "family": "Mega Death Laser",
+        "name": "Jade Mega Death Laser",
+        "colour": "#ffd07b",
+        "damage": 100,
+        "energy": 240,
+        "speed": 100,
+        "tag": "M",
+        "description": "A massive single aperture with heavy hull damage and rapid energy drain. Boss shields, phase gates and rock still block it. Pods echo smaller beams; release or switch to stop."
       }
     ],
     [
@@ -1028,6 +1056,20 @@
         "energy": 106,
         "speed": 94,
         "description": "8% heavier impact; 6% more energy and 6% slower projectiles."
+      },
+      {
+        "id": 92,
+        "ship": 2,
+        "slot": 5,
+        "variant": 3,
+        "family": "Mega Death Laser",
+        "name": "Crimson Mega Death Laser",
+        "colour": "#ffd07b",
+        "damage": 100,
+        "energy": 240,
+        "speed": 100,
+        "tag": "M",
+        "description": "A massive single aperture with heavy hull damage and rapid energy drain. Boss shields, phase gates and rock still block it. Pods echo smaller beams; release or switch to stop."
       }
     ],
     [
