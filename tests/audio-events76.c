@@ -11,7 +11,8 @@ int main(void){
  arena();g.devInvincible=1;regularSpawnBudget=8;group(0,0);regularSpawnBudget=-1;for(int t=0;t<400;t++){game_step(0,0);audio_events_step76();int before=audioRequests76[28];audio_events_step76();V(audioRequests76[28]==before);}V(audioAdmitted76[28]>0&&audioAdmitted76[28]<=audioRequests76[28]);V(!hostileSource76);
  arena();drop(g.px/Q,player_y/Q,5);game_step(0,0);V(pickupSerial76==1&&pickupKind76==5);V(g.drops[0].on==0);int serial=pickupSerial76;game_step(0,0);V(pickupSerial76==serial);
  sideBlend=0;float pan=audio_effect_pan76(90,100);sideBlend=1;V(fabsf(audio_effect_pan76(90,100)-pan)>.1f);
- arena();g.devInvincible=1;Obj laser={.on=1,.type=27,.hp=10,.entryTicks=12,.x=160*Q,.y=80*Q};for(int t=1;t<=54;t++){g.tick++;aircraft_weapon_step(&laser);V(audioRequests76[37]==1);V(audioRequests76[12]==(t<40?0:t<54?t-39:14));V(audio_stat76(12261)==(t>=40&&t<54));}V(laser.weaponShots==1);
+ arena();g.devInvincible=1;Obj laser={.on=1,.type=27,.hp=10,.entryTicks=12,.x=160*Q,.y=80*Q};for(int t=1;t<=211;t++){g.tick++;enemy_mega_step88(&laser);V(audioRequests76[37]==1);V(audioRequests76[12]==0);V(audio_stat76(12262)==(t<61?0:t<=210?t-60:150));V(!audio_stat76(12261));V(audio_stat76(12263)==(t>=61&&t<=210));}V(laser.weaponShots==1);
+
  arena();g.devInvincible=1;Obj mini={.on=1,.type=4,.variant=1,.hp=100,.base=100,.phase=1,.age=280,.x=160*Q,.y=58*Q};stage_boss_step(&mini);V(mini.attack==1&&audioRequests76[37]==1&&!audioRequests76[12]);for(int t=2;t<=86;t++){mini.age++;g.tick++;stage_boss_step(&mini);V(mini.attack==t);V(audioRequests76[12]==(t<61?0:t<=85?t-60:25));V(audio_stat76(12261)==(t>=61&&t<=85));}V(audioRequests76[37]==1);
  arena();ex.giant.archetype=5;Obj*gb=giant_audio_bullet76(50*Q,80*Q,0,200);V(gb&&gb->audioClass76==6);V(gb->audioBorn76==g.tick);
  arena();g.tick++;giant_beam_damage(20,40,20,240,8);V(audioRequests76[12]==1&&audio_stat76(12261));g.tick++;V(!audio_stat76(12261));game_reset();V(!audio_stat76(12261));

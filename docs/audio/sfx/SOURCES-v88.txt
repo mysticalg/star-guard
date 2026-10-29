@@ -1,0 +1,6 @@
+Enemy Mega Laser: recorded charge, onset, sustained bed and discharge tail.
+All reused audio files and their creator/redistribution licenses remain listed in SOURCES-v76.txt.
+https://freesound.org/people/Why_O/sounds/633172/
+https://creativecommons.org/licenses/by/4.0/
+Laser source: Why_O (Freesound 633172), CC BY 4.0, excerpts/loop edits; low-pass 2300 Hz, playback 0.66x for this enemy-only sustain.
+No new recordings or changed original files. Shared master limiter and 35-source budget retained.
